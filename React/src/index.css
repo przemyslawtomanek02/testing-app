@@ -1,0 +1,197 @@
+@import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+    --color-darkCustom-1000: #070809;
+    --color-darkCustom-900: #111213;
+    --color-darkCustom-800: #181a1b;
+    --color-darkCustom-700: #232527;
+    --color-darkCustom-600: #353739;
+    --color-darkCustom-500: #55585b;
+    --color-darkCustom-400: #7c7f83;
+    --color-darkCustom-300: #999da1;
+    --color-darkCustom-200: #b7bbbe;
+    --color-darkCustom-100: #d9dbdd;
+    --color-darkCustom-50: #f0f1f1;
+}
+
+.checkbox-wrapper {
+    --size: 1.25rem;
+}
+
+.checkbox-wrapper input {
+    position: absolute;
+    opacity: 0;
+}
+
+.checkbox-wrapper label {
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    border: 2px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    position: relative;
+}
+
+.checkbox-wrapper label:active {
+    transform: scale(1.05);
+    border-radius: 12px;
+}
+
+.checkbox-wrapper svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+.checkbox-wrapper path {
+    fill: none;
+    stroke: #333;
+    stroke-width: 4px;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 101;
+    transition: 0.25s cubic-bezier(1, 0, .37, .91);
+}
+
+input:checked + label path {
+    stroke-dashoffset: 0;
+}
+
+.tests_table td {
+    border-top: 1px solid #e7e7e7;
+}
+
+/* Stylowanie rc-slider przez Tailwinda */
+.rc-slider {
+    @apply h-2 my-4;
+}
+
+.rc-slider-rail {
+    @apply bg-gray-300 rounded;
+    height: 8px !important;
+}
+
+.rc-slider-track {
+    @apply bg-blue-500 rounded;
+    height: 8px !important;
+}
+
+.rc-slider-handle {
+    @apply border-2 border-blue-500 bg-white rounded-full;
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: -6px !important;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.exam-card-animated {
+    opacity: 0;
+    animation-name: slideInUp;
+    animation-duration: 0.6s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-enter {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.is-refreshing {
+    animation: spin 0.5s ease-in-out infinite;
+}
+
+@layer utilities {
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .animate-shimmer {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .animate-shimmer::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+        background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.2) 20%,
+                rgba(255, 255, 255, 0.5) 60%,
+                rgba(255, 255, 255, 0)
+        );
+        animation: shimmer 2s infinite;
+    }
+}
+
+@media (max-width: 768px) {
+    .my-toast-container.Toastify__toast-container {
+        width: 100%;
+        padding: 0;
+        left: 0;
+        margin: 0;
+    }
+
+    .my-toast-container .Toastify__toast {
+        width: 90%;
+        margin: 10px auto;
+        border-radius: 8px;
+    }
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}

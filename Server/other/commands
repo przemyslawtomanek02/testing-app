@@ -1,0 +1,59 @@
+npm run package-win
+npm run dist:win
+pyinstaller name.spec
+
+npx @tailwindcss/cli -i ./src/index.css -o ./src/indextw.css --watch
+
+
+    "_buildwindows": "vite build && rmdir /s /q ..\\Server\\frontend\\ && xcopy /s /e /y dist\\* ..\\Server\\frontend\\",
+    "_buildlinux": "vite build && rm -rf ../Server/frontend/* && cp -r dist/* ../Server/frontend/",
+
+-------------------------------
+SELECT r.result_id, r.question_id, r.user_response,
+       CASE
+           WHEN r.user_response = 0 THEN q.first_question
+           WHEN r.user_response = 1 THEN q.second_question
+           WHEN r.user_response = 2 THEN q.third_question
+       END AS selected_answer
+FROM Results r
+JOIN Questions q ON r.question_id = q.id;
+
+SELECT
+    r.user_activity_id,
+    COUNT(CASE WHEN r.user_response = q.correct_answer THEN 1 END) AS liczba_poprawnych_odpowiedzi
+FROM Results r
+JOIN Questions q ON r.question_id = q.id
+GROUP BY r.user_activity_id;
+
+UPDATE UserActivity
+SET score = (
+    SELECT COUNT(CASE WHEN r.user_response = q.correct_answer THEN 1 END)
+    FROM Results r
+    JOIN Questions q ON r.question_id = q.id
+    WHERE r.user_activity_id = UserActivity.activity_id
+);
+
+UPDATE Results
+SET user_response = (
+    SELECT
+        CASE
+            WHEN Results.user_response = 0 THEN q.first_question
+            WHEN Results.user_response = 1 THEN q.second_question
+            WHEN Results.user_response = 2 THEN q.third_question
+            ELSE '' -- Provide a default value to ensure NOT NULL constraint is satisfied
+        END
+    FROM Questions q
+    WHERE q.id = Results.question_id
+)
+WHERE EXISTS (
+    SELECT 1
+    FROM Questions q
+    WHERE q.id = Results.question_id
+);
+-----------------------------------------------
+
+redis commands
+1. redis-cli
+2. CONFIG SET maxmemory-policy allkeys-lru / usuwa najstarsze sessiony
+2. CONFIG SET maxmemory-policy volatile-lru / usuwa najstarsze cache
+3. CONFIG SET maxmemory 100mb (ustaw max ram memory moze byc wiecej)

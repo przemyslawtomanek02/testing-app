@@ -1,0 +1,145 @@
+CREATE TABLE Tests (
+    test_id TEXT PRIMARY KEY,
+    name TEXT,
+    description TEXT,
+    max_score INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_tests_created_at ON Tests(created_at);
+
+CREATE TABLE TestInstances (
+    instance_id TEXT PRIMARY KEY,
+    test_id TEXT,
+    scheme_id TEXT,
+    start_time DATETIME,
+    end_time DATETIME,
+    is_active BOOLEAN DEFAULT 1,
+    test_time INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    instance_name TEXT DEFAULT 'Default Test Name',
+    max_instance_score INTEGER DEFAULT 0,
+    FOREIGN KEY (test_id) REFERENCES Tests(test_id),
+    FOREIGN KEY (scheme_id) REFERENCES Grading_schemes(scheme_id)
+);
+
+CREATE INDEX idx_testinstances_test_id ON TestInstances(test_id);
+CREATE INDEX idx_testinstances_created_at ON TestInstances(created_at);
+
+CREATE TABLE UserActivity (
+    activity_id TEXT PRIMARY KEY,
+    user_id TEXT,
+    user_name TEXT,
+    user_surname TEXT,
+    user_index INTEGER,
+    instance_id TEXT,
+    question_number INTEGER DEFAULT 1,
+    is_finished BOOLEAN DEFAULT 0,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    score INTEGER DEFAULT 0,
+    max_score INTEGER DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (instance_id) REFERENCES TestInstances(id)
+);
+
+CREATE INDEX idx_useractivity_user_id ON UserActivity(user_id);
+CREATE INDEX idx_useractivity_instance_id ON UserActivity(instance_id);
+CREATE INDEX idx_useractivity_timestamp ON UserActivity(timestamp);
+
+CREATE TABLE Questions (
+    question_id TEXT PRIMARY KEY,
+    test_id TEXT,
+    question_text TEXT,
+    question_type TEXT,
+    extra_data JSON,
+    image_path TEXT,
+    FOREIGN KEY (test_id) REFERENCES Tests(test_id),
+);
+
+CREATE INDEX idx_questions_test_id ON Questions(test_id);
+
+CREATE TABLE Answers (
+    answer_id TEXT PRIMARY KEY,
+    question_id TEXT,
+    answer_text TEXT,
+    is_correct BOOLEAN DEFAULT 0,
+    match_id INTEGER,
+    FOREIGN KEY (question_id) REFERENCES Questions(question_id)
+);
+
+CREATE INDEX idx_answers_question_id ON Answers(question_id);
+
+CREATE TABLE Results (
+    result_id TEXT PRIMARY KEY,
+    test_instance_id TEXT,
+    test_id TEXT,
+    question_id TEXT,
+    user_activity_id TEXT,
+    user_response TEXT,
+    points_collected INTEGER DEFAULT 0,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (test_instance_id) REFERENCES TestInstances(id),
+    FOREIGN KEY (test_id) REFERENCES Tests(test_id),
+    FOREIGN KEY (question_id) REFERENCES Questions(question_id),
+    FOREIGN KEY (user_activity_id) REFERENCES UserActivity(activity_id),
+);
+
+CREATE INDEX idx_results_test_instance_id ON Results(test_instance_id);
+CREATE INDEX idx_results_test_id ON Results(test_id);
+CREATE INDEX idx_results_question_id ON Results(question_id);
+CREATE INDEX idx_results_user_activity_id ON Results(user_activity_id);
+CREATE INDEX idx_results_timestamp ON Results(timestamp);
+
+CREATE TABLE Grading_schemes(
+    scheme_id         TEXT, primary key,
+    name              TEXT,
+    description       TEXT,
+    scale_type        TEXT,
+    created_at        TIMESTAMP default CURRENT_TIMESTAMP,
+    partial_credit    BOOLEAN   default 1,
+    penalize_wrong    BOOLEAN   default 0,
+    penalty_per_wrong REAL      default 1.0,
+    method            TEXT      default 'balanced'
+);
+
+CREATE INDEX idx_grading_schemes_created_at ON Grading_schemes(created_at);
+
+CREATE TABLE Grading_thresholds (
+    threshold_id TEXT PRIMARY KEY,
+    scheme_id TEXT,
+    percentage_min REAL,
+    percentage_max REAL,
+    grade INTEGER,
+    FOREIGN KEY (scheme_id) REFERENCES Grading_schemes(scheme_id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_grading_thresholds_scheme_id ON Grading_thresholds(scheme_id);
+
+CREATE TABLE Users (
+    user_id TEXT PRIMARY KEY,
+    login TEXT,
+    password_hash TEXT,
+    name TEXT,
+    surrname TEXT,
+    email TEXT,
+    "index" TEXT
+);
+
+CREATE INDEX idx_users_login ON Users(login);
+CREATE INDEX idx_users_email ON Users(email);
+
+CREATE TABLE Admins (
+    admin_id TEXT PRIMARY KEY,
+    login TEXT,
+    password_hash TEXT
+);
+
+CREATE INDEX idx_admins_login ON Admins(login);
+
+CREATE TABLE IF NOT EXISTS app_config (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            dark_mode INTEGER DEFAULT 0,
+            open_mode INTEGER DEFAULT 1,
+            use_index INTEGER DEFAULT 1,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )

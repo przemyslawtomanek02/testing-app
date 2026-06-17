@@ -1,0 +1,116 @@
+{
+  "test_name": "Wszechstronny Test Systemowy",
+  "test_description": "Test zawierający wszystkie zaimplementowane typy pytań w celu weryfikacji całego systemu.",
+  "questions": [
+    {
+      "type": "SingleChoice",
+      "question": "(SingleChoice) Jaki jest wzór chemiczny wody?",
+      "points_value": 1,
+      "answers": [
+        { "id": "0", "text": "CO2", "is_correct": false },
+        { "id": "1", "text": "H2O", "is_correct": true },
+        { "id": "2", "text": "O2", "is_correct": false }
+      ],
+      "extra_data": {}
+    },
+    {
+      "type": "MultipleChoice",
+      "question": "(MultipleChoice) Które z poniższych są ssakami?",
+      "points_value": 2,
+      "answers": [
+        { "id": "0", "text": "Wieloryb", "is_correct": true },
+        { "id": "1", "text": "Pingwin", "is_correct": false },
+        { "id": "2", "text": "Nietoperz", "is_correct": true }
+      ],
+      "extra_data": {}
+    },
+    {
+      "type": "TrueFalse",
+      "question": "(TrueFalse) Oceń prawdziwość poniższych stwierdzeń:",
+      "points_value": 2,
+      "answers": [
+        { "id": "0", "text": "Mount Everest to najwyższa góra na Ziemi.", "is_correct": true },
+        { "id": "1", "text": "Amazonka to najdłuższa rzeka świata.", "is_correct": true },
+        { "id": "2", "text": "Liczba Pi jest liczbą wymierną.", "is_correct": false }
+      ],
+      "extra_data": {}
+    },
+    {
+      "type": "FillInTheBlank",
+      "question": "Stolicą Francji jest .",
+      "points_value": 1,
+      "answers": [
+        { "id": "0", "text": "Paryż" }
+      ],
+      "extra_data": [
+        { "type": "text", "value": "Stolicą" },
+        { "type": "text", "value": "Francji" },
+        { "type": "text", "value": "jest" },
+        { "type": "blank", "correct_answer_id": "0" },
+        { "type": "text", "value": "." }
+      ]
+    },
+    {
+      "type": "DragAndDropOrder",
+      "question": "(DragAndDropOrder) Ułóż etapy rozwoju motyla w kolejności.",
+      "points_value": 3,
+      "answers": [
+        { "id": "0", "text": "Jajo" },
+        { "id": "1", "text": "Larwa (gąsienica)" },
+        { "id": "2", "text": "Poczwarka" },
+        { "id": "3", "text": "Imago (dorosły motyl)" }
+      ],
+      "extra_data": {
+        "correct_order": ["0", "1", "2", "3"]
+      }
+    },
+    {
+      "type": "MatchingMultiple",
+      "question": "(MatchingMultiple) Dopasuj zwierzę do jego odgłosu.",
+      "points_value": 2,
+      "answers": [
+        { "id": "0", "left": "Pies", "right": "Hau" },
+        { "id": "1", "left": "Kot", "right": "Miau" },
+        { "id": "2", "left": "Krowa", "right": "Muu" }
+      ],
+      "extra_data": {
+        "hasCorrectOrder": false,
+        "correct_order": []
+      }
+    },
+    {
+      "type": "Rating",
+      "question": "(Rating - Opinia) Jak bardzo lubisz rozwiązywać testy?",
+      "points_value": 1,
+      "answers": [],
+      "extra_data": {
+        "available_range": [1, 5],
+        "correct_enabled": false
+      }
+    },
+    {
+      "type": "Rating",
+      "question": "(Rating - Jedna poprawna) Ile wynosi 2x5?",
+      "points_value": 2,
+      "answers": [],
+      "extra_data": {
+        "available_range": [1, 10],
+        "correct_enabled": true,
+        "use_range": false,
+        "correct_value": 10
+      }
+    },
+    {
+      "type": "Rating",
+      "question": "(Rating - Zakres) Wskaż zakres 1-5.",
+      "points_value": 3,
+      "answers": [],
+      "extra_data": {
+        "available_range": [1, 10],
+        "correct_enabled": true,
+        "use_range": true,
+        "correct_range": [1, 5]
+      }
+    }
+  ]
+}

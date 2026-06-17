@@ -1,0 +1,11 @@
+.idea/
+/venv
+Server/fastapi_app/frontend/*
+Server/fastapi_app/uploads
+Server/fastapi_app/avatars
+Server/other/*
+Server/backend 17.05.2025.db
+
+React/node_modules
+React/package-lock.json
+React/public
