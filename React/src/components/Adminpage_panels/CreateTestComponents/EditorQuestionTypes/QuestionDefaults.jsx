@@ -83,9 +83,9 @@ export const QuestionDefaults = {
     question: "",
     type: "MatchingMultiple",
     answers: [
-      { id: "0", left: "", right: "" },
-      { id: "1", left: "", right: "" },
-      { id: "2", left: "", right: "" },
+      { id: "0", left: { text: "" }, right: { text: "" } },
+      { id: "1", left: { text: "" }, right: { text: "" } },
+      { id: "2", left: { text: "" }, right: { text: "" } },
     ],
     extra_data: {
       correct_order: ["0", "1", "2"],
