@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import MatchingMultipleQuestion from "./QuestionsTypes/MatchingMultipleQuestion.jsx";
 import RatingQuestion from "./QuestionsTypes/RatingQuestion.jsx";
 import FillInTheBlankQuestion from "./QuestionsTypes/FillInTheBlankQuestion.jsx";
+import TypedFillInBlankQuestion from "./QuestionsTypes/TypedFillInBlankQuestion.jsx";
 import TimedRevealGate from "./QuestionsTypes/TimedRevealGate.jsx";
 import SuspensePage from "./Suspense.jsx";
 import { toast } from "react-toastify";
@@ -62,6 +63,13 @@ export default function SolvingTestPage() {
 
   const isExitRegistered = useRef(false);
   const blurTimeout = useRef(null);
+  const blurTimestamp = useRef(0);
+  const rafId = useRef(null);
+  const lastFrameTime = useRef(performance.now());
+  // Czas (ms) po którym focus jest uznawany za prawdziwy powrót (nie false positive macOS minimize)
+  const GENUINE_FOCUS_THRESHOLD_MS = 300;
+  // Delta klatki powyżej której uznajemy że karta jest w tle (throttled RAF)
+  const RAF_BACKGROUND_THRESHOLD_MS = 250;
 
   useEffect(() => {
     if (!isTestFinished && questions.length === 0) {
@@ -73,7 +81,6 @@ export default function SolvingTestPage() {
   useEffect(() => {
     if (currentQuestion?.image) {
       const img = new Image();
-      // img.src = currentQuestion.image.replace(/\\/g, '/');
       img.src = `/uploads/${currentQuestion.image}`;
       img.onload = () => {
         setOrientation(
@@ -86,31 +93,71 @@ export default function SolvingTestPage() {
   }, [currentQuestion]);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden && !isExitRegistered.current) {
+    const registerExit = () => {
+      if (!isExitRegistered.current) {
         isExitRegistered.current = true;
+        blurTimestamp.current = Date.now();
+        clearTimeout(blurTimeout.current);
         blurTimeout.current = setTimeout(() => {
           setExitCount((prev) => prev + 1);
+          isExitRegistered.current = false;
         }, 1000);
-      } else if (document.visibilityState === "visible") {
-        clearTimeout(blurTimeout.current);
-        isExitRegistered.current = false;
+      }
+    };
+
+    const cancelExit = () => {
+      clearTimeout(blurTimeout.current);
+      isExitRegistered.current = false;
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        registerExit();
+      } else {
+        cancelExit();
       }
     };
 
     const handleBlur = () => {
-      if (!isExitRegistered.current) {
-        isExitRegistered.current = true;
-        blurTimeout.current = setTimeout(() => {
-          setExitCount((prev) => prev + 1);
-        }, 1000);
-      }
+      // Bez guardu !document.hidden — Arc nie zmienia document.hidden przy zmianie karty,
+      // więc musimy reagować na każdy blur.
+      registerExit();
     };
 
     const handleFocus = () => {
-      clearTimeout(blurTimeout.current);
-      isExitRegistered.current = false;
+      if (document.hidden) return;
+
+      const elapsed = Date.now() - blurTimestamp.current;
+      if (elapsed >= GENUINE_FOCUS_THRESHOLD_MS) {
+        // Prawdziwy powrót (>= 300ms) — anuluj timer.
+        // Jeśli timer już odpalił (> 1s), cancelExit jest no-op.
+        cancelExit();
+      }
+      // < 300ms = macOS false positive (minimize odpala blur+focus niemal natychmiast).
+      // Timer pozostaje aktywny.
     };
+
+    // RAF loop — fallback dla przeglądarek z wyłączonym Page Visibility API (np. Arc).
+    // Przeglądarki throttlują RAF do ~1fps dla kart w tle niezależnie od Visibility API.
+    // Delta > 250ms = karta w tle. Delta wraca do normy = user wrócił.
+    const frameLoop = (timestamp) => {
+      const delta = timestamp - lastFrameTime.current;
+      lastFrameTime.current = timestamp;
+
+      if (delta > RAF_BACKGROUND_THRESHOLD_MS) {
+        registerExit();
+      } else if (isExitRegistered.current) {
+        // Klatki wróciły do normalnego tempa — user wrócił na kartę.
+        const elapsed = Date.now() - blurTimestamp.current;
+        if (elapsed >= GENUINE_FOCUS_THRESHOLD_MS) {
+          cancelExit();
+        }
+      }
+
+      rafId.current = requestAnimationFrame(frameLoop);
+    };
+
+    rafId.current = requestAnimationFrame(frameLoop);
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("blur", handleBlur);
@@ -121,6 +168,7 @@ export default function SolvingTestPage() {
       window.removeEventListener("blur", handleBlur);
       window.removeEventListener("focus", handleFocus);
       clearTimeout(blurTimeout.current);
+      cancelAnimationFrame(rafId.current);
     };
   }, []);
 
@@ -155,6 +203,8 @@ export default function SolvingTestPage() {
         return <RatingQuestion {...props} />;
       case "MatchingMultiple":
         return <MatchingMultipleQuestion {...props} />;
+      case "TypedFillInBlank":
+        return <TypedFillInBlankQuestion {...props} />;
       default:
         return <p>Nieobsługiwany typ pytania</p>;
     }

@@ -160,8 +160,10 @@ async def save_answers_for_question(db: AsyncSession, question_type: str, questi
                 is_correct=bool(answer_data.get("is_correct", False)),
                 is_active=True
             ))
-            if answer_id is not None:
-                temp_to_db_id_map[str(answer_id)] = new_id
+            # Map using answer_id if set, otherwise fall back to the frontend temp 'id'
+            temp_key = answer_id if answer_id is not None else answer_data.get('id')
+            if temp_key is not None:
+                temp_to_db_id_map[str(temp_key)] = new_id
 
     ids_to_archive = set(existing_answers_map.keys()) - processed_ids
     if ids_to_archive:
@@ -191,6 +193,17 @@ async def save_answers_for_question(db: AsyncSession, question_type: str, questi
                     new_id = temp_to_db_id_map.get(temp_id)
                     if new_id and part['correct_answer_id'] != new_id:
                         part['correct_answer_id'] = new_id
+
+        elif question_type == "TypedFillInBlank" and isinstance(extra_data, dict):
+            requires_update = True
+            parts = extra_data.get('parts', [])
+            for part in parts:
+                if part.get('type') == 'blank':
+                    temp_id = str(part.get('correct_answer_id'))
+                    new_id = temp_to_db_id_map.get(temp_id)
+                    if new_id and part['correct_answer_id'] != new_id:
+                        part['correct_answer_id'] = new_id
+            extra_data['parts'] = parts
 
         elif question_type == "Rating":
             requires_update = True

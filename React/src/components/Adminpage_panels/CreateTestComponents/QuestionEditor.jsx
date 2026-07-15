@@ -8,6 +8,7 @@ import DragAndDropOrderEditor from "./EditorQuestionTypes/DragAndDropOrderEditor
 import FillInTheBlankEditor from "./EditorQuestionTypes/FillInTheBlankEditor";
 import RatingEditor from "./EditorQuestionTypes/RatingEditor.jsx";
 import MatchingMultipleEditor from "./EditorQuestionTypes/MatchingMultipleEditor.jsx";
+import TypedFillInBlankEditor from "./EditorQuestionTypes/TypedFillInBlankEditor.jsx";
 
 const QuestionEditor = ({
   question,
@@ -91,6 +92,8 @@ const QuestionEditor = ({
         return <RatingEditor {...props} />;
       case "MatchingMultiple":
         return <MatchingMultipleEditor {...props} />;
+      case "TypedFillInBlank":
+        return <TypedFillInBlankEditor {...props} />;
       default:
         return (
           <p className="text-red-500">Unsupported question type: {type}</p>
@@ -143,6 +146,7 @@ const QuestionEditor = ({
             <option value="FillInTheBlank">Fill In The Blank</option>
             <option value="Rating">Rating</option>
             <option value="MatchingMultiple">Matching Multiple</option>
+            <option value="TypedFillInBlank">Typed Fill in the Blank</option>
           </select>
         </div>
 

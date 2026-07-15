@@ -93,4 +93,14 @@ export const QuestionDefaults = {
     },
     points_value: 1,
   },
+
+  TypedFillInBlank: {
+    question: "",
+    type: "TypedFillInBlank",
+    answers: [],
+    extra_data: {
+      parts: [],
+    },
+    points_value: 1,
+  },
 };

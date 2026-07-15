@@ -489,6 +489,59 @@ async def calculate_points(db: AsyncSession, answer_data: schemas.UserAnswerPayl
                 f"partial={partial_credit} penalize={penalize_wrong}"
             )
 
+        elif question_type == 'TypedFillInBlank':
+            parts = (extra_data or {}).get('parts', [])
+            blanks = [p for p in parts if isinstance(p, dict) and p.get('type') == 'blank']
+            total_blanks = len(blanks)
+
+            if total_blanks == 0:
+                return 0.0
+
+            # Pobierz odpowiedzi w kolejności wstawienia (ULID = czas → kolejność = pozycja luki)
+            ans_stmt = (
+                select(Answer.answer_id, Answer.answer_text)
+                .where(Answer.question_id == question_id, Answer.is_active.is_(True))
+                .order_by(Answer.answer_id)
+            )
+            db_rows = (await db.execute(ans_stmt)).all()
+            db_by_id = {row[0]: (row[1] or '').strip().lower() for row in db_rows}
+            db_by_pos = [(row[1] or '').strip().lower() for row in db_rows]
+
+            # Odpowiedzi usera – tablica pozycyjna [{answer_id, typed_text}, ...]
+            user_items = [
+                item for item in (user_response if isinstance(user_response, list) else [])
+                if isinstance(item, dict)
+            ]
+
+            correct_count = 0
+            wrong_count = 0
+
+            for idx, blank in enumerate(blanks):
+                correct_id = str(blank.get('correct_answer_id', ''))
+
+                # Szukaj poprawnej odpowiedzi: najpierw po ID, potem po pozycji
+                correct_text = db_by_id.get(correct_id, '')
+                if not correct_text and idx < len(db_by_pos):
+                    correct_text = db_by_pos[idx]
+
+                # Szukaj odpowiedzi usera: po pozycji (lista jest pozycyjna)
+                user_text = ''
+                if idx < len(user_items):
+                    user_text = (user_items[idx].get('typed_text') or '').strip().lower()
+
+                if user_text and correct_text and user_text == correct_text:
+                    correct_count += 1
+                else:
+                    wrong_count += 1
+
+            if partial_credit:
+                score = (correct_count / total_blanks) * points_value
+            else:
+                score = points_value if correct_count == total_blanks else 0.0
+
+            if penalize_wrong:
+                score -= wrong_count * penalty_per_wrong
+
         elif question_type == 'Rating':
 
             extra_data = extra_data or {}
@@ -830,7 +883,7 @@ async def get_formatted_results(db: AsyncSession, activity_id: str) -> List[Dict
                     "side": a.side,
                 })
 
-        if not historical_answer_ids and question_type not in ("Rating", "FillInTheBlank"):
+        if not historical_answer_ids and question_type not in ("Rating", "FillInTheBlank", "TypedFillInBlank"):
             answers = [
                 {
                     "answer_id": a.answer_id, "text": a.answer_text, "is_correct": bool(a.is_correct),
@@ -862,6 +915,28 @@ async def get_formatted_results(db: AsyncSession, activity_id: str) -> List[Dict
                             "text": answer_details['text'],
                             "id": answer_details['answer_id']
                         })
+
+        elif question_type == "TypedFillInBlank":
+            parts = extra_data.get('parts', []) if isinstance(extra_data, dict) else []
+            # Posortuj odpowiedzi po answer_id (ULID = kolejność wstawienia = pozycja luki)
+            sorted_answers = sorted(answers, key=lambda a: a.get('answer_id', ''))
+            blank_idx = 0
+            for part in parts:
+                if part.get("type") == "text":
+                    correct_answers.append({"type": "text", "value": part.get("value", "")})
+                elif part.get("type") == "blank":
+                    correct_answer_id = part.get("correct_answer_id")
+                    # Szukaj po ID, fallback do pozycji
+                    answer_details = next((a for a in sorted_answers if a['answer_id'] == correct_answer_id), None)
+                    if not answer_details and blank_idx < len(sorted_answers):
+                        answer_details = sorted_answers[blank_idx]
+                    if answer_details:
+                        correct_answers.append({
+                            "type": "answer",
+                            "text": answer_details['text'],
+                            "id": answer_details['answer_id']
+                        })
+                    blank_idx += 1
 
         elif question_type == "MatchingMultiple":
             pairs = {}
