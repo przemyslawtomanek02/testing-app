@@ -7,6 +7,7 @@ import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import SessionGuard from "./components/Validators/SessionGuard.jsx";
 import {useAppContext} from "./AppContext.jsx";
+import StudentLayout from "./components/Layouts/StudentLayout.jsx";
 
 
 const Welcomepage = lazy(() => import('./components/Welcomepage'));
@@ -38,13 +39,18 @@ const App = () => {
                 {/* --- Chronione Trasy Użytkownika --- */}
                 <Route element={<SessionGuard/>}>
                     <Route element={<TestLayout/>}>
-                        <Route path="/exams" element={<Examspage/>}/>
-                        <Route path="/test" element={<Solvingtestpage/>}/>
-                        <Route path="/result" element={<ResultPage/>}/>
 
-                        {config && !config.open_mode && (
-                            <Route path="/profile" element={<UserPage/>}/>
-                        )}
+                        {/* Strony z bocznym panelem nawigacyjnym */}
+                        <Route element={<StudentLayout/>}>
+                            <Route path="/exams" element={<Examspage/>}/>
+                            <Route path="/result" element={<ResultPage/>}/>
+                            {config && !config.open_mode && (
+                                <Route path="/profile" element={<UserPage/>}/>
+                            )}
+                        </Route>
+
+                        {/* Strona egzaminu — bez sidebara */}
+                        <Route path="/test" element={<Solvingtestpage/>}/>
 
                     </Route>
                 </Route>

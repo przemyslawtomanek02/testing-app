@@ -3,11 +3,10 @@ import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {useAppContext} from '../AppContext.jsx';
 import {
-    Loader2, FileText, Clock, Inbox, ChevronLeft, Search,
-    ChevronRight, TrendingUp, BarChart3
+    FileText, Clock, Inbox, ChevronLeft, Search,
+    ChevronRight, TrendingUp, BarChart3, Settings, ArrowLeft
 } from 'lucide-react';
 import formatDate from "./Reusable/FormatDate.jsx";
-import {Header} from "./Layouts/Header.jsx";
 import {SettingsPanel} from "./Reusable/UserSettingsPanel.jsx";
 import ResultTemplate from "./Layouts/ResultTemplate.jsx";
 
@@ -206,30 +205,34 @@ function UserPanel() {
 
     if (selectedTest) {
         return (
-            <div className="min-h-screen bg-slate-100 dark:bg-darkCustom-900">
-                <Header variant="embedhistory" onSettingsClick={() => setIsSettingsOpen(true)} handleBack={handleBack}/>
+            <div className="min-h-full bg-slate-100 dark:bg-darkCustom-900 py-10 px-4">
                 <SettingsPanel
                     user={user}
                     isOpen={isSettingsOpen}
                     onClose={() => setIsSettingsOpen(false)}
                     onProfileUpdate={handleProfileUpdate}
                 />
-                <div className="py-10 px-4">
-                    <div className="max-w-4xl mx-auto">
-                        <h1 className="text-4xl md:text-5xl font-bold text-center mb-10 lg:mb-20 text-slate-900 dark:text-darkCustom-100">Exam
-                            Results</h1>
-                        <ResultTemplate
-                            results={details}
-                            loading={detailsLoading}
-                            title={selectedTest.instance_name}
-                            asPage
-                            useGsap={true}
-                            onBack={() => {
-                                setSelectedTest(null);
-                                setDetails(null);
-                            }}
-                        />
-                    </div>
+                <div className="max-w-4xl mx-auto">
+                    <button
+                        onClick={handleBack}
+                        className="flex items-center gap-2 mb-8 text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-darkCustom-300 dark:hover:text-darkCustom-100 transition-colors"
+                    >
+                        <ArrowLeft size={16}/> Back to history
+                    </button>
+                    <h1 className="text-4xl md:text-5xl font-bold text-center mb-10 lg:mb-20 text-slate-900 dark:text-darkCustom-100">
+                        Exam Results
+                    </h1>
+                    <ResultTemplate
+                        results={details}
+                        loading={detailsLoading}
+                        title={selectedTest.instance_name}
+                        asPage
+                        useGsap={true}
+                        onBack={() => {
+                            setSelectedTest(null);
+                            setDetails(null);
+                        }}
+                    />
                 </div>
             </div>
         );
@@ -238,13 +241,20 @@ function UserPanel() {
     const totalPages = Math.max(1, Math.ceil(processedData.length / pageSize));
 
     return (
-        <div className="min-h-screen bg-slate-100 dark:bg-darkCustom-900">
-            <Header variant="profile" onSettingsClick={() => setIsSettingsOpen(true)}/>
+        <div className="min-h-full bg-slate-100 dark:bg-darkCustom-900">
             <SettingsPanel user={user} isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}
                            onProfileUpdate={handleProfileUpdate}/>
             <div className="py-10 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <h1 className="text-3xl font-bold text-slate-800 dark:text-darkCustom-100 mb-8">Test's history</h1>
+                    <div className="flex items-center justify-between mb-8">
+                        <h1 className="text-3xl font-bold text-slate-800 dark:text-darkCustom-100">Test's history</h1>
+                        <button
+                            onClick={() => setIsSettingsOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-darkCustom-300 hover:bg-white dark:hover:bg-darkCustom-700 rounded-lg transition-colors"
+                        >
+                            <Settings size={16}/> Settings
+                        </button>
+                    </div>
 
                     {loading ? (
                         <>

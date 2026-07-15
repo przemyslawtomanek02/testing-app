@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useTestContext} from "./Context/TestContext.jsx";
 import {toast} from 'react-toastify';
 import {BookCopy, Clock, PlayCircle, Loader2} from 'lucide-react';
-import {Header} from "./Layouts/Header.jsx";
 import {AnimatePresence, motion} from "framer-motion";
 
 const ExamCardSkeleton = () => (
@@ -126,10 +125,7 @@ function ExamsPage() {
     };
 
     return (
-        <div className="min-h-screen
-                        bg-gradient-to-br from-white via-indigo-100 to-white
-                        dark:bg-gradient-to-br dark:from-[#141517] dark:via-[#1d212a] dark:to-[#131314]">
-            <Header variant="default"/>
+        <div className="min-h-full bg-gradient-to-br from-white via-indigo-100 to-white dark:bg-gradient-to-br dark:from-[#141517] dark:via-[#1d212a] dark:to-[#131314]">
             <main className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-10 sm:mb-12">

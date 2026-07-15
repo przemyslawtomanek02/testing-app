@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {useTestContext} from './Context/TestContext.jsx';
 import {useNavigate} from "react-router-dom";
-import {Header} from "./Layouts/Header.jsx";
 import ResultTemplate from "./Layouts/ResultTemplate.jsx";
 
 const ResultPage = () => {
@@ -26,8 +25,7 @@ const ResultPage = () => {
     // }, []);
 
     return (
-        <div className="bg-slate-100 dark:bg-darkCustom-900 min-h-screen">
-            <Header variant="result"/>
+        <div className="min-h-full bg-slate-100 dark:bg-darkCustom-900">
             <main className="container mx-auto px-4 sm:px-6 py-16">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 text-slate-900 dark:text-darkCustom-100">Exam Results</h1>
