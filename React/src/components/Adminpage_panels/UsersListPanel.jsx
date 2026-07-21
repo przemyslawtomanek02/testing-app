@@ -309,11 +309,11 @@ const SortableHeader = ({children, columnKey, sortConfig, onSort}) => {
     const Icon = isSorted ? (isAsc ? ArrowUp : ArrowDown) : ArrowUpDown;
 
     return (
-        <th className="p-3 font-bold cursor-pointer hover:bg-slate-100 dark:hover:bg-darkCustom-700"
+        <th className="px-4 py-3 text-xs font-semibold text-[#65676B] uppercase tracking-wider cursor-pointer hover:bg-[#F0F2F5] transition-colors"
             onClick={() => onSort(columnKey)}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
                 <span>{children}</span>
-                <Icon size={14} className="text-slate-400"/>
+                <Icon size={12} className="text-[#BEC3C9]"/>
             </div>
         </th>
     );
@@ -491,108 +491,88 @@ export default function UsersListPanel({setOverlay, onRefresh}) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <Loader2 className="animate-spin h-8 w-8 text-slate-600 dark:text-darkCustom-300"/>
+            <div className="flex items-center justify-center h-full bg-[#F0F2F5]">
+                <Loader2 className="animate-spin h-8 w-8 text-[#BEC3C9]"/>
             </div>
         );
     }
 
     return (
-        <div className="p-4 sm:p-6 md:p-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                    <div className="relative w-full md:mr-auto md:max-w-md">
-                        <Search
-                            className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-darkCustom-400"/>
+        <div className="p-6 bg-[#F0F2F5] min-h-screen">
+            <div className="max-w-5xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-5">
+                    <div className="relative w-full md:mr-auto md:max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#BEC3C9]"/>
                         <input
                             type="text"
                             placeholder="Search users..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="w-full p-2 pl-10 bg-white dark:bg-darkCustom-900 rounded-lg text-base border-0 text-black dark:text-darkCustom-100 shadow-md focus:ring-2 focus:ring-slate-600 dark:focus:ring-darkCustom-300 outline-none transition-shadow placeholder:text-slate-400 dark:placeholder:text-darkCustom-400"
+                            className="w-full py-2 pl-9 pr-3 bg-white border border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] outline-none transition-all placeholder:text-[#BEC3C9] shadow-sm"
                         />
                     </div>
 
                     <div className="flex w-full md:w-auto md:max-w-xs items-center gap-2">
-                        <RoleFilterMenu
-                            selectedRole={roleFilter}
-                            onSelectRole={setRoleFilter}
-                        />
+                        <RoleFilterMenu selectedRole={roleFilter} onSelectRole={setRoleFilter}/>
                     </div>
 
                     <button onClick={openCreateForm}
-                            className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-slate-900 transition-colors dark:bg-indigo-600 dark:hover:bg-indigo-700">
-                        <UserPlus size={18}/>
+                            className="w-full md:w-auto flex items-center justify-center gap-2 bg-[#0866FF] text-white font-semibold py-2 px-4 rounded-xl hover:bg-[#0757D9] transition-colors text-sm shadow-sm">
+                        <UserPlus size={16}/>
                         <span>Add New User</span>
                     </button>
-
                 </div>
 
-                <div className="bg-white dark:bg-darkCustom-900 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-white border border-[#E4E6EB] rounded-2xl shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead
-                                className="bg-slate-50 dark:bg-darkCustom-900 text-slate-600 dark:text-darkCustom-50 text-sm border-b border-slate-200 dark:border-darkCustom-700">
+                            <thead className="border-b border-[#E4E6EB]">
                             <tr>
-                                <SortableHeader columnKey="surname" sortConfig={sortConfig} onSort={handleSort}>
-                                    User
-                                </SortableHeader>
-                                <SortableHeader columnKey="login" sortConfig={sortConfig} onSort={handleSort}>
-                                    Login
-                                </SortableHeader>
-                                <SortableHeader columnKey="email" sortConfig={sortConfig} onSort={handleSort}>
-                                    Email
-                                </SortableHeader>
-                                <SortableHeader columnKey="role" sortConfig={sortConfig} onSort={handleSort}>
-                                    Role
-                                </SortableHeader>
-                                <SortableHeader columnKey="user_index" sortConfig={sortConfig} onSort={handleSort}>
-                                    Index
-                                </SortableHeader>
-                                <th className="p-3 font-bold">Actions</th>
+                                <SortableHeader columnKey="surname" sortConfig={sortConfig} onSort={handleSort}>User</SortableHeader>
+                                <SortableHeader columnKey="login" sortConfig={sortConfig} onSort={handleSort}>Login</SortableHeader>
+                                <SortableHeader columnKey="email" sortConfig={sortConfig} onSort={handleSort}>Email</SortableHeader>
+                                <SortableHeader columnKey="role" sortConfig={sortConfig} onSort={handleSort}>Role</SortableHeader>
+                                <SortableHeader columnKey="user_index" sortConfig={sortConfig} onSort={handleSort}>Index</SortableHeader>
+                                <th className="px-4 py-3 text-xs font-semibold text-[#65676B] uppercase tracking-wider">Actions</th>
                             </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-darkCustom-700">
+                            <tbody className="divide-y divide-[#E4E6EB]">
                             {filteredAndSortedUsers.map(user => (
-                                <tr key={user.user_id} className="hover:bg-slate-50 dark:hover:bg-darkCustom-800/50">
-                                    <td className="p-3">
+                                <tr key={user.user_id} className="hover:bg-[#F0F2F5] transition-colors">
+                                    <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
                                             {user.photo_url ? (
                                                 <img src={user.photo_url} alt={`${user.name} ${user.surname}`}
                                                      className="h-9 w-9 rounded-full object-cover"/>
                                             ) : (
-                                                <div
-                                                    className="flex h-9 w-9 items-center justify-center font-bold rounded-full bg-slate-200 dark:bg-darkCustom-700 text-slate-600 dark:text-darkCustom-200">
-                                                    <span>{(user?.surname?.[0]).toUpperCase()}{(user?.name?.[0]).toUpperCase()}</span>
+                                                <div className="flex h-9 w-9 items-center justify-center font-semibold rounded-full bg-[#E7F3FF] text-[#0866FF] text-sm">
+                                                    <span>{(user?.surname?.[0] || '').toUpperCase()}{(user?.name?.[0] || '').toUpperCase()}</span>
                                                 </div>
                                             )}
-                                            <div>
-                                                <p className="font-medium text-slate-800 dark:text-darkCustom-100">{user.surname} {user.name}</p>
-                                            </div>
+                                            <p className="font-medium text-[#1C1E21] text-sm">{user.surname} {user.name}</p>
                                         </div>
                                     </td>
-                                    <td className="p-3 text-slate-600 dark:text-darkCustom-200">{user.login}</td>
-                                    <td className="p-3 text-slate-600 dark:text-darkCustom-200">{user.email || '-'}</td>
-                                    <td className="p-3 text-slate-600 dark:text-darkCustom-200">{capitalize(user.role)}</td>
-                                    <td className="p-3 text-slate-600 dark:text-darkCustom-200">{user.user_index || '-'}</td>
-                                    <td className="p-3">
-                                        <div className="flex gap-2">
-                                            <button onClick={() => openEditForm(user)}
-                                                    title="Edit user"
-                                                    className="p-1.5 text-slate-500 hover:text-green-600 dark:text-darkCustom-400 dark:hover:text-green-400">
-                                                <Edit size={16}/>
+                                    <td className="px-4 py-3 text-[#65676B] text-sm">{user.login}</td>
+                                    <td className="px-4 py-3 text-[#65676B] text-sm">{user.email || '—'}</td>
+                                    <td className="px-4 py-3">
+                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-[#E7F3FF] text-[#0866FF]' : 'bg-[#F0F2F5] text-[#65676B]'}`}>
+                                            {capitalize(user.role)}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-[#65676B] text-sm">{user.user_index || '—'}</td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex gap-1">
+                                            <button onClick={() => openEditForm(user)} title="Edit user"
+                                                    className="p-1.5 rounded-lg text-[#606770] hover:text-green-600 hover:bg-green-50 transition-colors">
+                                                <Edit size={15}/>
                                             </button>
-
-                                            <button onClick={() => handleRequestPasswordReset(user)}
-                                                    title="Force password reset"
-                                                    className="p-1.5 text-slate-500 hover:text-amber-600 dark:text-darkCustom-400 dark:hover:text-amber-400">
-                                                <KeyRound size={16}/>
+                                            <button onClick={() => handleRequestPasswordReset(user)} title="Force password reset"
+                                                    className="p-1.5 rounded-lg text-[#606770] hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                                                <KeyRound size={15}/>
                                             </button>
-
-                                            <button onClick={() => handleDelete(user.user_id)}
-                                                    title="Delete user"
-                                                    className="p-1.5 text-slate-500 hover:text-red-600 dark:text-darkCustom-400 dark:hover:text-red-500">
-                                                <Trash2 size={16}/>
+                                            <button onClick={() => handleDelete(user.user_id)} title="Delete user"
+                                                    className="p-1.5 rounded-lg text-[#606770] hover:text-red-500 hover:bg-red-50 transition-colors">
+                                                <Trash2 size={15}/>
                                             </button>
                                         </div>
                                     </td>

@@ -5,7 +5,6 @@ import {toast} from 'react-toastify';
 const CreateGradingScheme = ({scheme_id, onBack}) => {
     const isEditing = !!scheme_id;
 
-    // --- State Management ---
     const [schemeName, setSchemeName] = useState('');
     const [schemeDescription, setSchemeDescription] = useState('');
     const [minScale, setMinScale] = useState(2);
@@ -21,27 +20,15 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
     const [isRegenerating, setIsRegenerating] = useState(false);
 
     const generateThresholds = useCallback((min, max) => {
-        if (min === '' || max === '' || Number(min) > Number(max)) {
-            return [];
-        }
-
+        if (min === '' || max === '' || Number(min) > Number(max)) return [];
         const range = Number(max) - Number(min) + 1;
         if (range <= 0) return [];
-
         const thresholds = [];
         let currentMin = 0;
-
         for (let i = 0; i < range; i++) {
             const grade = min + i;
-            const currentMax = (i === range - 1)
-                ? 100
-                : Math.round(100 / range * (i + 1)) - 1;
-
-            thresholds.push({
-                percentage_min: currentMin,
-                percentage_max: currentMax,
-                grade: grade,
-            });
+            const currentMax = (i === range - 1) ? 100 : Math.round(100 / range * (i + 1)) - 1;
+            thresholds.push({percentage_min: currentMin, percentage_max: currentMax, grade});
             currentMin = currentMax + 1;
         }
         return thresholds;
@@ -66,7 +53,6 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
                     setPenaltyPerWrong(data.penalty_per_wrong);
                     setAllowNegativePoints(data.allow_negative_points);
                 } catch (err) {
-                    console.error('Failed to load grading scheme:', err);
                     toast.error("Failed to load the template.");
                     if (onBack) onBack();
                 } finally {
@@ -84,14 +70,11 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
     const validateThresholds = (thresholds) => {
         const errs = {};
         if (!thresholds || thresholds.length === 0) return true;
-
         for (let i = 0; i < thresholds.length; i++) {
             const current = thresholds[i];
             const prev = i > 0 ? thresholds[i - 1] : null;
-
             const min = parseFloat(current.percentage_min);
             const max = parseFloat(current.percentage_max);
-
             if (isNaN(min) || isNaN(max)) {
                 errs[i] = 'Values must be numbers.';
             } else if (min >= max) {
@@ -116,13 +99,11 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
             toast.warn("Minimum grade cannot be greater than maximum grade.");
             return;
         }
-
         setIsRegenerating(true);
-
         setTimeout(() => {
             setGradingThresholds(generateThresholds(minScale, maxScale));
             setThresholdErrors({});
-            toast.info("Thresholds have been regenerated based on the current scale.");
+            toast.info("Thresholds regenerated.");
             setIsRegenerating(false);
         }, 300);
     };
@@ -137,43 +118,36 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
             toast.warn("Template name is required.");
             return;
         }
-
         setIsSubmitting(true);
-
-        const gradingSchemeData = {
+        const payload = {
             name: schemeName,
             description: schemeDescription,
             scale_type: `${minScale}-${maxScale}`,
             grading_thresholds: gradingThresholds.map(t => ({
                 grade: t.grade,
                 percentage_min: parseFloat(t.percentage_min),
-                percentage_max: parseFloat(t.percentage_max)
+                percentage_max: parseFloat(t.percentage_max),
             })),
             partial_credit: partialCredit,
             penalize_wrong: penalizeWrong,
             penalty_per_wrong: penaltyPerWrong,
-            allow_negative_points: allowNegativePoints
+            allow_negative_points: allowNegativePoints,
         };
-
         const url = isEditing ? `/api/admin/update_grading_scheme/${scheme_id}` : '/api/admin/create_grading_scheme';
-        const method = isEditing ? 'PUT' : 'POST';
-
         try {
             const res = await fetch(url, {
-                method,
+                method: isEditing ? 'PUT' : 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(gradingSchemeData),
+                body: JSON.stringify(payload),
             });
-
             if (res.ok) {
                 toast.success(isEditing ? 'Template updated!' : 'Template created!');
                 if (onBack) onBack();
             } else {
-                const errorData = await res.json().catch(() => ({message: 'Failed to save the template.'}));
-                toast.error(errorData.message || 'An error occurred.');
+                const err = await res.json().catch(() => ({}));
+                toast.error(err.message || 'An error occurred.');
             }
-        } catch (err) {
-            console.error("Save error:", err);
+        } catch {
             toast.error('Connection error while saving.');
         } finally {
             setIsSubmitting(false);
@@ -182,195 +156,175 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-full p-8 bg-slate-50 dark:bg-darkCustom-800">
-                <Loader className="h-12 w-12 animate-spin text-slate-500 dark:text-darkCustom-400"/>
+            <div className="flex items-center justify-center h-full p-8 bg-[#F0F2F5] min-h-screen">
+                <Loader className="h-10 w-10 animate-spin text-[#BEC3C9]"/>
             </div>
         );
     }
 
-    const inputClasses = "p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition dark:bg-darkCustom-700 dark:border-darkCustom-600 dark:text-darkCustom-100 dark:placeholder:text-darkCustom-400 dark:focus:ring-slate-300 dark:focus:border-slate-300";
-    const toggleBaseClasses = "w-11 h-6 bg-slate-300 rounded-full peer dark:bg-darkCustom-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-offset-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 dark:peer-focus:ring-offset-darkCustom-900 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:after:border-gray-600";
+    const inputCls = "w-full px-3 py-2 border border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] bg-white placeholder:text-[#BEC3C9] focus:outline-none focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] transition-all";
+
+    const Toggle = ({checked, onChange}) => (
+        <button
+            type="button"
+            onClick={() => onChange(!checked)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-[#0866FF]' : 'bg-[#CED0D4]'}`}
+            aria-checked={checked}
+        >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${checked ? 'translate-x-5' : 'translate-x-0'}`}/>
+        </button>
+    );
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 md:p-8 bg-slate-50 dark:bg-darkCustom-800 font-sans">
-            <div className="mx-auto">
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
+        <form onSubmit={handleSubmit} className="p-6 bg-[#F0F2F5] min-h-screen">
+            <div className="max-w-4xl mx-auto">
+
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
                         {onBack && (
                             <button type="button" onClick={onBack}
-                                    className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors">
-                                <ArrowLeft size={22} className="text-slate-600 dark:text-darkCustom-100"/>
+                                    className="p-2 rounded-xl hover:bg-white border border-transparent hover:border-[#E4E6EB] text-[#606770] transition-all">
+                                <ArrowLeft size={20}/>
                             </button>
                         )}
-                        <h1 className="text-3xl font-bold text-slate-800 dark:text-darkCustom-100">
+                        <h1 className="text-xl font-bold text-[#1C1E21]">
                             {isEditing ? 'Edit Grading Template' : 'Create Grading Template'}
                         </h1>
                     </div>
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="flex items-center justify-center gap-2 bg-slate-800 text-white hover:bg-slate-900 font-medium py-2 px-6 rounded-lg transition-all shadow-sm disabled:bg-slate-400 disabled:cursor-wait dark:bg-darkCustom-500 dark:text-darkCustom-50 dark:hover:bg-darkCustom-300 dark:hover:text-white dark:disabled:bg-darkCustom-600 dark:disabled:text-darkCustom-400"
+                        className="flex items-center gap-2 bg-[#0866FF] text-white hover:bg-[#0757D9] font-semibold py-2 px-5 rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-wait text-sm"
                     >
-                        {isSubmitting ? <Loader size={20} className="animate-spin"/> : <Save size={20}/>}
+                        {isSubmitting ? <Loader size={16} className="animate-spin"/> : <Save size={16}/>}
                         <span>{isEditing ? 'Save Changes' : 'Create Template'}</span>
                     </button>
                 </div>
 
-                <div className="space-y-6">
-                    {/* Basic Info Card */}
-                    <div className="bg-white dark:bg-darkCustom-900 p-6 rounded-lg shadow-md">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="flex flex-col space-y-1">
-                                <label htmlFor="schemeName"
-                                       className="font-medium text-slate-700 dark:text-darkCustom-200">Template
-                                    Name</label>
-                                <input
-                                    type="text" id="schemeName" value={schemeName}
-                                    onChange={(e) => setSchemeName(e.target.value)}
-                                    className={inputClasses}
-                                    required
-                                />
+                <div className="space-y-4">
+                    {/* Basic Info */}
+                    <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
+                        <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider mb-4">Basic Information</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="schemeName" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Template Name</label>
+                                <input type="text" id="schemeName" value={schemeName}
+                                       onChange={e => setSchemeName(e.target.value)}
+                                       className={inputCls} placeholder="e.g. Standard 2-5" required/>
                             </div>
-                            <div className="flex flex-col space-y-1">
-                                <label htmlFor="schemeDescription"
-                                       className="font-medium text-slate-700 dark:text-darkCustom-200">Description</label>
-                                <input
-                                    type="text" id="schemeDescription" value={schemeDescription}
-                                    onChange={(e) => setSchemeDescription(e.target.value)}
-                                    className={inputClasses}
-                                />
+                            <div>
+                                <label htmlFor="schemeDescription" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Description</label>
+                                <input type="text" id="schemeDescription" value={schemeDescription}
+                                       onChange={e => setSchemeDescription(e.target.value)}
+                                       className={inputCls} placeholder="Optional description"/>
                             </div>
                         </div>
                     </div>
 
-                    {/* Scale & Rules Card */}
-                    <div
-                        className="bg-white dark:bg-darkCustom-900 p-6 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                    {/* Scale & Rules */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Scale */}
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-darkCustom-100 border-b border-slate-200 dark:border-darkCustom-700 pb-2">Grading
-                                Scale</h3>
+                        <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
+                            <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider mb-4">Grading Scale</h2>
                             <div className="flex items-center gap-4">
-                                <div className="flex flex-col space-y-1 flex-1">
-                                    <label htmlFor="minScale"
-                                           className="font-medium text-slate-700 dark:text-darkCustom-200">Minimum
-                                        Grade</label>
+                                <div className="flex-1">
+                                    <label htmlFor="minScale" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Minimum Grade</label>
                                     <input type="number" id="minScale" value={minScale}
-                                           onChange={(e) => setMinScale(Math.max(1, Number(e.target.value)))} min="1"
-                                           max="10" className={`${inputClasses} w-full`}/>
+                                           onChange={e => setMinScale(Math.max(1, Number(e.target.value)))}
+                                           min="1" max="10" className={inputCls}/>
                                 </div>
-                                <div className="flex flex-col space-y-1 flex-1">
-                                    <label htmlFor="maxScale"
-                                           className="font-medium text-slate-700 dark:text-darkCustom-200">Maximum
-                                        Grade</label>
+                                <div className="flex-1">
+                                    <label htmlFor="maxScale" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Maximum Grade</label>
                                     <input type="number" id="maxScale" value={maxScale}
-                                           onChange={(e) => setMaxScale(Math.max(minScale, Number(e.target.value)))}
-                                           min={minScale} max="10" className={`${inputClasses} w-full`}/>
+                                           onChange={e => setMaxScale(Math.max(minScale, Number(e.target.value)))}
+                                           min={minScale} max="10" className={inputCls}/>
                                 </div>
                             </div>
                         </div>
 
                         {/* Rules */}
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-darkCustom-100 border-b border-slate-200 dark:border-darkCustom-700 pb-2">Scoring
-                                Rules</h3>
-                            <div className="flex justify-between items-center">
-                                <span
-                                    className="font-medium text-slate-700 dark:text-darkCustom-200">Use partial points</span>
-                                <label className="relative inline-flex items-center cursor-pointer"><input
-                                    type="checkbox" checked={partialCredit}
-                                    onChange={(e) => setPartialCredit(e.target.checked)} className="sr-only peer"/>
-                                    <div className={toggleBaseClasses}></div>
-                                </label>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="font-medium text-slate-700 dark:text-darkCustom-200">Penalize wrong answers</span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox" checked={penalizeWrong}
-                                        onChange={(e) => setPenalizeWrong(e.target.checked)} className="sr-only peer"/>
-                                    <div className={toggleBaseClasses}></div>
-                                </label>
-                            </div>
-                            {penalizeWrong && (
-                                <div className="flex justify-between items-center pl-4">
-                                    <label htmlFor="select-penality-per-wrong" className="text-sm text-slate-600 dark:text-darkCustom-300">Penalty per wrong
-                                        answer</label>
-                                    <select value={penaltyPerWrong}
-                                            id="select-penality-per-wrong"
-                                            name="select-penality-per-wrong"
-                                            onChange={(e) => setPenaltyPerWrong(Number(e.target.value))}
-                                            className={`${inputClasses} text-sm`}>
-                                        <option value={0.25}>0.25</option>
-                                        <option value={0.5}>0.5</option>
-                                        <option value={1}>1</option>
-                                        <option value={1.5}>1.5</option>
-                                        <option value={2}>2</option>
-                                    </select>
+                        <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
+                            <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider mb-4">Scoring Rules</h2>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-[#1C1E21]">Use partial points</span>
+                                    <Toggle checked={partialCredit} onChange={setPartialCredit}/>
                                 </div>
-                            )}
-                            <div className="flex justify-between items-center">
-                                <span className="font-medium text-slate-700 dark:text-darkCustom-200">Allow negative points</span>
-                                <label className="relative inline-flex items-center cursor-pointer"><input
-                                    type="checkbox" checked={allowNegativePoints}
-                                    onChange={(e) => setAllowNegativePoints(e.target.checked)}
-                                    className="sr-only peer"/>
-                                    <div className={toggleBaseClasses}></div>
-                                </label>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-[#1C1E21]">Penalize wrong answers</span>
+                                    <Toggle checked={penalizeWrong} onChange={setPenalizeWrong}/>
+                                </div>
+                                {penalizeWrong && (
+                                    <div className="flex justify-between items-center pl-4 border-l-2 border-[#E4E6EB]">
+                                        <label htmlFor="penalty-select" className="text-sm text-[#65676B]">Penalty per wrong answer</label>
+                                        <select
+                                            id="penalty-select"
+                                            value={penaltyPerWrong}
+                                            onChange={e => setPenaltyPerWrong(Number(e.target.value))}
+                                            className="text-sm border border-[#E4E6EB] rounded-lg px-2 py-1.5 text-[#1C1E21] bg-white focus:outline-none focus:border-[#0866FF]"
+                                        >
+                                            <option value={0.25}>0.25</option>
+                                            <option value={0.5}>0.5</option>
+                                            <option value={1}>1</option>
+                                            <option value={1.5}>1.5</option>
+                                            <option value={2}>2</option>
+                                        </select>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-[#1C1E21]">Allow negative points</span>
+                                    <Toggle checked={allowNegativePoints} onChange={setAllowNegativePoints}/>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Thresholds Card */}
-                    <div className="bg-white dark:bg-darkCustom-900 p-6 rounded-lg shadow-md">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-darkCustom-100">Percentage
-                                Thresholds for Grades</h3>
-
+                    {/* Thresholds */}
+                    <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
+                        <div className="flex justify-between items-center mb-5">
+                            <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider">Percentage Thresholds</h2>
                             <button
                                 type="button"
                                 onClick={handleRegenerateThresholds}
                                 disabled={isRegenerating}
-                                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium p-2 rounded-md hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-500/10 transition-colors"
+                                className="flex items-center gap-1.5 text-sm text-[#0866FF] hover:text-[#0757D9] font-medium px-3 py-1.5 rounded-lg hover:bg-[#E7F3FF] transition-colors disabled:opacity-50"
                             >
-                                <RefreshCw
-                                    size={16}
-                                    className={isRegenerating ? 'animate-spin' : ''}
-                                />
-                                <span>{isRegenerating ? 'Regenerating...' : 'Regenerate'}</span>
+                                <RefreshCw size={14} className={isRegenerating ? 'animate-spin' : ''}/>
+                                <span>{isRegenerating ? 'Regenerating…' : 'Regenerate'}</span>
                             </button>
                         </div>
 
-                        <div className="space-y-3">
-                            {/* Header */}
-                            <div
-                                className="grid grid-cols-12 gap-4 px-2 text-sm font-medium text-slate-500 dark:text-darkCustom-300">
+                        <div className="space-y-2">
+                            <div className="grid grid-cols-12 gap-3 px-1 text-xs font-semibold text-[#65676B] uppercase tracking-wider">
                                 <span className="col-span-2">Grade</span>
-                                <span className="col-span-3">Min %</span>
-                                <span className="col-span-3">Max %</span>
-                                <span className="col-span-4"></span>
+                                <span className="col-span-4">Min %</span>
+                                <span className="col-span-4">Max %</span>
+                                <span className="col-span-2"></span>
                             </div>
 
-                            {/* Rows */}
                             {gradingThresholds.map((threshold, i) => {
                                 const error = thresholdErrors[i];
                                 return (
-                                    <div key={i} className="grid grid-cols-12 gap-4 items-center">
-                                        <label
-                                            className="col-span-2 p-2 font-bold text-slate-700 dark:text-darkCustom-100 text-center bg-slate-100 dark:bg-darkCustom-700 rounded-md">{threshold.grade}</label>
-                                        <div className="col-span-3">
+                                    <div key={i} className="grid grid-cols-12 gap-3 items-center">
+                                        <div className="col-span-2 flex items-center justify-center h-9 bg-[#E7F3FF] text-[#0866FF] font-bold text-sm rounded-xl">
+                                            {threshold.grade}
+                                        </div>
+                                        <div className="col-span-4">
                                             <input type="number" step="any" value={threshold.percentage_min}
-                                                   onChange={(e) => handleThresholdChange(i, 'percentage_min', e.target.value)}
-                                                   className={`w-full p-2 border rounded-md transition ${inputClasses} ${error ? 'border-red-500 ring-1 ring-red-500 dark:border-red-400 dark:ring-red-400' : 'border-slate-300'}`}/>
+                                                   onChange={e => handleThresholdChange(i, 'percentage_min', e.target.value)}
+                                                   className={`${inputCls} ${error ? 'border-red-400 ring-1 ring-red-400' : ''}`}/>
                                         </div>
-                                        <div className="col-span-3">
+                                        <div className="col-span-4">
                                             <input type="number" step="any" value={threshold.percentage_max}
-                                                   onChange={(e) => handleThresholdChange(i, 'percentage_max', e.target.value)}
-                                                   className={`w-full p-2 border rounded-md transition ${inputClasses} ${error ? 'border-red-500 ring-1 ring-red-500 dark:border-red-400 dark:ring-red-400' : 'border-slate-300'}`}/>
+                                                   onChange={e => handleThresholdChange(i, 'percentage_max', e.target.value)}
+                                                   className={`${inputCls} ${error ? 'border-red-400 ring-1 ring-red-400' : ''}`}/>
                                         </div>
-                                        {error && <span
-                                            className="col-span-4 flex items-center gap-1 text-red-600 dark:text-red-400 text-sm">
-                                            <AlertCircle size={16}/> {error}</span>}
+                                        {error && (
+                                            <span className="col-span-2 flex items-center gap-1 text-red-500 text-xs">
+                                                <AlertCircle size={13}/> {error}
+                                            </span>
+                                        )}
                                     </div>
                                 );
                             })}

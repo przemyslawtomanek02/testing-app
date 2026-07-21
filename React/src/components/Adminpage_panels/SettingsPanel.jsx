@@ -6,12 +6,12 @@ import {Moon, Users, IdCard} from 'lucide-react';
 
 function SettingToggle({icon, label, description, value, onChange, disabled}) {
     return (
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-darkCustom-700 last:border-b-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4E6EB] last:border-b-0">
             <div className="flex items-center gap-4">
-                <div className="text-slate-500 dark:text-darkCustom-400">{icon}</div>
+                <div className="text-[#606770]">{icon}</div>
                 <div className="flex flex-col">
-                    <h3 className="font-semibold text-slate-800 dark:text-darkCustom-100">{label}</h3>
-                    <p className="text-sm text-slate-500 dark:text-darkCustom-300">{description}</p>
+                    <h3 className="font-semibold text-[#1C1E21] text-sm">{label}</h3>
+                    <p className="text-xs text-[#65676B] mt-0.5">{description}</p>
                 </div>
             </div>
 
@@ -19,8 +19,8 @@ function SettingToggle({icon, label, description, value, onChange, disabled}) {
                 type="button"
                 onClick={onChange}
                 disabled={disabled}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-darkCustom-900 ${
-                    value ? 'bg-blue-600 dark:bg-blue-500' : 'bg-slate-300 dark:bg-darkCustom-600'
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
+                    value ? 'bg-[#0866FF]' : 'bg-[#CED0D4]'
                 }`}
                 aria-checked={value}
             >
@@ -67,11 +67,11 @@ export default function SettingsPanel() {
     };
 
     return (
-        <div className="p-4 sm:p-6 md:p-8">
-            <div className="max-w-5xl mx-auto">
-                <div className="bg-white dark:bg-darkCustom-900 rounded-lg shadow-md border border-slate-200 dark:border-darkCustom-700">
-                    <header className="p-4 border-b border-slate-200 dark:border-darkCustom-700">
-                        <h2 className="text-xl font-bold text-slate-800 dark:text-darkCustom-100">Application Settings</h2>
+        <div className="p-6 bg-[#F0F2F5] min-h-screen">
+            <div className="max-w-2xl mx-auto">
+                <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
+                    <header className="px-6 py-4 border-b border-[#E4E6EB]">
+                        <h2 className="text-[15px] font-semibold text-[#1C1E21]">Application Settings</h2>
                     </header>
                     <div className="space-y-0">
                         <SettingToggle

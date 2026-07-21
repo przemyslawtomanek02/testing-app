@@ -97,8 +97,8 @@ export default function InstancesPanel({data, setOverlay, onRefresh}) {
 
     if (!data) {
         return (
-            <div className="flex items-center justify-center h-full p-8 bg-slate-100 dark:bg-darkCustom-800">
-                <Loader className="h-12 w-12 animate-spin text-slate-500 dark:text-darkCustom-400"/>
+            <div className="flex items-center justify-center h-full p-8 bg-[#F0F2F5]">
+                <Loader className="h-10 w-10 animate-spin text-[#BEC3C9]"/>
             </div>
         );
     }
@@ -107,87 +107,92 @@ export default function InstancesPanel({data, setOverlay, onRefresh}) {
     const selectedCount = selectedRowsInstances.filter(Boolean).length;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 bg-slate-100 dark:bg-darkCustom-800 min-h-screen font-sans">
-            <div className="max-w-7xl mx-auto">
+        <div className="p-6 bg-[#F0F2F5] min-h-screen">
+            <div className="max-w-5xl mx-auto">
 
-                <div className="bg-white dark:bg-darkCustom-900 dark:border dark:border-darkCustom-700 rounded-lg shadow-sm p-3 mb-4 flex items-center justify-between gap-4">
+                {/* Toolbar */}
+                <div className="bg-white rounded-2xl shadow-sm border border-[#E4E6EB] px-5 py-3 mb-5 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <button onClick={handleSelectAll}
-                                className="flex items-center gap-2 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-darkCustom-700 transition-colors">
-                            {allSelected ? <CheckSquare size={22} className="text-slate-700 dark:text-darkCustom-200"/> :
-                                <Square size={22} className="text-slate-400 dark:text-darkCustom-500"/>}
+                        <button onClick={handleSelectAll} className="p-1.5 rounded-lg hover:bg-[#F0F2F5] transition-colors">
+                            {allSelected
+                                ? <CheckSquare size={20} className="text-[#0866FF]"/>
+                                : <Square size={20} className="text-[#BEC3C9]"/>}
                         </button>
-                        <span
-                            className="font-semibold text-slate-700 dark:text-darkCustom-200">{selectedCount} z {data.length} zaznaczonych</span>
+                        <span className="text-sm font-medium text-[#65676B]">
+                            {selectedCount > 0 ? `${selectedCount} of ${data.length} selected` : `${data.length} instances`}
+                        </span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                         <button
-                            title="Refresh list"
                             onClick={handleRefresh}
-                            className="p-2 rounded-full text-slate-500 dark:text-darkCustom-400 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors disabled:cursor-not-allowed"
                             disabled={isRefreshing}
+                            className="p-2 rounded-lg text-[#606770] hover:bg-[#F0F2F5] transition-colors disabled:opacity-50"
                         >
-                            <RefreshCw size={18} className={isRefreshing ? 'is-refreshing' : ''}/>
+                            <RefreshCw size={17} className={isRefreshing ? 'is-refreshing' : ''}/>
                         </button>
                         <button
-                            className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-sm disabled:bg-slate-400 disabled:cursor-not-allowed dark:disabled:bg-darkCustom-600"
+                            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             onClick={handleDeleteClick}
                             disabled={selectedCount === 0}
                         >
-                            <Trash2 size={18}/>
+                            <Trash2 size={15}/>
                             <span>Delete</span>
                         </button>
                     </div>
                 </div>
 
                 {data.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-3">
                         {data.map((row, index) => (
                             <div
                                 key={row.instance_id}
-                                className={`card-enter bg-white dark:bg-darkCustom-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex flex-row items-center p-4 gap-4 ${selectedRowsInstances[index] ? 'ring-2 ring-slate-600 bg-slate-50 dark:ring-darkCustom-300 dark:bg-darkCustom-800' : ''} ${row.is_active ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500'}`}
-                                style={{animationDelay: `${index * 100}ms`}}
+                                style={{animationDelay: `${index * 50}ms`}}
+                                className={`card-enter bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all duration-200 flex flex-row items-center px-5 py-4 gap-5 border-l-4 ${row.is_active ? 'border-l-green-500' : 'border-l-red-400'} ${selectedRowsInstances[index] ? 'border-[#0866FF] ring-1 ring-[#0866FF]/20' : 'border-[#E4E6EB]'}`}
                             >
                                 <button onClick={() => handleCheckboxChange(index)}
-                                        className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-darkCustom-700">
-                                    {selectedRowsInstances[index] ?
-                                        <CheckSquare size={22} className="text-slate-700 dark:text-darkCustom-200"/> :
-                                        <Square size={22} className="text-slate-300 dark:text-darkCustom-500"/>}
+                                        className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-[#F0F2F5] flex-shrink-0 transition-colors">
+                                    {selectedRowsInstances[index]
+                                        ? <CheckSquare size={20} className="text-[#0866FF]"/>
+                                        : <Square size={20} className="text-[#BEC3C9]"/>}
                                 </button>
 
-                                <div className="flex-1 grid grid-cols-12 gap-4 items-center">
-                                    <div className="col-span-5 min-w-0">
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-darkCustom-100 truncate">{row.instance_name}</h2>
-                                        <p className="text-sm text-slate-500 dark:text-darkCustom-400">Test: {row.test_name}</p>
-                                    </div>
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-[15px] font-semibold text-[#1C1E21] truncate">{row.instance_name}</h2>
+                                    <p className="text-sm text-[#65676B] mt-0.5">Test: {row.test_name}</p>
+                                </div>
 
-                                    <div
-                                        className="col-span-5 flex flex-col items-start gap-1 text-xs text-slate-500 dark:text-darkCustom-400 pl-4 border-l border-slate-200 dark:border-darkCustom-700">
-                                        <span>Start: <span
-                                            className="font-semibold text-slate-700 dark:text-darkCustom-200">{formatDate(row.start_time)}</span></span>
-                                        <span>End: <span
-                                            className="font-semibold text-slate-700 dark:text-darkCustom-200">{formatDate(row.end_time)}</span></span>
-                                        <span>Time: <span
-                                            className="font-semibold text-slate-700 dark:text-darkCustom-200">{row.test_time} min</span> | Questions: <span
-                                            className="font-semibold text-slate-700 dark:text-darkCustom-200">{row.num_questions}</span></span>
+                                <div className="flex items-center gap-6 text-sm text-[#65676B] pr-5 border-r border-[#E4E6EB]">
+                                    <div>
+                                        <p className="text-xs text-[#BEC3C9] mb-0.5">Start</p>
+                                        <p className="font-medium text-[#1C1E21] text-[13px]">{formatDate(row.start_time)}</p>
                                     </div>
-
-                                    <div className="col-span-2 flex justify-end">
-                                        <button onClick={() => handleStatusToggle(row)}
-                                                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold transition-transform duration-200 ease-in-out hover:scale-105 ${row.is_active ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'}`}>
-                                            {row.is_active ? <ToggleRight size={20}/> : <ToggleLeft size={20}/>}
-                                            {row.is_active ? 'Active' : 'Inactive'}
-                                        </button>
+                                    <div>
+                                        <p className="text-xs text-[#BEC3C9] mb-0.5">End</p>
+                                        <p className="font-medium text-[#1C1E21] text-[13px]">{formatDate(row.end_time)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-[#BEC3C9] mb-0.5">Time</p>
+                                        <p className="font-medium text-[#1C1E21] text-[13px]">{row.test_time} min</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-[#BEC3C9] mb-0.5">Questions</p>
+                                        <p className="font-medium text-[#1C1E21] text-[13px]">{row.num_questions}</p>
                                     </div>
                                 </div>
+
+                                <button onClick={() => handleStatusToggle(row)}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${row.is_active ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
+                                    {row.is_active ? <ToggleRight size={16}/> : <ToggleLeft size={16}/>}
+                                    {row.is_active ? 'Active' : 'Inactive'}
+                                </button>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 px-6 bg-white dark:bg-darkCustom-900 dark:border dark:border-darkCustom-700 rounded-lg shadow-sm">
-                        <Inbox size={48} className="mx-auto text-slate-400 dark:text-darkCustom-500"/>
-                        <h3 className="mt-4 text-xl font-semibold text-slate-800 dark:text-darkCustom-100">No instances found</h3>
-                        <p className="mt-1 text-slate-500 dark:text-darkCustom-300">You can create new instances from the 'Tests' panel.</p>
+                    <div className="text-center py-20 px-6 bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
+                        <Inbox size={44} className="mx-auto text-[#BEC3C9]"/>
+                        <h3 className="mt-4 text-base font-semibold text-[#1C1E21]">No instances found</h3>
+                        <p className="mt-1 text-sm text-[#65676B]">You can create new instances from the 'Tests' panel.</p>
                     </div>
                 )}
             </div>

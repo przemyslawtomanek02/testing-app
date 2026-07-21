@@ -1,149 +1,98 @@
-import React, { memo, useEffect, useState } from 'react';
-import { useFieldArray, useWatch } from 'react-hook-form';
-import {
-    DndContext,
-    DragOverlay,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    closestCenter
-} from '@dnd-kit/core';
-import {
-    SortableContext,
-    useSortable,
-    verticalListSortingStrategy
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { PlusCircle, Trash2, GripVertical } from 'lucide-react';
+import React, {memo, useEffect, useState} from 'react';
+import {useFieldArray, useWatch} from 'react-hook-form';
+import {DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCenter} from '@dnd-kit/core';
+import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+import {PlusCircle, Trash2, GripVertical} from 'lucide-react';
 
-const SortableItem = ({ field, aIndex, qIndex, control, setValue, onRemove, isDragging, isOverlay = false, inputClasses }) => {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-    } = useSortable({ id: field.id });
+const SortableItem = ({field, aIndex, qIndex, control, setValue, onRemove, isDragging, isOverlay = false, inputCls}) => {
+    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: field.id});
 
-    const itemValueFromForm = useWatch({
-        control,
-        name: `questions.${qIndex}.answers.${aIndex}.text`,
-    });
-
+    const itemValueFromForm = useWatch({control, name: `questions.${qIndex}.answers.${aIndex}.text`});
     const [localItemValue, setLocalItemValue] = useState(itemValueFromForm || '');
 
     useEffect(() => {
         const handler = setTimeout(() => {
             if (itemValueFromForm !== localItemValue) {
-                setValue(`questions.${qIndex}.answers.${aIndex}.text`, localItemValue, { shouldDirty: true });
+                setValue(`questions.${qIndex}.answers.${aIndex}.text`, localItemValue, {shouldDirty: true});
             }
         }, 400);
-
         return () => clearTimeout(handler);
     }, [localItemValue, itemValueFromForm, setValue, qIndex, aIndex]);
 
     useEffect(() => {
-        if (itemValueFromForm !== undefined) {
-            setLocalItemValue(itemValueFromForm || '');
-        }
+        if (itemValueFromForm !== undefined) setLocalItemValue(itemValueFromForm || '');
     }, [itemValueFromForm, aIndex]);
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging && !isOverlay ? 0.5 : 1,
-    };
+    const style = {transform: CSS.Transform.toString(transform), transition, opacity: isDragging && !isOverlay ? 0.5 : 1};
 
-    const baseClasses = "flex items-center gap-3 p-2 rounded-md border";
-    const normalStateClasses = "bg-white border-slate-200 dark:bg-darkCustom-900 dark:border-darkCustom-700";
-    const draggingStateClasses = "bg-white shadow-lg border-blue-500 z-10 dark:bg-darkCustom-800 dark:border-blue-400";
-
-    const classes = `${baseClasses} ${isDragging || isOverlay ? draggingStateClasses : normalStateClasses}`;
-
+    const classes = `flex items-center gap-3 p-2 rounded-xl border transition-shadow ${
+        isDragging || isOverlay
+            ? 'bg-white shadow-lg border-[#0866FF] z-10'
+            : 'bg-white border-[#E4E6EB]'
+    }`;
 
     return (
         <div ref={setNodeRef} style={style} className={classes}>
-            <span {...attributes} {...listeners} className="cursor-grab text-slate-400 hover:text-slate-600 dark:text-darkCustom-300 dark:hover:text-darkCustom-200 p-1">
-                <GripVertical size={20} />
+            <span {...attributes} {...listeners} className="cursor-grab text-[#BEC3C9] hover:text-[#65676B] p-1">
+                <GripVertical size={18}/>
             </span>
             <input
                 type="text"
                 value={localItemValue}
                 onChange={(e) => setLocalItemValue(e.target.value)}
                 placeholder={`Item ${aIndex + 1}`}
-                className={`${inputClasses} flex-grow`}
+                className={`${inputCls} flex-grow`}
             />
             <button
                 type="button"
                 onClick={() => onRemove(aIndex)}
-                className="p-2 text-slate-400 hover:text-red-600 dark:text-darkCustom-400 dark:hover:text-red-500 rounded-md"
+                className="p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
             >
-                <Trash2 size={18} />
+                <Trash2 size={16}/>
             </button>
         </div>
     );
 };
 
-
-// ============================================================================
-// GŁÓWNY KOMPONENT
-// ============================================================================
-const DragAndDropOrderEditor = ({ qIndex, control, register, setValue }) => {
-    const { fields, append, remove, move } = useFieldArray({
+const DragAndDropOrderEditor = ({qIndex, control, register, setValue}) => {
+    const {fields, append, remove, move} = useFieldArray({
         control,
         name: `questions.${qIndex}.answers`,
         keyName: "key",
     });
 
     const [activeId, setActiveId] = useState(null);
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 5,
-            },
-        })
-    );
+    const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {distance: 5}}));
 
-    const answers = useWatch({
-        control,
-        name: `questions.${qIndex}.answers`,
-    }) || [];
-
-    const questionFromForm = useWatch({ control, name: `questions.${qIndex}.question` });
+    const answers = useWatch({control, name: `questions.${qIndex}.answers`}) || [];
+    const questionFromForm = useWatch({control, name: `questions.${qIndex}.question`});
     const [localQuestion, setLocalQuestion] = useState(questionFromForm || '');
 
     useEffect(() => {
         const handler = setTimeout(() => {
             if (questionFromForm !== localQuestion) {
-                setValue(`questions.${qIndex}.question`, localQuestion, { shouldDirty: true });
+                setValue(`questions.${qIndex}.question`, localQuestion, {shouldDirty: true});
             }
         }, 500);
-
-        return () => {
-            clearTimeout(handler);
-        };
+        return () => clearTimeout(handler);
     }, [localQuestion, qIndex, setValue, questionFromForm]);
 
-    useEffect(() => {
-        setLocalQuestion(questionFromForm || '');
-    }, [questionFromForm]);
+    useEffect(() => { setLocalQuestion(questionFromForm || ''); }, [questionFromForm]);
 
     useEffect(() => {
         if (answers && answers.length > 0) {
-            const currentOrder = answers.map(answer => answer.answer_id);
-            setValue(`questions.${qIndex}.extra_data.correct_order`, currentOrder, { shouldDirty: true });
+            setValue(`questions.${qIndex}.extra_data.correct_order`, answers.map(a => a.answer_id), {shouldDirty: true});
         }
     }, [answers, qIndex, setValue]);
 
-    function handleDragStart(event) {
-        setActiveId(event.active.id);
-    }
+    function handleDragStart(event) { setActiveId(event.active.id); }
 
     function handleDragEnd(event) {
-        const { active, over } = event;
+        const {active, over} = event;
         if (over && active.id !== over.id) {
-            const oldIndex = fields.findIndex((item) => item.id === active.id);
-            const newIndex = fields.findIndex((item) => item.id === over.id);
+            const oldIndex = fields.findIndex(item => item.id === active.id);
+            const newIndex = fields.findIndex(item => item.id === over.id);
             move(oldIndex, newIndex);
         }
         setActiveId(null);
@@ -152,39 +101,35 @@ const DragAndDropOrderEditor = ({ qIndex, control, register, setValue }) => {
     const handleAddItem = () => {
         if (fields.length < 8) {
             const highestId = answers.reduce((maxId, item) => Math.max(maxId, parseInt(item.id, 10)), -1);
-            const newId = (highestId + 1).toString();
-            append({ text: "", id: newId });
+            append({text: "", id: (highestId + 1).toString()});
         }
     };
 
-    const handleRemoveItem = (index) => {
-        if (fields.length > 2) {
-            remove(index);
-        }
-    };
+    const handleRemoveItem = (index) => { if (fields.length > 2) remove(index); };
 
-    const activeField = activeId ? fields.find(field => field.id === activeId) : null;
-    const activeIndex = activeId ? fields.findIndex(field => field.id === activeId) : -1;
-    const inputClasses = "p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-500 transition dark:bg-darkCustom-700 dark:border-darkCustom-600 dark:text-darkCustom-100 dark:placeholder:text-darkCustom-400 dark:focus:ring-slate-300 dark:focus:border-slate-300";
+    const activeField = activeId ? fields.find(f => f.id === activeId) : null;
+    const activeIndex = activeId ? fields.findIndex(f => f.id === activeId) : -1;
+
+    const inputCls = "px-3 py-2 border border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] bg-white placeholder:text-[#BEC3C9] focus:outline-none focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] transition-all";
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <div>
-                <label htmlFor={`question-text-${qIndex}`} className="block text-sm font-medium text-slate-700 dark:text-darkCustom-200 mb-1">
+                <label htmlFor={`qt-${qIndex}`} className="block text-sm font-medium text-[#1C1E21] mb-1.5">
                     Question / Instruction
                 </label>
                 <textarea
-                    id={`question-text-${qIndex}`}
+                    id={`qt-${qIndex}`}
                     value={localQuestion}
                     onChange={(e) => setLocalQuestion(e.target.value)}
                     placeholder="e.g., Arrange the following steps in the correct order."
-                    className={`${inputClasses} w-full max-h-[400px]`}
+                    className={`${inputCls} w-full max-h-[400px]`}
                     rows={3}
                 />
             </div>
 
-            <div className="space-y-3">
-                <label htmlFor="" className="block text-sm font-medium text-slate-700 dark:text-darkCustom-200">Items to Order</label>
+            <div className="space-y-2.5">
+                <label className="block text-sm font-medium text-[#1C1E21]">Items to Order</label>
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -192,10 +137,7 @@ const DragAndDropOrderEditor = ({ qIndex, control, register, setValue }) => {
                     onDragEnd={handleDragEnd}
                     onDragCancel={() => setActiveId(null)}
                 >
-                    <SortableContext
-                        items={fields.map(field => field.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
+                    <SortableContext items={fields.map(f => f.id)} strategy={verticalListSortingStrategy}>
                         <div className="space-y-2">
                             {fields.map((field, aIndex) => (
                                 <SortableItem
@@ -207,12 +149,11 @@ const DragAndDropOrderEditor = ({ qIndex, control, register, setValue }) => {
                                     setValue={setValue}
                                     onRemove={handleRemoveItem}
                                     isDragging={activeId === field.id}
-                                    inputClasses={inputClasses}
+                                    inputCls={inputCls}
                                 />
                             ))}
                         </div>
                     </SortableContext>
-
                     <DragOverlay>
                         {activeField ? (
                             <SortableItem
@@ -224,24 +165,22 @@ const DragAndDropOrderEditor = ({ qIndex, control, register, setValue }) => {
                                 onRemove={() => {}}
                                 isDragging={true}
                                 isOverlay={true}
-                                inputClasses={inputClasses}
+                                inputCls={inputCls}
                             />
                         ) : null}
                     </DragOverlay>
                 </DndContext>
             </div>
 
-            <div>
-                <button
-                    type="button"
-                    onClick={handleAddItem}
-                    disabled={fields.length >= 8}
-                    className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 disabled:text-slate-400 dark:text-blue-400 dark:hover:text-blue-300 dark:disabled:text-darkCustom-500 disabled:cursor-not-allowed transition-colors"
-                >
-                    <PlusCircle size={18} />
-                    Add Item
-                </button>
-            </div>
+            <button
+                type="button"
+                onClick={handleAddItem}
+                disabled={fields.length >= 8}
+                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
+            >
+                <PlusCircle size={16}/>
+                Add Item
+            </button>
         </div>
     );
 };

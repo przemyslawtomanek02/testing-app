@@ -199,71 +199,90 @@ export default function Adminpage() {
     };
 
     return (
-        <div className="flex h-screen bg-slate-100 dark:bg-darkCustom-800 font-sans">
-            {/* Sidebar */}
-            <aside
-                className={`flex h-screen flex-col bg-[#1c2434] dark:bg-darkCustom-900 text-white transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
-                {/* Sidebar Header */}
-                <div className="flex items-center gap-4 px-4 h-20 border-b border-slate-700 dark:border-darkCustom-600">
-                    {/*<LayoutDashboard size={28} className="text-white flex-shrink-0" />*/}
-                    <img src="/media/logo.png" alt="Logo" className="h-10 w-auto flex-shrink-0"/>
-                    {isSidebarOpen && <h1 className="text-xl font-bold whitespace-nowrap">Admin Panel</h1>}
+        <div className="flex h-screen bg-[#F0F2F5]">
+            {/* ── SIDEBAR ── */}
+            <aside className={`flex h-screen flex-col bg-white border-r border-[#E4E6EB] flex-shrink-0 transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-[240px]' : 'w-[64px]'}`}>
+
+                {/* Logo */}
+                <div className={`flex items-center h-[60px] border-b border-[#E4E6EB] flex-shrink-0 ${isSidebarOpen ? 'px-5 gap-3' : 'justify-center'}`}>
+                    <img src="/media/logo.png" alt="Logo" className="h-8 w-8 object-contain flex-shrink-0"/>
+                    {isSidebarOpen && (
+                        <span className="text-[#1C1E21] text-[15px] font-semibold whitespace-nowrap tracking-tight">
+                            Admin Panel
+                        </span>
+                    )}
                 </div>
 
-                {/* Main Navigation */}
-                <nav className="flex-grow p-4 space-y-2 ">
-                    {isSidebarOpen &&
-                        <h2 className="px-4 pt-2 pb-2 text-xs font-bold text-slate-500 dark:text-darkCustom-100 uppercase tracking-wider">General</h2>}
-                    <SidebarLink icon={<BookOpen size={20}/>} text="Tests"
-                                 isActive={['tests', 'edit_test'].includes(activePanel)}
+                {/* Navigation */}
+                <nav className="flex-grow overflow-y-auto py-3 px-3 space-y-0.5">
+                    {isSidebarOpen && (
+                        <p className="px-2 pt-2 pb-1.5 text-[11px] font-semibold text-[#65676B] uppercase tracking-widest">
+                            General
+                        </p>
+                    )}
+                    <SidebarLink icon={<BookOpen size={17}/>} text="Tests"
+                                 isActive={['tests', 'edit_test', 'preview_test'].includes(activePanel)}
                                  onClick={() => setActivePanel('tests')} isSidebarOpen={isSidebarOpen}/>
-                    <SidebarLink icon={<Hash size={20}/>} text="Instances" isActive={activePanel === 'instances'}
+                    <SidebarLink icon={<Hash size={17}/>} text="Instances"
+                                 isActive={activePanel === 'instances'}
                                  onClick={() => setActivePanel('instances')} isSidebarOpen={isSidebarOpen}/>
-                    <SidebarLink icon={<BarChart3 size={20}/>} text="Results" isActive={activePanel === 'results'}
+                    <SidebarLink icon={<BarChart3 size={17}/>} text="Results"
+                                 isActive={activePanel === 'results'}
                                  onClick={() => setActivePanel('results')} isSidebarOpen={isSidebarOpen}/>
-                    <SidebarLink icon={<Percent size={20}/>} text="Grading" isActive={activePanel === 'grading_schemes'}
+                    <SidebarLink icon={<Percent size={17}/>} text="Grading"
+                                 isActive={activePanel === 'grading_schemes'}
                                  onClick={() => setActivePanel('grading_schemes')} isSidebarOpen={isSidebarOpen}/>
 
-                    {isSidebarOpen &&
-                        <h2 className="px-4 pt-4 pb-2 text-xs font-bold text-slate-500 dark:text-darkCustom-100 uppercase tracking-wider">Creation</h2>}
-                    <SidebarLink icon={<PlusSquare size={20}/>} text="Create Test"
-                                 isActive={activePanel === 'create_test'} onClick={() => setActivePanel('create_test')}
-                                 isSidebarOpen={isSidebarOpen}/>
-                    <SidebarLink icon={<FilePlus2 size={20}/>} text="Create Grading"
+                    {isSidebarOpen && (
+                        <p className="px-2 pt-4 pb-1.5 text-[11px] font-semibold text-[#65676B] uppercase tracking-widest">
+                            Creation
+                        </p>
+                    )}
+                    {!isSidebarOpen && <div className="my-2 border-t border-[#E4E6EB]"/>}
+                    <SidebarLink icon={<PlusSquare size={17}/>} text="Create Test"
+                                 isActive={activePanel === 'create_test'}
+                                 onClick={() => setActivePanel('create_test')} isSidebarOpen={isSidebarOpen}/>
+                    <SidebarLink icon={<FilePlus2 size={17}/>} text="Create Grading"
                                  isActive={activePanel === 'create_grading_schemes'}
-                                 onClick={() => setActivePanel('create_grading_schemes')}
-                                 isSidebarOpen={isSidebarOpen}/>
+                                 onClick={() => setActivePanel('create_grading_schemes')} isSidebarOpen={isSidebarOpen}/>
                 </nav>
 
-                <div className="p-4 border-t border-slate-700 dark:border-darkCustom-600 space-y-2">
-                    <SidebarLink icon={<ListChecks size={20}/>} text="Go to Exams" isActive={false}
-                                 onClick={() => navigate('/exams')} isSidebarOpen={isSidebarOpen}/>
-
-                    <SidebarLink icon={<Users size={20}/>} text="Users List" isActive={activePanel === 'users_list'}
+                {/* Bottom links */}
+                <div className="px-3 py-3 border-t border-[#E4E6EB] space-y-0.5">
+                    <SidebarLink icon={<ListChecks size={17}/>} text="Go to Exams"
+                                 isActive={false} onClick={() => navigate('/exams')} isSidebarOpen={isSidebarOpen}/>
+                    <SidebarLink icon={<Users size={17}/>} text="Users"
+                                 isActive={activePanel === 'users_list'}
                                  onClick={() => setActivePanel('users_list')} isSidebarOpen={isSidebarOpen}/>
-
-                    <SidebarLink icon={<Settings size={20}/>} text="Settings" isActive={activePanel === 'settings'}
+                    <SidebarLink icon={<Settings size={17}/>} text="Settings"
+                                 isActive={activePanel === 'settings'}
                                  onClick={() => setActivePanel('settings')} isSidebarOpen={isSidebarOpen}/>
-                    <SidebarLink icon={<LogOut size={20}/>} text="Logout" onClick={logout}
-                                 isSidebarOpen={isSidebarOpen}/>
+                    <SidebarLink icon={<LogOut size={17}/>} text="Log out"
+                                 isActive={false} onClick={logout} isSidebarOpen={isSidebarOpen} danger/>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <header
-                    className="flex justify-between items-center bg-white dark:bg-darkCustom-900 h-20 px-8 border-b border-slate-200 dark:border-darkCustom-600 flex-shrink-0 transition-all duration-300">
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-50">{panelTitles[activePanel] || 'Dashboard'}</h2>
-                    <div className="gap-4 flex items-center text-slate-500 dark:text-darkCustom-400">
-                        <DarkModeSwitcher></DarkModeSwitcher>
-                        <button onClick={toggleSidebar}
-                                className="p-2 rounded-full text-slate-500 dark:text-darkCustom-50 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors">
-                            {isSidebarOpen ? <ChevronsLeft size={20}/> : <ChevronsRight size={20}/>}
+            {/* ── MAIN CONTENT ── */}
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+                {/* Top bar */}
+                <header className="flex-shrink-0 flex items-center justify-between h-[60px] px-6 bg-white border-b border-[#E4E6EB]">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={toggleSidebar}
+                            className="p-2 rounded-full text-[#606770] hover:bg-[#F0F2F5] transition-colors"
+                        >
+                            {isSidebarOpen ? <ChevronsLeft size={18}/> : <ChevronsRight size={18}/>}
                         </button>
+                        {panelTitles[activePanel] && (
+                            <h2 className="text-[#1C1E21] text-[15px] font-semibold">
+                                {panelTitles[activePanel]}
+                            </h2>
+                        )}
                     </div>
+                    <DarkModeSwitcher/>
                 </header>
 
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex-1 overflow-y-auto bg-[#F0F2F5]">
                     {renderContent()}
                 </main>
             </div>
@@ -274,16 +293,23 @@ export default function Adminpage() {
     );
 }
 
-const SidebarLink = ({icon, text, isActive, onClick, isSidebarOpen}) => (
+const SidebarLink = ({icon, text, isActive, onClick, isSidebarOpen, danger = false}) => (
     <button
         onClick={onClick}
-        className={`flex items-center w-full h-12 text-base font-medium rounded-lg transition-colors duration-200 ${
-            isActive
-                ? 'bg-slate-700 dark:bg-darkCustom-700 text-white dark:text-darkCustom-50'
-                : 'text-slate-400 hover:bg-slate-700/[0.5] hover:dark:bg-darkCustom-600  hover:text-white dark:text-darkCustom-50 hover:dark:text-darkCustom-50'
-        } ${isSidebarOpen ? 'px-4' : 'justify-center'}`}
+        title={!isSidebarOpen ? text : undefined}
+        className={`relative flex items-center w-full h-9 rounded-lg transition-colors duration-150 text-[14px] font-medium
+            ${isSidebarOpen ? 'px-3 gap-3' : 'justify-center'}
+            ${isActive
+                ? 'bg-[#E7F3FF] text-[#0866FF]'
+                : danger
+                    ? 'text-[#65676B] hover:bg-[#FFF0F0] hover:text-[#FA383E]'
+                    : 'text-[#606770] hover:bg-[#F0F2F5] hover:text-[#1C1E21]'
+            }`}
     >
-        {icon}
-        {isSidebarOpen && <span className="ml-4 transition-opacity duration-200">{text}</span>}
+        {isActive && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#0866FF] rounded-r-full"/>
+        )}
+        <span className={`flex-shrink-0 ${isActive ? 'text-[#0866FF]' : ''}`}>{icon}</span>
+        {isSidebarOpen && <span className="truncate">{text}</span>}
     </button>
 );

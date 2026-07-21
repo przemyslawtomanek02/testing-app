@@ -8,7 +8,7 @@ import {PlusSquare, Edit, Trash2, CheckSquare, Square, Inbox, RefreshCw, Loader,
 const Tooltip = ({label, children}) => (
     <div className="relative group/tip flex items-center justify-center">
         {children}
-        <span className="pointer-events-none absolute right-full mr-2 px-2 py-1 rounded-md text-xs font-medium bg-slate-800 text-white dark:bg-darkCustom-100 dark:text-darkCustom-900 whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150 z-10">
+        <span className="pointer-events-none absolute right-full mr-2 px-2.5 py-1 rounded-lg text-xs font-medium bg-[#1C1E21] text-white whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150 z-10 shadow-lg">
             {label}
         </span>
     </div>
@@ -126,8 +126,8 @@ export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh
 
     if (!data) {
         return (
-            <div className="flex items-center justify-center h-full p-8 dark:bg-darkCustom-800">
-                <Loader className="h-12 w-12 animate-spin text-slate-500 dark:text-darkCustom-400" />
+            <div className="flex items-center justify-center h-full p-8 bg-[#F0F2F5]">
+                <Loader className="h-10 w-10 animate-spin text-[#BEC3C9]" />
             </div>
         );
     }
@@ -136,114 +136,126 @@ export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh
     const selectedCount = selectedRows.filter(Boolean).length;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 bg-slate-100 dark:bg-darkCustom-800 min-h-screen font-sans">
-            <div className="max-w-7xl mx-auto">
+        <div className="p-6 bg-[#F0F2F5] min-h-screen">
+            <div className="max-w-5xl mx-auto">
 
-                <div className="bg-white dark:bg-darkCustom-900 dark:border dark:border-darkCustom-700 rounded-lg shadow-sm px-4 py-3 mb-4 flex items-center justify-between gap-4">
+                {/* Toolbar */}
+                <div className="bg-white rounded-2xl shadow-sm border border-[#E4E6EB] px-5 py-3 mb-5 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                         <button onClick={handleSelectAll} className="flex items-center gap-2 rounded-md hover:bg-slate-100 dark:hover:bg-darkCustom-700 transition-colors">
-                            {allSelected ? <CheckSquare size={22} className="text-slate-700 dark:text-darkCustom-200"/> : <Square size={22} className="text-slate-400 dark:text-darkCustom-500"/>}
-                         </button>
-                        <span className="font-semibold text-slate-700 dark:text-darkCustom-200">{selectedCount} z {data.length} selected</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <button
-                            title="Refresh list"
-                            onClick={handleRefresh}
-                            className="p-2 rounded-full text-slate-500 dark:text-darkCustom-400 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors"
-                            disabled={isRefreshing}
-                        >
-                            <RefreshCw size={18} className={isRefreshing ? 'is-refreshing' : ''}/>
+                        <button onClick={handleSelectAll} className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-[#F0F2F5] transition-colors">
+                            {allSelected
+                                ? <CheckSquare size={20} className="text-[#0866FF]"/>
+                                : <Square size={20} className="text-[#BEC3C9]"/>}
                         </button>
-
-                         <button
-                            className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-sm disabled:bg-slate-400 disabled:cursor-not-allowed dark:disabled:bg-darkCustom-600"
+                        <span className="text-sm font-medium text-[#65676B]">
+                            {selectedCount > 0 ? `${selectedCount} of ${data.length} selected` : `${data.length} tests`}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleRefresh}
+                            disabled={isRefreshing}
+                            className="p-2 rounded-lg text-[#606770] hover:bg-[#F0F2F5] transition-colors disabled:opacity-50"
+                        >
+                            <RefreshCw size={17} className={isRefreshing ? 'is-refreshing' : ''}/>
+                        </button>
+                        <button
+                            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             onClick={handleDeleteOfSelected}
                             disabled={selectedCount === 0}
                         >
-                            <Trash2 size={18} />
+                            <Trash2 size={15}/>
                             <span>Delete</span>
                         </button>
                         <input ref={importInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
                         <button
                             onClick={() => importInputRef.current?.click()}
-                            className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+                            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg border border-[#E4E6EB] text-[#606770] hover:bg-[#F0F2F5] transition-colors"
                         >
-                            <Upload size={18} />
+                            <Upload size={15}/>
                             <span>Import</span>
                         </button>
                         <button
                             onClick={() => onCreateTest && onCreateTest()}
-                            className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+                            className="flex items-center gap-1.5 text-sm font-semibold px-4 py-1.5 rounded-lg text-white bg-[#0866FF] hover:bg-[#0757D9] transition-colors shadow-sm"
                         >
-                            <FilePlus2 size={18} />
+                            <FilePlus2 size={15}/>
                             <span>New Test</span>
                         </button>
                     </div>
                 </div>
 
                 {data.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-3">
                         {data.map((row, index) => (
                             <div
                                 key={row.test_id}
-                                style={{ animationDelay: `${index * 100}ms` }}
-                                className={`card-enter bg-white dark:bg-darkCustom-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex flex-row items-center px-4 py-2 gap-4 border-2 ${selectedRows[index] ? 'border-slate-600 bg-slate-50 dark:border-darkCustom-300 dark:bg-darkCustom-800' : 'border-transparent dark:border-darkCustom-700'}`}
+                                style={{ animationDelay: `${index * 50}ms` }}
+                                className={`card-enter bg-white rounded-2xl border transition-all duration-200 flex flex-row items-center px-5 py-4 gap-5 shadow-sm hover:shadow-md ${selectedRows[index] ? 'border-[#0866FF] ring-1 ring-[#0866FF]/20' : 'border-[#E4E6EB]'}`}
                             >
-                                <button onClick={() => handleCheckboxChange(index)} className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-darkCustom-700">
-                                    {selectedRows[index] ? <CheckSquare size={22} className="text-slate-700 dark:text-darkCustom-200"/> : <Square size={22} className="text-slate-300 dark:text-darkCustom-500"/>}
+                                <button onClick={() => handleCheckboxChange(index)} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-[#F0F2F5] flex-shrink-0 transition-colors">
+                                    {selectedRows[index]
+                                        ? <CheckSquare size={20} className="text-[#0866FF]"/>
+                                        : <Square size={20} className="text-[#BEC3C9]"/>}
                                 </button>
 
-                                <div className="w-1/2 min-w-0 pr-4">
-                                    <h2 className="text-xl font-bold text-slate-900 dark:text-darkCustom-100 mb-2 truncate">{row.name}</h2>
-                                    <p className="text-slate-600 dark:text-darkCustom-300 text-sm break-words">{row.description}</p>
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-[15px] font-semibold text-[#1C1E21] truncate">{row.name}</h2>
+                                    <p className="text-[#65676B] text-sm mt-0.5 line-clamp-1">{row.description}</p>
                                 </div>
 
-                                {/* Column 2: Stats */}
-                                <div className="w-1/4 flex flex-col items-start gap-1 text-sm text-slate-500 dark:text-darkCustom-400 py-2 pl-4 border-l border-slate-200 dark:border-darkCustom-700">
-                                    <span>Number of Questions: <span className="font-semibold text-slate-700 dark:text-darkCustom-200">{row.number_of_questions}</span></span>
-                                    <span>Instances: <span className="font-semibold text-slate-700 dark:text-darkCustom-200">{row.instance_count}</span></span>
-                                    <span>Created: <span className="font-semibold text-slate-700 dark:text-darkCustom-200">{formatDate(row.created_at)}</span></span>
+                                {/* Stats */}
+                                <div className="flex-shrink-0 flex items-center gap-5 text-sm text-[#65676B] pr-5 border-r border-[#E4E6EB]">
+                                    <div className="text-center">
+                                        <p className="text-[18px] font-bold text-[#1C1E21] leading-none">{row.number_of_questions}</p>
+                                        <p className="text-xs mt-0.5">Questions</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[18px] font-bold text-[#1C1E21] leading-none">{row.instance_count}</p>
+                                        <p className="text-xs mt-0.5">Instances</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[13px] font-semibold text-[#1C1E21] leading-none">{formatDate(row.created_at)}</p>
+                                        <p className="text-xs mt-0.5">Created</p>
+                                    </div>
                                 </div>
 
-                                {/* Column 3: Action Buttons */}
-                                <div className="w-1/4 flex justify-end">
-                                    <div className="flex-shrink-0 flex flex-col items-center gap-1 self-center">
+                                {/* Action Buttons */}
+                                <div className="flex-shrink-0 flex items-center gap-0.5">
                                     <Tooltip label="Create Instance">
-                                        <button onClick={() => handleInstance(row.test_id, row.number_of_questions)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-blue-600 hover:bg-blue-100 dark:hover:text-blue-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
-                                            <PlusSquare size={20}/>
+                                        <button onClick={() => handleInstance(row.test_id, row.number_of_questions)} className="p-2 text-[#606770] hover:text-[#0866FF] hover:bg-[#E7F3FF] rounded-xl transition-colors">
+                                            <PlusSquare size={18}/>
                                         </button>
                                     </Tooltip>
                                     <Tooltip label="Preview Test">
-                                        <button onClick={() => onPreviewTest && onPreviewTest(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-amber-600 hover:bg-amber-100 dark:hover:text-amber-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
-                                            <Eye size={20}/>
+                                        <button onClick={() => onPreviewTest && onPreviewTest(row.test_id)} className="p-2 text-[#606770] hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-colors">
+                                            <Eye size={18}/>
                                         </button>
                                     </Tooltip>
                                     <Tooltip label="Edit Test">
-                                        <button onClick={() => handleEdit(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-green-600 hover:bg-green-100 dark:hover:text-green-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
-                                            <Edit size={20}/>
+                                        <button onClick={() => handleEdit(row.test_id)} className="p-2 text-[#606770] hover:text-green-600 hover:bg-green-50 rounded-xl transition-colors">
+                                            <Edit size={18}/>
                                         </button>
                                     </Tooltip>
                                     <Tooltip label="Export as JSON">
-                                        <button onClick={() => onExportTest && onExportTest(row.test_id, row.name)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-indigo-600 hover:bg-indigo-100 dark:hover:text-indigo-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
-                                            <Download size={20}/>
+                                        <button onClick={() => onExportTest && onExportTest(row.test_id, row.name)} className="p-2 text-[#606770] hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors">
+                                            <Download size={18}/>
                                         </button>
                                     </Tooltip>
                                     <Tooltip label="Delete Test">
-                                        <button onClick={() => handleDelete(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-red-600 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
-                                            <Trash2 size={20}/>
+                                        <button onClick={() => handleDelete(row.test_id)} className="p-2 text-[#606770] hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                                            <Trash2 size={18}/>
                                         </button>
                                     </Tooltip>
-                                </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 px-6 bg-white dark:bg-darkCustom-900 dark:border dark:border-darkCustom-700 rounded-lg shadow-sm">
-                        <Inbox size={48} className="mx-auto text-slate-400 dark:text-darkCustom-500"/>
-                        <h3 className="mt-4 text-xl font-semibold text-slate-800 dark:text-darkCustom-100">No tests found</h3>
-                        <p className="mt-1 text-slate-500 dark:text-darkCustom-300">Get started by creating a new test.</p>
+                    <div className="text-center py-20 px-6 bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
+                        <Inbox size={44} className="mx-auto text-[#BEC3C9]"/>
+                        <h3 className="mt-4 text-base font-semibold text-[#1C1E21]">No tests found</h3>
+                        <p className="mt-1 text-sm text-[#65676B]">Get started by creating a new test.</p>
                     </div>
                 )}
             </div>

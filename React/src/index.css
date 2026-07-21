@@ -4,17 +4,41 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-    --color-darkCustom-1000: #070809;
-    --color-darkCustom-900: #111213;
-    --color-darkCustom-800: #181a1b;
-    --color-darkCustom-700: #232527;
-    --color-darkCustom-600: #353739;
-    --color-darkCustom-500: #55585b;
-    --color-darkCustom-400: #7c7f83;
-    --color-darkCustom-300: #999da1;
-    --color-darkCustom-200: #b7bbbe;
-    --color-darkCustom-100: #d9dbdd;
-    --color-darkCustom-50: #f0f1f1;
+    --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+    /* Meta / Business Suite light palette */
+    --color-meta-bg:              #F0F2F5;   /* tło strony */
+    --color-meta-surface:         #FFFFFF;   /* karty, sidebar, panele */
+    --color-meta-surface-hover:   #F2F3F5;   /* hover na kartach / wierszach */
+    --color-meta-border:          #E4E6EB;   /* obramowania */
+    --color-meta-divider:         #CED0D4;   /* separatory */
+    --color-meta-text-primary:    #1C1E21;   /* główny tekst */
+    --color-meta-text-secondary:  #65676B;   /* tekst pomocniczy */
+    --color-meta-text-placeholder:#BEC3C9;   /* placeholder */
+    --color-meta-blue:            #0866FF;   /* akcent Meta blue */
+    --color-meta-blue-hover:      #0757D9;
+    --color-meta-blue-light:      #E7F3FF;   /* tło aktywnego/hovered elementu */
+    --color-meta-green:           #42B72A;
+    --color-meta-red:             #FA383E;
+    --color-meta-icon:            #606770;   /* ikony w sidebarze */
+
+    /* Zachowane dla paneli które jeszcze nie zostały przepisane */
+    --color-darkCustom-900:  #FFFFFF;
+    --color-darkCustom-800:  #F0F2F5;
+    --color-darkCustom-700:  #F2F3F5;
+    --color-darkCustom-600:  #E4E6EB;
+    --color-darkCustom-500:  #BEC3C9;
+    --color-darkCustom-400:  #65676B;
+    --color-darkCustom-300:  #65676B;
+    --color-darkCustom-200:  #1C1E21;
+    --color-darkCustom-100:  #1C1E21;
+    --color-darkCustom-50:   #1C1E21;
+}
+
+body {
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #1C1E21;
+    background-color: #F0F2F5;
 }
 
 .checkbox-wrapper {

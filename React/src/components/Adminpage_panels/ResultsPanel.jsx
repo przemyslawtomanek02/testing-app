@@ -38,12 +38,11 @@ const TopLinearLoader = ({show}) => (
 );
 
 const Skeleton = ({className = ''}) => (
-    <div className={`animate-pulse rounded-md bg-slate-200/70 dark:bg-darkCustom-700/70 ${className}`}/>
+    <div className={`animate-pulse rounded-md bg-[#3A3B3C]/70 ${className}`}/>
 );
 
 const SkeletonListCard = () => (
-    <div
-        className="bg-white dark:bg-darkCustom-900 p-4 rounded-lg shadow-md border-l-4 border-slate-300 dark:border-darkCustom-600">
+    <div className="bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm">
         <Skeleton className="h-5 w-2/3 mb-2"/>
         <Skeleton className="h-4 w-24"/>
     </div>
@@ -60,38 +59,30 @@ const SkeletonGrid = ({count = 6}) => (
 );
 
 const SkeletonParticipants = ({rows = 6, instance}) => (
-    <div className="p-4 max-w-7xl mx-auto card-enter">
-        <header className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
-                <button
-                    className="p-2 rounded-full hover:bg-slate-200 dark:text-darkCustom-50 dark:hover:bg-darkCustom-700 transition-colors"
-                    disabled>
-                    <ChevronLeft/>
+    <div className="p-6 max-w-5xl mx-auto card-enter">
+        <header className="flex justify-between items-center mb-5">
+            <div className="flex items-center gap-3">
+                <button className="p-2 rounded-xl hover:bg-[#F0F2F5] transition-colors" disabled>
+                    <ChevronLeft size={20} className="text-[#606770]"/>
                 </button>
                 <div>
-                    <div className="h-7"><span
-                        className="text-2xl font-bold text-slate-800 dark:text-darkCustom-100">{instance?.instance_name || ''}</span>
-                    </div>
-                    <Skeleton className="h-4 w-32 mt-1"/>
+                    <span className="text-xl font-bold text-[#1C1E21]">{instance?.instance_name || ''}</span>
+                    <Skeleton className="h-4 w-28 mt-1"/>
                 </div>
             </div>
-            <Skeleton className="h-9 w-36"/>
+            <Skeleton className="h-9 w-32"/>
         </header>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {Array.from({length: rows}).map((_, i) => (
-                <div key={i}
-                     className="bg-white dark:bg-darkCustom-900 p-4 rounded-lg shadow-md flex items-center gap-4">
-                    <div className="flex-1">
-                        <Skeleton className="h-5 w-48 mb-2"/>
-                        <Skeleton className="h-4 w-24"/>
-                    </div>
-                    <div className="w-1/3">
-                        <div className="flex justify-between items-baseline mb-1">
-                            <Skeleton className="h-4 w-24"/>
-                            <Skeleton className="h-4 w-10"/>
+                <div key={i} className="bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm">
+                    <div className="flex items-center gap-3 mb-3">
+                        <Skeleton className="h-10 w-10 rounded-full"/>
+                        <div className="flex-1">
+                            <Skeleton className="h-4 w-36 mb-1.5"/>
+                            <Skeleton className="h-3 w-24"/>
                         </div>
-                        <Skeleton className="h-2 w-full"/>
                     </div>
+                    <Skeleton className="h-1.5 w-full rounded-full"/>
                 </div>
             ))}
         </div>
@@ -109,43 +100,43 @@ const SearchHeader = ({
                           setSearchType,
                           resultsCount,
                       }) => (
-    <header
-        className="sticky top-0 z-20 bg-slate-100/80 dark:bg-darkCustom-800 backdrop-blur-sm p-4 border-b border-slate-200 dark:border-darkCustom-700">
-        <div className="lg:max-w-7xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative w-full sm:w-1/2">
-                <Search
-                    className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-darkCustom-200"/>
+    <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-[#E4E6EB] px-6 py-3">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative w-full sm:flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#BEC3C9]"/>
                 <input
-                    className="p-3 pl-12 text-base border-0 bg-white dark:bg-darkCustom-900 text-black dark:text-darkCustom-100 rounded-lg shadow-md w-full focus:ring-2 focus:ring-slate-600 dark:focus:ring-darkCustom-300 outline-none transition-shadow placeholder:text-slate-400 dark:placeholder:text-darkCustom-200"
+                    className="w-full py-2 pl-10 pr-4 text-sm bg-[#F0F2F5] border border-[#E4E6EB] text-[#1C1E21] rounded-xl focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] outline-none transition-all placeholder:text-[#BEC3C9]"
                     type="text"
                     name="results-search-input"
                     id="results-search-input"
-                    placeholder={searchType === 'instances' ? 'Search for instance...' : 'Search for user...'}
+                    placeholder={searchType === 'instances' ? 'Search instances…' : 'Search users…'}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="flex items-center gap-2 p-1.5 bg-slate-200 dark:bg-darkCustom-900 rounded-lg">
+            <div className="flex items-center gap-1 p-1 bg-[#F0F2F5] rounded-xl border border-[#E4E6EB]">
                 <button
                     onClick={() => setSearchType('instances')}
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
-                        searchType === 'instances' ? 'bg-white dark:bg-darkCustom-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-darkCustom-200'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                        searchType === 'instances'
+                            ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]'
+                            : 'text-[#65676B] hover:text-[#1C1E21]'
                     }`}
                 >
-                    <BookOpen size={16}/> Instances
+                    <BookOpen size={15}/> Instances
                 </button>
                 <button
                     onClick={() => setSearchType('users')}
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
-                        searchType === 'users' ? 'bg-white dark:bg-darkCustom-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-darkCustom-200'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                        searchType === 'users'
+                            ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]'
+                            : 'text-[#65676B] hover:text-[#1C1E21]'
                     }`}
                 >
-                    <Users size={16}/> Users
+                    <Users size={15}/> Users
                 </button>
             </div>
-            <div className="flex-grow text-right">
-                <span className="font-bold text-slate-600 dark:text-darkCustom-200">Found: {resultsCount}</span>
-            </div>
+            <span className="text-sm font-medium text-[#65676B] shrink-0">{resultsCount} results</span>
         </div>
     </header>
 );
@@ -155,11 +146,11 @@ const SearchHeader = ({
 // =============================================================
 
 const EmptyState = ({title = 'No Results found', subtitle = 'Search for Instance or User.'}) => (
-    <div className="flex flex-col items-center justify-center w-full h-full">
-        <div className="text-center py-16 px-6 w-2/3 mt-10 bg-white dark:bg-darkCustom-900 rounded-lg shadow-sm">
-            <Inbox size={48} className="mx-auto text-slate-400 dark:text-darkCustom-500"/>
-            <h3 className="mt-4 text-xl font-semibold text-slate-800 dark:text-darkCustom-100">{title}</h3>
-            <p className="mt-1 text-slate-500 dark:text-darkCustom-300">{subtitle}</p>
+    <div className="flex flex-col items-center justify-center w-full h-full px-6">
+        <div className="text-center py-16 px-8 w-full max-w-sm mt-10 bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
+            <Inbox size={44} className="mx-auto text-[#BEC3C9]"/>
+            <h3 className="mt-4 text-base font-semibold text-[#1C1E21]">{title}</h3>
+            <p className="mt-1 text-sm text-[#65676B]">{subtitle}</p>
         </div>
     </div>
 );
@@ -188,88 +179,61 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
 
     const Badge = ({color = 'slate', children}) => {
         const colorClasses = {
-            slate: 'bg-slate-100 text-slate-700 dark:bg-darkCustom-700 dark:text-darkCustom-200',
-            green: 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400',
-            indigo: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400',
-            red: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
+            slate: 'bg-[#F0F2F5] text-[#65676B]',
+            green: 'bg-green-50 text-green-700',
+            indigo: 'bg-[#E7F3FF] text-[#0866FF]',
+            red: 'bg-red-50 text-red-600',
         };
         return (
-            <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${colorClasses[color] || colorClasses.slate}`}>
+            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${colorClasses[color] || colorClasses.slate}`}>
                 {children}
             </span>
         );
     };
 
     const Dot = ({on = false}) => (
-        <span
-            className={`inline-block h-2 w-2 rounded-full ${on ? 'bg-green-500' : 'bg-red-500 dark:bg-red-400'}`}/>
+        <span className={`inline-block h-1.5 w-1.5 rounded-full ${on ? 'bg-green-500' : 'bg-red-500'}`}/>
     );
 
     const InfoItem = ({icon: Icon, children}) => (
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-darkCustom-400">
-            {Icon && <Icon size={14} className="shrink-0"/>}
+        <div className="flex items-center gap-1.5 text-xs text-[#65676B]">
+            {Icon && <Icon size={13} className="shrink-0 text-[#BEC3C9]"/>}
             <span className="truncate">{children}</span>
         </div>
     );
 
     const Card = ({item, index}) => {
-        const key = isInstanceMode
-            ? item.instance_id
-            : item.activity_id || item.user_id;
-
+        const key = isInstanceMode ? item.instance_id : item.activity_id || item.user_id;
         const created = formatDate(item.created_at);
         const updated = formatDate(item.updated_at || item.last_activity_at);
-
-        // Uczestnicy / metryki instancji (opcjonalnie)
         const participants = item.participants_count ?? item.users_count ?? item.participants?.length ?? null;
-
-        // Wyniki (opcjonalnie)
         const avg = item.avg_score ?? item.average_score ?? null;
-        const max = item.max_score ?? item.high_score ?? null;
-
-        // Użytkownik – dane opcjonalne
         const fullName = item.user_surname && item.user_name ? `${item.user_surname} ${item.user_name}` : item.full_name;
-        const initials =
-            (item.user_surname?.[0] || item.surname?.[0] || '') + (item.user_name?.[0] || item.name?.[0] || '');
-
+        const initials = (item.user_surname?.[0] || item.surname?.[0] || '') + (item.user_name?.[0] || item.name?.[0] || '');
         const handleClick = () => (isInstanceMode ? onInstanceClick(item) : onUserClick(item));
 
         return (
             <div
                 key={key}
                 onClick={handleClick}
-                className={`card-enter group relative bg-white dark:bg-darkCustom-900 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-slate-100 dark:border-darkCustom-700 ${
-                    isInstanceMode
-                        ? (item.is_active
-                            ? 'outline-1 outline-green-400/50 dark:outline-green-500/30'
-                            : 'outline-1 outline-red-400/50 dark:outline-red-500/30')
-                        : ''
-                }`}
-                style={{animationDelay: `${index * 50}ms`}}
+                className="card-enter bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                style={{animationDelay: `${index * 40}ms`}}
             >
-                {/* HEADER */}
                 <div className="flex items-start gap-3">
-                    {/* Avatar / Initials (dla userów) */}
                     {!isInstanceMode && (
                         item.photo_url ? (
-                            <img
-                                src={item.photo_url}
-                                alt={fullName || item.login}
-                                className="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-darkCustom-900 shadow-sm"
-                            />
+                            <img src={item.photo_url} alt={fullName || item.login}
+                                 className="h-10 w-10 rounded-full object-cover"/>
                         ) : (
-                            <div
-                                className="h-10 w-10 rounded-full bg-slate-200 dark:bg-darkCustom-700 text-slate-700 dark:text-darkCustom-200 flex items-center justify-center font-bold ring-2 ring-white dark:ring-darkCustom-900 shadow-sm">
-                                <span>{initials || 'U'}</span>
+                            <div className="h-10 w-10 rounded-full bg-[#E7F3FF] text-[#0866FF] flex items-center justify-center font-semibold text-sm shrink-0">
+                                {initials || 'U'}
                             </div>
                         )
                     )}
 
                     <div className="min-w-0 flex-1">
-                        {/* Tytuł */}
-                        <div className="flex items-center gap-2 w-full justify-between">
-                            <p className="font-bold text-slate-800 dark:text-darkCustom-100 truncate">
+                        <div className="flex items-center justify-between gap-2">
+                            <p className="font-semibold text-[#1C1E21] text-[14px] truncate">
                                 {isInstanceMode ? item.instance_name : fullName}
                             </p>
                             {isInstanceMode ? (
@@ -279,54 +243,39 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
                                     </span>
                                 </Badge>
                             ) : (
-                                item.role &&
-                                <Badge color={item.role === 'admin' ? 'indigo' : 'slate'}>{item.role}</Badge>
+                                item.role && <Badge color={item.role === 'admin' ? 'indigo' : 'slate'}>{item.role}</Badge>
                             )}
                         </div>
 
-                        {/* Druga linia tytułu */}
-                        <div className="mt-1 flex flex-col items-start gap-1">
+                        <div className="mt-1.5 flex flex-col gap-0.5">
                             {isInstanceMode ? (
                                 <>
-                                    {created && (
-                                        <InfoItem icon={CalendarDays}>Created: {created}</InfoItem>
-                                    )}
-                                    {updated && (
-                                        <InfoItem icon={Activity}>Updated: {updated}</InfoItem>
-                                    )}
-                                    {participants != null && (
-                                        <InfoItem icon={Users}>Participants: {participants}</InfoItem>
-                                    )}
-                                    {avg != null && max != null && (
-                                        <InfoItem icon={Percent}>Avg: {fmt2(avg)}</InfoItem>
-                                    )}
+                                    {created && <InfoItem icon={CalendarDays}>Created: {created}</InfoItem>}
+                                    {updated && <InfoItem icon={Activity}>Last activity: {updated}</InfoItem>}
+                                    {participants != null && <InfoItem icon={Users}>Participants: {participants}</InfoItem>}
+                                    {avg != null && <InfoItem icon={Percent}>Avg score: {fmt2(avg)}</InfoItem>}
                                 </>
                             ) : (
                                 <>
-                                    {item.user_index && config.use_index &&
-                                        <InfoItem icon={Hash}>Index: {item.user_index}</InfoItem>}
-                                    {updated && <InfoItem icon={Activity}>Active: {updated}</InfoItem>}
+                                    {item.user_index && config.use_index && <InfoItem icon={Hash}>Index: {item.user_index}</InfoItem>}
+                                    {updated && <InfoItem icon={Activity}>Last active: {updated}</InfoItem>}
                                 </>
                             )}
                         </div>
                     </div>
                 </div>
 
-                {/* STOPKA KARTY — opcjonalny progress/metryki instancji */}
                 {isInstanceMode && (typeof item.completed_ratio === 'number' || typeof item.progress === 'number') && (
-                    <div className="mt-4">
-                        <div
-                            className="flex items-center justify-between text-xs text-slate-500 dark:text-darkCustom-400 mb-1">
+                    <div className="mt-3">
+                        <div className="flex items-center justify-between text-xs text-[#65676B] mb-1">
                             <span>Completion</span>
-                            <span className="font-semibold text-slate-700 dark:text-darkCustom-200">
-                            {Math.round((item.completed_ratio ?? item.progress) * 100)}%
-                          </span>
+                            <span className="font-semibold text-[#1C1E21]">
+                                {Math.round((item.completed_ratio ?? item.progress) * 100)}%
+                            </span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-darkCustom-700">
-                            <div
-                                className="h-2 rounded-full bg-slate-700 dark:bg-darkCustom-200"
-                                style={{width: `${Math.round((item.completed_ratio ?? item.progress) * 100)}%`}}
-                            />
+                        <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
+                            <div className="h-1.5 rounded-full bg-[#0866FF]"
+                                 style={{width: `${Math.round((item.completed_ratio ?? item.progress) * 100)}%`}}/>
                         </div>
                     </div>
                 )}
@@ -335,8 +284,8 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
     };
 
     return (
-        <div className="p-4 max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="p-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {results.map((item, index) => (
                     <Card key={(isInstanceMode ? item.instance_id : item.activity_id || item.user_id) ?? index}
                           item={item} index={index}/>
@@ -461,140 +410,128 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
     const Avatar = ({user}) => {
         const initials = `${user.user_surname?.[0] || ''}${user.user_name?.[0] || ''}` || 'U';
         return (
-            <div
-                className="h-10 w-10 rounded-full bg-slate-200 dark:bg-darkCustom-700 text-slate-700 dark:text-darkCustom-50 flex items-center justify-center font-bold ring-2 ring-white dark:ring-darkCustom-900 shadow-sm">
+            <div className="h-10 w-10 rounded-full bg-[#E7F3FF] text-[#0866FF] flex items-center justify-center font-semibold text-sm shrink-0">
                 {initials}
             </div>
         );
     };
 
     return (
-        <div className="p-4 max-w-7xl mx-auto card-enter">
+        <div className="p-6 max-w-5xl mx-auto card-enter">
             {/* HEADER */}
-            <header className="mb-4">
+            <header className="mb-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                         <button onClick={onBack}
-                                className="p-2 rounded-full hover:bg-slate-200 dark:text-darkCustom-50 dark:hover:bg-darkCustom-700 transition-colors">
-                            <ChevronLeft/>
+                                className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
+                            <ChevronLeft size={20}/>
                         </button>
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-50">{instance.instance_name}</h2>
-                            <div className="mt-1 text-slate-500 dark:text-darkCustom-200">Participants: {users.length}</div>
+                            <h2 className="text-xl font-bold text-[#1C1E21]">{instance.instance_name}</h2>
+                            <p className="text-sm text-[#65676B] mt-0.5">Participants: {users.length}</p>
                         </div>
                     </div>
 
-                    {/* Sort + Download — only in participants tab */}
                     {activeTab === 'participants' && users.length > 0 && (
-                        <div className="w-full flex flex-row md:w-auto gap-3">
-                            <div className="flex items-center justify-between">
-                                <div className="relative" ref={menuRef}>
-                                    <button
-                                        type="button"
-                                        onClick={() => setOpenSort((v) => !v)}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-darkCustom-600 bg-white dark:bg-darkCustom-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-darkCustom-50 hover:bg-slate-50 dark:hover:bg-darkCustom-800"
-                                    >
-                                        <ArrowUpDown size={16}/>
-                                        <span className="truncate max-w-[14rem]">{currentSortLabel}</span>
-                                        <ChevronDown size={16} className={`transition-transform ${openSort ? 'rotate-180' : ''}`}/>
-                                    </button>
-                                    <AnimatePresence>
-                                        {openSort && (
-                                            <motion.div
-                                                initial={{opacity: 0, y: -5}} animate={{opacity: 1, y: 0}}
-                                                exit={{opacity: 0, y: -5}}
-                                                className="absolute z-20 mt-2 w-64 rounded-xl border border-slate-200 dark:border-darkCustom-700 bg-white dark:bg-darkCustom-900 p-1 shadow-lg ring-1 ring-black/5">
-                                                {sortOptions.map((opt) => {
-                                                    const active = opt.value === sortKey;
-                                                    return (
-                                                        <button
-                                                            key={opt.value}
-                                                            onClick={() => { setSortKey(opt.value); setOpenSort(false); }}
-                                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${active ? 'bg-slate-100 dark:bg-darkCustom-800 text-slate-900 dark:text-darkCustom-50' : 'text-slate-700 dark:text-darkCustom-200 hover:bg-slate-50 dark:hover:bg-darkCustom-800'}`}
-                                                        >
-                                                            <span className="truncate">{opt.label}</span>
-                                                            {active && <Check size={16} className="text-slate-700 dark:text-darkCustom-200"/>}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
+                        <div className="flex gap-2">
+                            <div className="relative" ref={menuRef}>
+                                <button
+                                    type="button"
+                                    onClick={() => setOpenSort((v) => !v)}
+                                    className="inline-flex items-center gap-2 rounded-xl border border-[#E4E6EB] bg-white px-3 py-2 text-sm font-medium text-[#1C1E21] hover:bg-[#F0F2F5] transition-colors shadow-sm"
+                                >
+                                    <ArrowUpDown size={15}/>
+                                    <span className="truncate max-w-[12rem]">{currentSortLabel}</span>
+                                    <ChevronDown size={15} className={`transition-transform text-[#65676B] ${openSort ? 'rotate-180' : ''}`}/>
+                                </button>
+                                <AnimatePresence>
+                                    {openSort && (
+                                        <motion.div
+                                            initial={{opacity: 0, y: -5}} animate={{opacity: 1, y: 0}}
+                                            exit={{opacity: 0, y: -5}}
+                                            className="absolute z-20 mt-2 w-56 rounded-2xl border border-[#E4E6EB] bg-white p-1 shadow-xl">
+                                            {sortOptions.map((opt) => {
+                                                const active = opt.value === sortKey;
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        onClick={() => { setSortKey(opt.value); setOpenSort(false); }}
+                                                        className={`w-full text-left px-3 py-2 rounded-xl text-sm flex items-center justify-between transition-colors ${active ? 'bg-[#E7F3FF] text-[#0866FF]' : 'text-[#1C1E21] hover:bg-[#F0F2F5]'}`}
+                                                    >
+                                                        <span>{opt.label}</span>
+                                                        {active && <Check size={15}/>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
-                            <div className="md:text-right">
-                                <DownloadResultButton id={instance.instance_id} entityType="instance"/>
-                            </div>
+                            <DownloadResultButton id={instance.instance_id} entityType="instance"/>
                         </div>
                     )}
                 </div>
             </header>
 
             {/* TABS */}
-            <div className="flex gap-1 mb-4 bg-slate-100 dark:bg-darkCustom-700 p-1 rounded-lg w-fit">
+            <div className="flex gap-1 mb-5 bg-[#F0F2F5] p-1 rounded-xl w-fit border border-[#E4E6EB]">
                 <button
                     onClick={() => setActiveTab('participants')}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'participants' ? 'bg-white dark:bg-darkCustom-900 text-slate-800 dark:text-darkCustom-50 shadow-sm' : 'text-slate-500 dark:text-darkCustom-400 hover:text-slate-700 dark:hover:text-darkCustom-200'}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'participants' ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]' : 'text-[#65676B] hover:text-[#1C1E21]'}`}
                 >
-                    <Users size={15}/> Participants
+                    <Users size={14}/> Participants
                 </button>
                 <button
                     onClick={() => setActiveTab('stats')}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'stats' ? 'bg-white dark:bg-darkCustom-900 text-slate-800 dark:text-darkCustom-50 shadow-sm' : 'text-slate-500 dark:text-darkCustom-400 hover:text-slate-700 dark:hover:text-darkCustom-200'}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'stats' ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]' : 'text-[#65676B] hover:text-[#1C1E21]'}`}
                 >
-                    <BarChart2 size={15}/> Statistics
+                    <BarChart2 size={14}/> Statistics
                 </button>
             </div>
 
-            {/* LISTA UCZESTNIKÓW */}
+            {/* PARTICIPANTS */}
             {activeTab === 'participants' && (
                 users.length === 0 ? (
-                    <div className="text-center p-16 text-slate-500 dark:text-darkCustom-400">
-                        <Users className="mx-auto h-12 w-12 mb-4"/>
-                        <p>This test instance has no participants yet.</p>
-                    </div>
+                    <EmptyState title="No participants yet" subtitle="This test instance has no participants."/>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {viewUsers.map((user) => {
                             const score = Number(user.score) || 0;
                             const maxScore = Number(user.max_score) || 0;
                             const percent = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-                            const bar = percent >= 80 ? 'bg-green-500' : percent >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+                            const bar = percent >= 80 ? 'bg-green-500' : percent >= 50 ? 'bg-amber-400' : 'bg-red-500';
 
                             return (
                                 <div
                                     key={user.activity_id || `${user.user_id}-${user.user_index}`}
                                     onClick={() => onUserClick(user, {fromInstance: true})}
-                                    className="bg-white dark:bg-darkCustom-900 p-4 rounded-xl border border-slate-200 dark:border-darkCustom-700 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+                                    className="bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex items-start gap-3 min-w-0">
                                             <Avatar user={user}/>
                                             <div className="min-w-0">
-                                                <p className="font-semibold text-slate-800 dark:text-darkCustom-50 truncate">
+                                                <p className="font-semibold text-[#1C1E21] text-[14px] truncate">
                                                     {user.user_surname} {user.user_name}
                                                 </p>
-                                                <div className="mt-1 flex items-center gap-3 text-xs text-slate-500 dark:text-darkCustom-200">
+                                                <div className="mt-1 flex items-center gap-3 text-xs text-[#65676B]">
                                                     {config?.use_index && user.user_index && (
                                                         <span className="inline-flex items-center gap-1">
-                                                            <Hash className="h-3.5 w-3.5"/> Index: {user.user_index}
+                                                            <Hash className="h-3 w-3 text-[#BEC3C9]"/> {user.user_index}
                                                         </span>
                                                     )}
-                                                    <span className="inline-flex items-center gap-1">
-                                                        <Percent className="h-3.5 w-3.5"/>
-                                                        {fmt2(score)} / {fmt2(maxScore)} pts
-                                                    </span>
+                                                    <span>{fmt2(score)} / {fmt2(maxScore)} pts</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right shrink-0">
-                                            <div className={`text-sm font-bold ${getPercentColor(percent)}`}>{percent}%</div>
-                                            <ArrowRight className="text-slate-400 dark:text-darkCustom-50 inline-block mt-1" size={18}/>
+                                        <div className="text-right shrink-0 flex items-center gap-2">
+                                            <span className={`text-sm font-bold ${getPercentColor(percent)}`}>{percent}%</span>
+                                            <ArrowRight className="text-[#BEC3C9]" size={16}/>
                                         </div>
                                     </div>
                                     <div className="mt-3">
-                                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-darkCustom-700">
-                                            <div className={`h-2 rounded-full ${bar}`} style={{width: `${percent}%`}}/>
+                                        <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
+                                            <div className={`h-1.5 rounded-full ${bar}`} style={{width: `${percent}%`}}/>
                                         </div>
                                     </div>
                                 </div>
@@ -604,53 +541,51 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
                 )
             )}
 
-            {/* STATISTICS TAB */}
+            {/* STATISTICS */}
             {activeTab === 'stats' && (
                 questionStatsLoading ? (
                     <div className="flex items-center justify-center p-16">
-                        <Loader className="animate-spin h-8 w-8 text-slate-400 dark:text-darkCustom-500"/>
+                        <Loader className="animate-spin h-8 w-8 text-[#BEC3C9]"/>
                     </div>
                 ) : !questionStats || questionStats.length === 0 ? (
                     <EmptyState title="No statistics yet" subtitle="Statistics appear once students complete the test."/>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {questionStats.map((q, idx) => (
-                            <div key={q.question_id} className="bg-white dark:bg-darkCustom-900 rounded-xl border border-slate-200 dark:border-darkCustom-700 shadow-sm p-5">
+                            <div key={q.question_id} className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-5">
                                 <div className="flex items-start justify-between gap-4 mb-3">
                                     <div className="min-w-0">
-                                        <p className="text-xs font-semibold text-slate-400 dark:text-darkCustom-500 uppercase tracking-wider mb-1">
+                                        <p className="text-xs font-semibold text-[#BEC3C9] uppercase tracking-wider mb-1">
                                             Q{idx + 1} · {q.question_type}
                                         </p>
-                                        <p className="font-semibold text-slate-800 dark:text-darkCustom-50">{q.question_text}</p>
+                                        <p className="font-semibold text-[#1C1E21] text-[14px]">{q.question_text}</p>
                                     </div>
                                     <div className="text-right shrink-0">
                                         <p className={`text-2xl font-bold ${getPercentColor(q.correct_percent)}`}>
                                             {q.correct_percent}%
                                         </p>
-                                        <p className="text-xs text-slate-400 dark:text-darkCustom-500">
-                                            {q.correct_count}/{q.total_responses} correct
-                                        </p>
+                                        <p className="text-xs text-[#65676B]">{q.correct_count}/{q.total_responses} correct</p>
                                     </div>
                                 </div>
-                                <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-darkCustom-700 mb-4">
+                                <div className="h-1.5 w-full rounded-full bg-[#F0F2F5] mb-4">
                                     <div
-                                        className={`h-2 rounded-full transition-all ${q.correct_percent >= 80 ? 'bg-green-500' : q.correct_percent >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                                        className={`h-1.5 rounded-full transition-all ${q.correct_percent >= 80 ? 'bg-green-500' : q.correct_percent >= 50 ? 'bg-amber-400' : 'bg-red-500'}`}
                                         style={{width: `${q.correct_percent}%`}}
                                     />
                                 </div>
                                 {q.answers && q.answers.length > 0 && (
-                                    <div className="space-y-2 mt-3 border-t border-slate-100 dark:border-darkCustom-700 pt-3">
+                                    <div className="space-y-2 mt-3 border-t border-[#E4E6EB] pt-3">
                                         {q.answers.map(a => (
                                             <div key={a.answer_id} className="flex items-center gap-3">
-                                                <span className={`flex-shrink-0 h-3 w-3 rounded-sm ${a.is_correct ? 'bg-green-500' : 'bg-slate-300 dark:bg-darkCustom-600'}`}/>
+                                                <span className={`flex-shrink-0 h-2.5 w-2.5 rounded-sm ${a.is_correct ? 'bg-green-500' : 'bg-[#E4E6EB]'}`}/>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between items-center text-xs mb-0.5">
-                                                        <span className="text-slate-600 dark:text-darkCustom-300 truncate">{a.text}</span>
-                                                        <span className="text-slate-400 dark:text-darkCustom-500 ml-2 shrink-0">{a.chosen_count} ({a.chosen_percent}%)</span>
+                                                    <div className="flex justify-between items-center text-xs mb-1">
+                                                        <span className="text-[#1C1E21] truncate">{a.text}</span>
+                                                        <span className="text-[#65676B] ml-2 shrink-0">{a.chosen_count} ({a.chosen_percent}%)</span>
                                                     </div>
-                                                    <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-darkCustom-700">
+                                                    <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
                                                         <div
-                                                            className={`h-1.5 rounded-full ${a.is_correct ? 'bg-green-500' : 'bg-slate-400 dark:bg-darkCustom-500'}`}
+                                                            className={`h-1.5 rounded-full ${a.is_correct ? 'bg-green-500' : 'bg-[#CED0D4]'}`}
                                                             style={{width: `${a.chosen_percent}%`}}
                                                         />
                                                     </div>
@@ -683,60 +618,52 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
     }, [userDetails]);
 
     return (
-        <div className="p-4 max-w-7xl mx-auto card-enter">
-            <header className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-4">
-                    <button onClick={onBack}
-                            className="p-2 rounded-full dark:text-darkCustom-50 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors">
-                        <ChevronLeft/>
+        <div className="p-6 max-w-5xl mx-auto card-enter">
+            <header className="flex justify-between items-center mb-5">
+                <div className="flex items-center gap-3">
+                    <button onClick={onBack} className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
+                        <ChevronLeft size={20}/>
                     </button>
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-50">
+                        <h2 className="text-xl font-bold text-[#1C1E21]">
                             {userDetails.user_name} {userDetails.user_surname}
                         </h2>
-
-                        {config.use_index && userDetails.user_index && (
-                            <span
-                                className="text-slate-500 dark:text-darkCustom-200">Index: {userDetails.user_index} |&nbsp;</span>
-                        )}
-                        <span
-                            className="text-slate-500 dark:text-darkCustom-200">Instance: {userDetails.instance_name}</span>
-
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="text-right">
-                        <p className={`text-xl font-bold ${getPercentColor(percent)}`}>{percent}%</p>
-                        <p className="text-sm text-slate-500 dark:text-darkCustom-200">
-                            {fmt2(userDetails.user_score)} / {fmt2(userDetails.max_score_for_activity)} pts
+                        <p className="text-sm text-[#65676B] mt-0.5">
+                            {config.use_index && userDetails.user_index && `Index: ${userDetails.user_index} · `}
+                            {userDetails.instance_name}
                         </p>
                     </div>
-                    {/*<DownloadResultButton id={user.activity_id} entityType="user"/>*/}
+                </div>
+                <div className="text-right bg-white rounded-2xl border border-[#E4E6EB] shadow-sm px-4 py-2">
+                    <p className={`text-2xl font-bold ${getPercentColor(percent)}`}>{percent}%</p>
+                    <p className="text-xs text-[#65676B]">
+                        {fmt2(userDetails.user_score)} / {fmt2(userDetails.max_score_for_activity)} pts
+                    </p>
                 </div>
             </header>
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {userDetails.questions.map((q, index) => {
                     const isCorrect = q.points_collected === q.points_value;
                     const isExpanded = expandedQuestions.includes(q.question_id);
 
                     return (
-                        <div key={q.question_id}
-                             className="bg-white dark:bg-darkCustom-900 rounded-lg shadow-md overflow-hidden">
+                        <div key={q.question_id} className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm overflow-hidden">
                             <div
-                                className="p-4 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-darkCustom-700"
+                                className="px-5 py-4 flex justify-between items-center cursor-pointer hover:bg-[#F0F2F5] transition-colors"
                                 onClick={() => toggleQuestion(q.question_id)}>
-                                <div className="flex items-center gap-3">
-                                    {isCorrect ? <Check className="h-5 w-5 text-green-500 shrink-0"/> :
-                                        <X className="h-5 w-5 text-red-500 shrink-0"/>}
-                                    <p className="font-semibold text-slate-800 dark:text-darkCustom-100">Q{index + 1}: {q.question_text}</p>
+                                <div className="flex items-center gap-3 min-w-0">
+                                    {isCorrect
+                                        ? <div className="h-6 w-6 rounded-full bg-green-50 flex items-center justify-center shrink-0"><Check className="h-3.5 w-3.5 text-green-600"/></div>
+                                        : <div className="h-6 w-6 rounded-full bg-red-50 flex items-center justify-center shrink-0"><X className="h-3.5 w-3.5 text-red-500"/></div>
+                                    }
+                                    <p className="font-medium text-[#1C1E21] text-[14px] truncate">Q{index + 1}: {q.question_text}</p>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                      <span
-                                          className={`font-bold text-sm ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                <div className="flex items-center gap-3 shrink-0 ml-4">
+                                    <span className={`font-semibold text-sm ${isCorrect ? 'text-green-600' : 'text-red-500'}`}>
                                         {fmt2(q.points_collected)} / {fmt2(q.points_value)} pts
-                                      </span>
+                                    </span>
                                     <motion.div animate={{rotate: isExpanded ? 180 : 0}}>
-                                        <ChevronDown className="h-5 w-5 text-slate-400 dark:text-darkCustom-500"/>
+                                        <ChevronDown className="h-4 w-4 text-[#BEC3C9]"/>
                                     </motion.div>
                                 </div>
                             </div>
@@ -748,22 +675,19 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
                                         initial={{height: 0, opacity: 0}}
                                         animate={{height: 'auto', opacity: 1}}
                                         exit={{height: 0, opacity: 0}}
-                                        transition={{duration: 0.3, ease: 'easeInOut'}}
+                                        transition={{duration: 0.25, ease: 'easeInOut'}}
                                         className="overflow-hidden"
                                     >
-                                        <div
-                                            className="p-4 border-t border-slate-200 dark:border-darkCustom-700 grid md:grid-cols-2 gap-4 text-sm">
+                                        <div className="px-5 py-4 border-t border-[#E4E6EB] grid md:grid-cols-2 gap-4 text-sm bg-[#F0F2F5]/50">
                                             <div>
-                                                <p className="font-semibold text-slate-500 dark:text-darkCustom-400 mb-2">Your
-                                                    Answer</p>
-                                                <div className="p-2 rounded">
+                                                <p className="font-semibold text-[#65676B] text-xs uppercase tracking-wider mb-2">Your Answer</p>
+                                                <div className="bg-white rounded-xl p-3 border border-[#E4E6EB]">
                                                     <RenderUserAnswer result={q}/>
                                                 </div>
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-slate-500 dark:text-darkCustom-400 mb-2">Correct
-                                                    Answer</p>
-                                                <div className="p-2 rounded">
+                                                <p className="font-semibold text-[#65676B] text-xs uppercase tracking-wider mb-2">Correct Answer</p>
+                                                <div className="bg-white rounded-xl p-3 border border-[#E4E6EB]">
                                                     <RenderCorrectAnswer result={q}/>
                                                 </div>
                                             </div>
@@ -796,38 +720,34 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
     }, [history]);
 
     const Stat = ({label, value}) => (
-        <div className="rounded-lg bg-white dark:bg-darkCustom-900 px-3 py-2 text-center">
-            <div className="text-xs text-slate-500 dark:text-darkCustom-400">{label}</div>
-            <div className="text-base font-semibold text-slate-800 dark:text-darkCustom-100">{value}</div>
+        <div className="rounded-2xl bg-white border border-[#E4E6EB] shadow-sm px-4 py-2 text-center">
+            <div className="text-xs text-[#65676B]">{label}</div>
+            <div className="text-base font-bold text-[#1C1E21]">{value}</div>
         </div>
     );
 
     const StatusPill = ({finished}) => (
-        <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
-                finished ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-400'
-            }`}
-        >
-      {finished ? (
-          <span className="inline-flex items-center gap-1"><Check size={14}/> Finished</span>
-      ) : (
-          <span className="inline-flex items-center gap-1"><X size={14}/> In&nbsp;Progress</span>
-      )}
-    </span>
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+            finished ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
+        }`}>
+            {finished
+                ? <><Check size={12}/> Finished</>
+                : <><X size={12}/> In Progress</>
+            }
+        </span>
     );
 
     if (!Array.isArray(history) || history.length === 0) {
         return (
-            <div className="p-4 max-w-7xl mx-auto card-enter">
-                <header className="flex items-center gap-4 mb-6">
-                    <button onClick={onBack}
-                            className="p-2 rounded-full dark:text-darkCustom-50 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors">
-                        <ChevronLeft/>
+            <div className="p-6 max-w-5xl mx-auto card-enter">
+                <header className="flex items-center gap-3 mb-5">
+                    <button onClick={onBack} className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
+                        <ChevronLeft size={20}/>
                     </button>
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-100">{user.user_surname} {user.user_name}</h2>
+                        <h2 className="text-xl font-bold text-[#1C1E21]">{user.user_surname} {user.user_name}</h2>
                         {config?.use_index && user.user_index && (
-                            <p className="text-slate-500 dark:text-darkCustom-400">Index: {user.user_index}</p>
+                            <p className="text-sm text-[#65676B]">Index: {user.user_index}</p>
                         )}
                     </div>
                 </header>
@@ -837,25 +757,18 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
     }
 
     return (
-        <div className="p-4 max-w-7xl mx-auto card-enter">
-            {/* Header */}
-            <header className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                    <button onClick={onBack}
-                            className="p-2 rounded-full dark:text-darkCustom-50 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors">
-                        <ChevronLeft/>
+        <div className="p-6 max-w-5xl mx-auto card-enter">
+            <header className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                    <button onClick={onBack} className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
+                        <ChevronLeft size={20}/>
                     </button>
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-100">
-                            {user.user_surname} {user.user_name}
-                        </h2>
-                        <div className="mt-0.5 flex items-center gap-3 text-sm text-slate-500 dark:text-darkCustom-400">
-                            {config?.use_index && user.user_index && (
-                                <span className="text-slate-500">Index: {user.user_index}</span>
-                            )}
-                            <span className="text-slate-300 dark:text-darkCustom-600">•</span>
-                            <span>Attempts: {attempts}</span>
-                        </div>
+                        <h2 className="text-xl font-bold text-[#1C1E21]">{user.user_surname} {user.user_name}</h2>
+                        <p className="text-sm text-[#65676B] mt-0.5">
+                            {config?.use_index && user.user_index && `Index: ${user.user_index} · `}
+                            {attempts} {attempts === 1 ? 'attempt' : 'attempts'}
+                        </p>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -864,7 +777,6 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
                 </div>
             </header>
 
-            {/* Attempts list */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {history.map((item) => {
                     const s = Number(item.score) || 0;
@@ -875,39 +787,32 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
                         <div
                             key={item.activity_id}
                             onClick={() => onInstanceClick(item)}
-                            className="bg-white dark:bg-darkCustom-900 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 cursor-pointer border border-slate-100 dark:border-darkCustom-700"
+                            className="bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                    <p className="font-semibold text-slate-800 dark:text-darkCustom-100 truncate">{item.instance_name}</p>
-                                    <div
-                                        className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-darkCustom-400">
+                                    <p className="font-semibold text-[#1C1E21] text-[14px] truncate">{item.instance_name}</p>
+                                    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-[#65676B]">
                                         <span className="inline-flex items-center gap-1">
-                                            <CalendarDays size={14}/> {formatDate(item.timestamp)}
+                                            <CalendarDays size={12} className="text-[#BEC3C9]"/> {formatDate(item.timestamp)}
                                         </span>
-                                        <span className="text-slate-300 dark:text-darkCustom-600">•</span>
-                                        <span className="inline-flex items-center gap-1">
-                                            <Percent size={14}/> {fmt2(s)} / {fmt2(m)} pts
-                                        </span>
-                                        <span className="text-slate-300 dark:text-darkCustom-600">•</span>
+                                        <span className="text-[#CED0D4]">·</span>
+                                        <span>{fmt2(s)} / {fmt2(m)} pts</span>
+                                        <span className="text-[#CED0D4]">·</span>
                                         <StatusPill finished={item.is_finished}/>
                                     </div>
                                 </div>
-                                <ArrowRight className="text-slate-400 dark:text-darkCustom-100 shrink-0" size={18}/>
+                                <ArrowRight className="text-[#BEC3C9] shrink-0" size={16}/>
                             </div>
 
                             <div className="mt-3">
-                                <div
-                                    className="flex items-center justify-between text-xs text-slate-500 dark:text-darkCustom-400 mb-1">
+                                <div className="flex items-center justify-between text-xs text-[#65676B] mb-1">
                                     <span>Score</span>
-                                    <span
-                                        className="font-semibold text-slate-700 dark:text-darkCustom-200">{pct}%</span>
+                                    <span className="font-semibold text-[#1C1E21]">{pct}%</span>
                                 </div>
-                                <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-darkCustom-700">
+                                <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
                                     <div
-                                        className={`h-2 rounded-full ${
-                                            pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                                        }`}
+                                        className={`h-1.5 rounded-full ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-amber-400' : 'bg-red-500'}`}
                                         style={{width: `${pct}%`}}
                                     />
                                 </div>
@@ -1151,7 +1056,7 @@ function ResultsPanel({reset}) {
     };
 
     return (
-        <div className="bg-slate-100 dark:bg-darkCustom-800 min-h-full">
+        <div className="bg-[#F0F2F5] min-h-full">
             <style>{`.card-enter { animation: fadeInUp 0.4s ease-out both; } @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
             <TopLinearLoader show={loading}/>
