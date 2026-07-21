@@ -271,6 +271,98 @@ async def detail_user_info(
 
     return payload
 
+@router.get("/instance_question_stats/{instance_id}")
+async def get_instance_question_stats(
+        instance_id: str,
+        db: AsyncSession = Depends(get_session),
+        is_user_admin: bool = Depends(is_admin)
+):
+    """Pobiera statystyki per pytanie dla instancji testu."""
+    stmt = (
+        select(
+            R.result_id,
+            R.question_id,
+            R.user_response,
+            R.points_collected,
+            Q.question_text,
+            Q.question_type,
+            Q.points_value,
+        )
+        .join(UA, R.user_activity_id == UA.activity_id)
+        .join(Q, R.question_id == Q.question_id)
+        .where(UA.instance_id == instance_id)
+    )
+    rows = (await db.execute(stmt)).mappings().all()
+
+    if not rows:
+        return []
+
+    question_ids = list({row["question_id"] for row in rows})
+
+    ans_stmt = (
+        select(A.answer_id, A.question_id, A.answer_text, A.is_correct)
+        .where(A.question_id.in_(question_ids), A.is_active == True)
+    )
+    answers_by_question: Dict[str, list] = {}
+    for a in (await db.execute(ans_stmt)).mappings().all():
+        answers_by_question.setdefault(a["question_id"], []).append(a)
+
+    questions_map: Dict[str, Any] = {}
+    for row in rows:
+        q_id = row["question_id"]
+        if q_id not in questions_map:
+            questions_map[q_id] = {
+                "question_text": row["question_text"],
+                "question_type": row["question_type"],
+                "points_value": float(row["points_value"] or 0),
+                "total_responses": 0,
+                "correct_count": 0,
+                "answer_pick_counts": {},
+            }
+        q_stats = questions_map[q_id]
+        q_stats["total_responses"] += 1
+
+        pts = float(row["points_collected"] or 0)
+        max_pts = float(row["points_value"] or 0)
+        if max_pts > 0 and pts >= max_pts:
+            q_stats["correct_count"] += 1
+
+        if row["question_type"] in ("SingleChoice", "MultipleChoice"):
+            user_resp = row["user_response"]
+            if isinstance(user_resp, list):
+                for item in user_resp:
+                    if isinstance(item, dict):
+                        aid = item.get("answer_id")
+                        if aid:
+                            q_stats["answer_pick_counts"][aid] = q_stats["answer_pick_counts"].get(aid, 0) + 1
+
+    result_list = []
+    for q_id, q_stats in questions_map.items():
+        total = q_stats["total_responses"]
+        answers_info = []
+        for a in answers_by_question.get(q_id, []):
+            chosen = q_stats["answer_pick_counts"].get(a["answer_id"], 0)
+            answers_info.append({
+                "answer_id": a["answer_id"],
+                "text": a["answer_text"],
+                "is_correct": bool(a["is_correct"]),
+                "chosen_count": chosen,
+                "chosen_percent": round(chosen / total * 100, 1) if total > 0 else 0.0,
+            })
+        result_list.append({
+            "question_id": q_id,
+            "question_text": q_stats["question_text"],
+            "question_type": q_stats["question_type"],
+            "points_value": q_stats["points_value"],
+            "total_responses": total,
+            "correct_count": q_stats["correct_count"],
+            "correct_percent": round(q_stats["correct_count"] / total * 100, 1) if total > 0 else 0.0,
+            "answers": answers_info,
+        })
+
+    return result_list
+
+
 def instance_aggregates():
     ua = UA
     return (

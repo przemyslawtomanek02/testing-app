@@ -15,7 +15,10 @@ import {
     ArrowRight,
     CalendarDays,
     Activity,
-    ArrowUpDown, Percent,
+    ArrowUpDown,
+    Percent,
+    BarChart2,
+    Loader,
 } from 'lucide-react';
 import DownloadResultButton from '../Reusable/DownloadResultButton.jsx';
 import {useAppContext} from '../../AppContext.jsx';
@@ -351,7 +354,27 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
 const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => {
     const [sortKey, setSortKey] = useState('percentDesc');
     const [openSort, setOpenSort] = useState(false);
+    const [activeTab, setActiveTab] = useState('participants');
+    const [questionStats, setQuestionStats] = useState(null);
+    const [questionStatsLoading, setQuestionStatsLoading] = useState(false);
     const menuRef = React.useRef(null);
+
+    useEffect(() => {
+        if (activeTab !== 'stats' || questionStats !== null) return;
+        const fetchStats = async () => {
+            setQuestionStatsLoading(true);
+            try {
+                const res = await fetch(`/api/admin/instance_question_stats/${instance.instance_id}`);
+                if (!res.ok) throw new Error('Failed');
+                setQuestionStats(await res.json());
+            } catch {
+                setQuestionStats([]);
+            } finally {
+                setQuestionStatsLoading(false);
+            }
+        };
+        fetchStats();
+    }, [activeTab, instance.instance_id, questionStats]);
 
     useEffect(() => {
         const onDown = (e) => {
@@ -445,26 +468,6 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
         );
     };
 
-    if (!Array.isArray(users) || users.length === 0) {
-        return (
-            <div className="p-4 max-w-7xl mx-auto card-enter">
-                <header className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-4">
-                        <button onClick={onBack}
-                                className="p-2 rounded-full dark:text-darkCustom-50 hover:bg-slate-200 dark:hover:bg-darkCustom-700 transition-colors">
-                            <ChevronLeft/>
-                        </button>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-100">{instance.instance_name}</h2>
-                    </div>
-                </header>
-                <div className="text-center p-16 text-slate-500 dark:text-darkCustom-400">
-                    <Users className="mx-auto h-12 w-12 mb-4"/>
-                    <p>This test instance has no participants yet.</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="p-4 max-w-7xl mx-auto card-enter">
             {/* HEADER */}
@@ -477,115 +480,190 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
                         </button>
                         <div>
                             <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-50">{instance.instance_name}</h2>
-                            <div
-                                className="mt-1 text-slate-500 dark:text-darkCustom-200">Participants: {users.length}</div>
+                            <div className="mt-1 text-slate-500 dark:text-darkCustom-200">Participants: {users.length}</div>
                         </div>
                     </div>
 
-                    {/* Menu box + statystyki */}
-                    <div className="w-full flex flex-row md:w-auto gap-3">
-                        <div className="flex items-center justify-between">
-                            {/* SORT MENU */}
-                            <div className="relative" ref={menuRef}>
-                                <button
-                                    type="button"
-                                    onClick={() => setOpenSort((v) => !v)}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-darkCustom-600 bg-white dark:bg-darkCustom-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-darkCustom-50 hover:bg-slate-50 dark:hover:bg-darkCustom-800"
-                                >
-                                    <ArrowUpDown size={16}/>
-                                    <span className="truncate max-w-[14rem]">{currentSortLabel}</span>
-                                    <ChevronDown size={16}
-                                                 className={`transition-transform ${openSort ? 'rotate-180' : ''}`}/>
-                                </button>
-
-                                <AnimatePresence>
-                                    {openSort && (
-                                        <motion.div
-                                            initial={{opacity: 0, y: -5}} animate={{opacity: 1, y: 0}}
-                                            exit={{opacity: 0, y: -5}}
-                                            className="absolute z-20 mt-2 w-64 rounded-xl border border-slate-200 dark:border-darkCustom-700 bg-white dark:bg-darkCustom-900 p-1 shadow-lg ring-1 ring-black/5">
-                                            {sortOptions.map((opt) => {
-                                                const active = opt.value === sortKey;
-                                                return (
-                                                    <button
-                                                        key={opt.value}
-                                                        onClick={() => {
-                                                            setSortKey(opt.value);
-                                                            setOpenSort(false);
-                                                        }}
-                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between
-                                                    ${active ? 'bg-slate-100 dark:bg-darkCustom-800 text-slate-900 dark:text-darkCustom-50' : 'text-slate-700 dark:text-darkCustom-200 hover:bg-slate-50 dark:hover:bg-darkCustom-800'}`}
-                                                    >
-                                                        <span className="truncate">{opt.label}</span>
-                                                        {active && <Check size={16}
-                                                                          className="text-slate-700 dark:text-darkCustom-200"/>}
-                                                    </button>
-                                                );
-                                            })}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                    {/* Sort + Download — only in participants tab */}
+                    {activeTab === 'participants' && users.length > 0 && (
+                        <div className="w-full flex flex-row md:w-auto gap-3">
+                            <div className="flex items-center justify-between">
+                                <div className="relative" ref={menuRef}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setOpenSort((v) => !v)}
+                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-darkCustom-600 bg-white dark:bg-darkCustom-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-darkCustom-50 hover:bg-slate-50 dark:hover:bg-darkCustom-800"
+                                    >
+                                        <ArrowUpDown size={16}/>
+                                        <span className="truncate max-w-[14rem]">{currentSortLabel}</span>
+                                        <ChevronDown size={16} className={`transition-transform ${openSort ? 'rotate-180' : ''}`}/>
+                                    </button>
+                                    <AnimatePresence>
+                                        {openSort && (
+                                            <motion.div
+                                                initial={{opacity: 0, y: -5}} animate={{opacity: 1, y: 0}}
+                                                exit={{opacity: 0, y: -5}}
+                                                className="absolute z-20 mt-2 w-64 rounded-xl border border-slate-200 dark:border-darkCustom-700 bg-white dark:bg-darkCustom-900 p-1 shadow-lg ring-1 ring-black/5">
+                                                {sortOptions.map((opt) => {
+                                                    const active = opt.value === sortKey;
+                                                    return (
+                                                        <button
+                                                            key={opt.value}
+                                                            onClick={() => { setSortKey(opt.value); setOpenSort(false); }}
+                                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${active ? 'bg-slate-100 dark:bg-darkCustom-800 text-slate-900 dark:text-darkCustom-50' : 'text-slate-700 dark:text-darkCustom-200 hover:bg-slate-50 dark:hover:bg-darkCustom-800'}`}
+                                                        >
+                                                            <span className="truncate">{opt.label}</span>
+                                                            {active && <Check size={16} className="text-slate-700 dark:text-darkCustom-200"/>}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
+                            <div className="md:text-right">
+                                <DownloadResultButton id={instance.instance_id} entityType="instance"/>
                             </div>
                         </div>
-                        <div className="md:text-right">
-                            <DownloadResultButton id={instance.instance_id} entityType="instance"/>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </header>
 
-            {/* LISTA UCZESTNIKÓW */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {viewUsers.map((user) => {
-                    const score = Number(user.score) || 0;
-                    const maxScore = Number(user.max_score) || 0;
-                    const percent = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-                    const bar = percent >= 80 ? 'bg-green-500' : percent >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+            {/* TABS */}
+            <div className="flex gap-1 mb-4 bg-slate-100 dark:bg-darkCustom-700 p-1 rounded-lg w-fit">
+                <button
+                    onClick={() => setActiveTab('participants')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'participants' ? 'bg-white dark:bg-darkCustom-900 text-slate-800 dark:text-darkCustom-50 shadow-sm' : 'text-slate-500 dark:text-darkCustom-400 hover:text-slate-700 dark:hover:text-darkCustom-200'}`}
+                >
+                    <Users size={15}/> Participants
+                </button>
+                <button
+                    onClick={() => setActiveTab('stats')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'stats' ? 'bg-white dark:bg-darkCustom-900 text-slate-800 dark:text-darkCustom-50 shadow-sm' : 'text-slate-500 dark:text-darkCustom-400 hover:text-slate-700 dark:hover:text-darkCustom-200'}`}
+                >
+                    <BarChart2 size={15}/> Statistics
+                </button>
+            </div>
 
-                    return (
-                        <div
-                            key={user.activity_id || `${user.user_id}-${user.user_index}`}
-                            onClick={() => onUserClick(user, {fromInstance: true})}
-                            className="bg-white dark:bg-darkCustom-900 p-4 rounded-xl border border-slate-200 dark:border-darkCustom-700 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-                        >
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="flex items-start gap-3 min-w-0">
-                                    <Avatar user={user}/>
-                                    <div className="min-w-0">
-                                        <p className="font-semibold text-slate-800 dark:text-darkCustom-50 truncate">
-                                            {user.user_surname} {user.user_name}
-                                        </p>
-                                        <div
-                                            className="mt-1 flex items-center gap-3 text-xs text-slate-500 dark:text-darkCustom-200">
-                                            {config?.use_index && user.user_index && (
-                                                <span className="inline-flex items-center gap-1">
-                                                  <Hash className="h-3.5 w-3.5"/>
-                                                  Index: {user.user_index}
-                                                </span>
-                                            )}
-                                            <span className="inline-flex items-center gap-1">
-                                                <Percent className="h-3.5 w-3.5"/>
-                                                {fmt2(score)} / {fmt2(maxScore)} pts
-                                            </span>
+            {/* LISTA UCZESTNIKÓW */}
+            {activeTab === 'participants' && (
+                users.length === 0 ? (
+                    <div className="text-center p-16 text-slate-500 dark:text-darkCustom-400">
+                        <Users className="mx-auto h-12 w-12 mb-4"/>
+                        <p>This test instance has no participants yet.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {viewUsers.map((user) => {
+                            const score = Number(user.score) || 0;
+                            const maxScore = Number(user.max_score) || 0;
+                            const percent = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+                            const bar = percent >= 80 ? 'bg-green-500' : percent >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+
+                            return (
+                                <div
+                                    key={user.activity_id || `${user.user_id}-${user.user_index}`}
+                                    onClick={() => onUserClick(user, {fromInstance: true})}
+                                    className="bg-white dark:bg-darkCustom-900 p-4 rounded-xl border border-slate-200 dark:border-darkCustom-700 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex items-start gap-3 min-w-0">
+                                            <Avatar user={user}/>
+                                            <div className="min-w-0">
+                                                <p className="font-semibold text-slate-800 dark:text-darkCustom-50 truncate">
+                                                    {user.user_surname} {user.user_name}
+                                                </p>
+                                                <div className="mt-1 flex items-center gap-3 text-xs text-slate-500 dark:text-darkCustom-200">
+                                                    {config?.use_index && user.user_index && (
+                                                        <span className="inline-flex items-center gap-1">
+                                                            <Hash className="h-3.5 w-3.5"/> Index: {user.user_index}
+                                                        </span>
+                                                    )}
+                                                    <span className="inline-flex items-center gap-1">
+                                                        <Percent className="h-3.5 w-3.5"/>
+                                                        {fmt2(score)} / {fmt2(maxScore)} pts
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <div className={`text-sm font-bold ${getPercentColor(percent)}`}>{percent}%</div>
+                                            <ArrowRight className="text-slate-400 dark:text-darkCustom-50 inline-block mt-1" size={18}/>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3">
+                                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-darkCustom-700">
+                                            <div className={`h-2 rounded-full ${bar}`} style={{width: `${percent}%`}}/>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-right shrink-0">
-                                    <div className={`text-sm font-bold ${getPercentColor(percent)}`}>{percent}%</div>
-                                    <ArrowRight className="text-slate-400 dark:text-darkCustom-50 inline-block mt-1"
-                                                size={18}/>
-                                </div>
-                            </div>
+                            );
+                        })}
+                    </div>
+                )
+            )}
 
-                            <div className="mt-3">
-                                <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-darkCustom-700">
-                                    <div className={`h-2 rounded-full ${bar}`} style={{width: `${percent}%`}}/>
+            {/* STATISTICS TAB */}
+            {activeTab === 'stats' && (
+                questionStatsLoading ? (
+                    <div className="flex items-center justify-center p-16">
+                        <Loader className="animate-spin h-8 w-8 text-slate-400 dark:text-darkCustom-500"/>
+                    </div>
+                ) : !questionStats || questionStats.length === 0 ? (
+                    <EmptyState title="No statistics yet" subtitle="Statistics appear once students complete the test."/>
+                ) : (
+                    <div className="space-y-4">
+                        {questionStats.map((q, idx) => (
+                            <div key={q.question_id} className="bg-white dark:bg-darkCustom-900 rounded-xl border border-slate-200 dark:border-darkCustom-700 shadow-sm p-5">
+                                <div className="flex items-start justify-between gap-4 mb-3">
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-semibold text-slate-400 dark:text-darkCustom-500 uppercase tracking-wider mb-1">
+                                            Q{idx + 1} · {q.question_type}
+                                        </p>
+                                        <p className="font-semibold text-slate-800 dark:text-darkCustom-50">{q.question_text}</p>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className={`text-2xl font-bold ${getPercentColor(q.correct_percent)}`}>
+                                            {q.correct_percent}%
+                                        </p>
+                                        <p className="text-xs text-slate-400 dark:text-darkCustom-500">
+                                            {q.correct_count}/{q.total_responses} correct
+                                        </p>
+                                    </div>
                                 </div>
+                                <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-darkCustom-700 mb-4">
+                                    <div
+                                        className={`h-2 rounded-full transition-all ${q.correct_percent >= 80 ? 'bg-green-500' : q.correct_percent >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                                        style={{width: `${q.correct_percent}%`}}
+                                    />
+                                </div>
+                                {q.answers && q.answers.length > 0 && (
+                                    <div className="space-y-2 mt-3 border-t border-slate-100 dark:border-darkCustom-700 pt-3">
+                                        {q.answers.map(a => (
+                                            <div key={a.answer_id} className="flex items-center gap-3">
+                                                <span className={`flex-shrink-0 h-3 w-3 rounded-sm ${a.is_correct ? 'bg-green-500' : 'bg-slate-300 dark:bg-darkCustom-600'}`}/>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-center text-xs mb-0.5">
+                                                        <span className="text-slate-600 dark:text-darkCustom-300 truncate">{a.text}</span>
+                                                        <span className="text-slate-400 dark:text-darkCustom-500 ml-2 shrink-0">{a.chosen_count} ({a.chosen_percent}%)</span>
+                                                    </div>
+                                                    <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-darkCustom-700">
+                                                        <div
+                                                            className={`h-1.5 rounded-full ${a.is_correct ? 'bg-green-500' : 'bg-slate-400 dark:bg-darkCustom-500'}`}
+                                                            style={{width: `${a.chosen_percent}%`}}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        ))}
+                    </div>
+                )
+            )}
         </div>
     );
 };

@@ -1,14 +1,23 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import CreateInstancePopup from "./OverlayComponents/CreateInstancePopup.jsx";
 import DeletePopup from "./OverlayComponents/DeletePopup.jsx";
 import formatDate from "../Reusable/FormatDate.jsx"
 import {toast} from 'react-toastify';
-import {PlusSquare, Edit, Trash2, CheckSquare, Square, Inbox, RefreshCw, Loader} from 'lucide-react';
+import {PlusSquare, Edit, Trash2, CheckSquare, Square, Inbox, RefreshCw, Loader, Eye, Download, Upload, FilePlus2} from 'lucide-react';
 
+const Tooltip = ({label, children}) => (
+    <div className="relative group/tip flex items-center justify-center">
+        {children}
+        <span className="pointer-events-none absolute right-full mr-2 px-2 py-1 rounded-md text-xs font-medium bg-slate-800 text-white dark:bg-darkCustom-100 dark:text-darkCustom-900 whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150 z-10">
+            {label}
+        </span>
+    </div>
+);
 
-export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh, onEditTest}) {
+export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh, onEditTest, onPreviewTest, onExportTest, onImportTest, onCreateTest}) {
     const [selectedRows, setSelectedRows] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const importInputRef = useRef(null);
 
     useEffect(() => {
         if (data) {
@@ -84,6 +93,22 @@ export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh
         }
     };
 
+    const handleImport = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const json = JSON.parse(ev.target.result);
+                if (onImportTest) onImportTest(json);
+            } catch {
+                toast.error('Invalid JSON file.');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    };
+
     const handleRefresh = async () => {
         if (!onRefresh) {
             window.location.reload();
@@ -139,6 +164,21 @@ export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh
                             <Trash2 size={18} />
                             <span>Delete</span>
                         </button>
+                        <input ref={importInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+                        <button
+                            onClick={() => importInputRef.current?.click()}
+                            className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+                        >
+                            <Upload size={18} />
+                            <span>Import</span>
+                        </button>
+                        <button
+                            onClick={() => onCreateTest && onCreateTest()}
+                            className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+                        >
+                            <FilePlus2 size={18} />
+                            <span>New Test</span>
+                        </button>
                     </div>
                 </div>
 
@@ -169,16 +209,32 @@ export default function TestsPanel({data, setOverlay, setOverlayImage, onRefresh
                                 {/* Column 3: Action Buttons */}
                                 <div className="w-1/4 flex justify-end">
                                     <div className="flex-shrink-0 flex flex-col items-center gap-1 self-center">
-                                         <button title="Create Instance" onClick={() => handleInstance(row.test_id, row.number_of_questions)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-blue-600 hover:bg-blue-100 dark:hover:text-blue-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
+                                    <Tooltip label="Create Instance">
+                                        <button onClick={() => handleInstance(row.test_id, row.number_of_questions)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-blue-600 hover:bg-blue-100 dark:hover:text-blue-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
                                             <PlusSquare size={20}/>
                                         </button>
-                                        <button title="Edit Test" onClick={() => handleEdit(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-green-600 hover:bg-green-100 dark:hover:text-green-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
+                                    </Tooltip>
+                                    <Tooltip label="Preview Test">
+                                        <button onClick={() => onPreviewTest && onPreviewTest(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-amber-600 hover:bg-amber-100 dark:hover:text-amber-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
+                                            <Eye size={20}/>
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip label="Edit Test">
+                                        <button onClick={() => handleEdit(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-green-600 hover:bg-green-100 dark:hover:text-green-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
                                             <Edit size={20}/>
                                         </button>
-                                        <button title="Delete Test" onClick={() => handleDelete(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-red-600 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
+                                    </Tooltip>
+                                    <Tooltip label="Export as JSON">
+                                        <button onClick={() => onExportTest && onExportTest(row.test_id, row.name)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-indigo-600 hover:bg-indigo-100 dark:hover:text-indigo-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
+                                            <Download size={20}/>
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip label="Delete Test">
+                                        <button onClick={() => handleDelete(row.test_id)} className="px-2 py-1 text-slate-500 dark:text-darkCustom-400 hover:text-red-600 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-darkCustom-700 rounded-full transition-colors">
                                             <Trash2 size={20}/>
                                         </button>
-                                    </div>
+                                    </Tooltip>
+                                </div>
                                 </div>
                             </div>
                         ))}

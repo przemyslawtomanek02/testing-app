@@ -29,12 +29,14 @@ import SettingsPanel from "./Adminpage_panels/SettingsPanel.jsx";
 import EditTestPanel from "./Adminpage_panels/CreateTestComponents/EditTestPanel.jsx";
 import UsersListPanel from "./Adminpage_panels/UsersListPanel.jsx";
 import DarkModeSwitcher from "./Reusable/DarkModeSwitcher.jsx";
+import TestPreviewPanel from "./Adminpage_panels/TestPreviewPanel.jsx";
 
 export default function Adminpage() {
     const navigate = useNavigate();
     const [activePanel, setActivePanel] = useState('tests');
     const [tests, setTests] = useState([]);
     const [editingTestId, setEditingTestId] = useState(null);
+    const [previewTestId, setPreviewTestId] = useState(null);
     const [instances, setInstances] = useState([]);
     const [overlay, setOverlay] = useState(null);
     const [overlayImage, setOverlayImage] = useState(null);
@@ -50,6 +52,7 @@ export default function Adminpage() {
         users_list: 'Users List',
         settings: 'Settings',
         edit_test: 'Edit Test',
+        preview_test: 'Test Preview',
     };
 
     useEffect(() => {
@@ -104,6 +107,47 @@ export default function Adminpage() {
         setActivePanel('edit_test');
     };
 
+    const handlePreviewTest = (testId) => {
+        setPreviewTestId(testId);
+        setActivePanel('preview_test');
+    };
+
+    const handleExportTest = async (testId, testName) => {
+        try {
+            const res = await fetch(`/api/admin/export_test/${testId}`, { credentials: 'include' });
+            if (!res.ok) throw new Error('Export failed');
+            const data = await res.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${testName.replace(/[^a-z0-9]/gi, '_')}_export.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast.success('Test exported successfully!');
+        } catch {
+            toast.error('Failed to export test.');
+        }
+    };
+
+    const handleImportTest = async (jsonData) => {
+        try {
+            const res = await fetch('/api/admin/import_test', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData),
+            });
+            if (!res.ok) throw new Error('Import failed');
+            toast.success('Test imported successfully!');
+            if (activePanel === 'tests') await fetchData();
+        } catch {
+            toast.error('Failed to import test.');
+        }
+    };
+
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     const logout = async () => {
@@ -125,7 +169,11 @@ export default function Adminpage() {
         switch (activePanel) {
             case 'tests':
                 return <TestsPanel data={tests} setOverlay={setOverlay} setOverlayImage={setOverlayImage}
-                                   onRefresh={fetchData} onEditTest={handleEditTest}/>
+                                   onRefresh={fetchData} onEditTest={handleEditTest}
+                                   onPreviewTest={handlePreviewTest}
+                                   onExportTest={handleExportTest}
+                                   onImportTest={handleImportTest}
+                                   onCreateTest={() => setActivePanel('create_test')}/>
             case 'instances':
                 return <InstancesPanel data={instances} setOverlay={setOverlay} onRefresh={fetchData}/>;
             case 'results':
@@ -143,6 +191,8 @@ export default function Adminpage() {
             case 'edit_test':
                 return <EditTestPanel testId={editingTestId} setOverlayImage={setOverlayImage}
                                       setActivePanel={setActivePanel}/>
+            case 'preview_test':
+                return <TestPreviewPanel testId={previewTestId} onBack={() => setActivePanel('tests')} />;
             default:
                 return null;
         }
