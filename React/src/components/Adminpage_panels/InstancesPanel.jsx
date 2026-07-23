@@ -3,9 +3,20 @@ import formatDate from "../Reusable/FormatDate.jsx"
 import DeletePopup from "./OverlayComponents/DeletePopup.jsx";
 import {toast} from 'react-toastify';
 import {Trash2, CheckSquare, Square, Inbox, Loader, RefreshCw, ToggleLeft, ToggleRight} from 'lucide-react';
+import {useAppContext} from '../../AppContext.jsx';
 
 
 export default function InstancesPanel({data, setOverlay, onRefresh}) {
+    const { darkMode: dk } = useAppContext();
+    const T = {
+        bg:      dk ? '#0F1117' : '#F4F6FB',
+        surface: dk ? '#171B2D' : '#FFFFFF',
+        border:  dk ? '#2A2F45' : '#EDF0F7',
+        text:    dk ? '#E2E8F0' : '#0F1623',
+        textSec: dk ? '#8896B3' : '#64748B',
+        textMuted: dk ? '#5A6483' : '#94A3B8',
+        hoverBg: dk ? 'rgba(255,255,255,0.05)' : '#F4F6FB',
+    };
     const [selectedRowsInstances, setSelectedRowsInstances] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -97,8 +108,8 @@ export default function InstancesPanel({data, setOverlay, onRefresh}) {
 
     if (!data) {
         return (
-            <div className="flex items-center justify-center h-full p-8 bg-[#F0F2F5]">
-                <Loader className="h-10 w-10 animate-spin text-[#BEC3C9]"/>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: T.bg }}>
+                <Loader size={36} style={{ color: T.textMuted, animation: 'spin 1s linear infinite' }}/>
             </div>
         );
     }
@@ -107,11 +118,13 @@ export default function InstancesPanel({data, setOverlay, onRefresh}) {
     const selectedCount = selectedRowsInstances.filter(Boolean).length;
 
     return (
-        <div className="p-6 bg-[#F0F2F5] min-h-screen">
-            <div className="max-w-5xl mx-auto">
+        <div style={{ padding: '28px', background: T.bg, minHeight: '100%' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+
+                <h1 style={{ fontSize: '20px', fontWeight: '700', color: T.text, marginBottom: '20px', letterSpacing: '-0.02em' }}>Instances</h1>
 
                 {/* Toolbar */}
-                <div className="bg-white rounded-2xl shadow-sm border border-[#E4E6EB] px-5 py-3 mb-5 flex items-center justify-between gap-4">
+                <div style={{ background: T.surface, borderRadius: '20px', border: `1px solid ${T.border}`, padding: '10px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', boxShadow: dk ? 'none' : '0 2px 12px rgba(43,115,255,0.07)' }}>
                     <div className="flex items-center gap-3">
                         <button onClick={handleSelectAll} className="p-1.5 rounded-lg hover:bg-[#F0F2F5] transition-colors">
                             {allSelected
@@ -142,57 +155,88 @@ export default function InstancesPanel({data, setOverlay, onRefresh}) {
                 </div>
 
                 {data.length > 0 ? (
-                    <div className="space-y-3">
-                        {data.map((row, index) => (
-                            <div
-                                key={row.instance_id}
-                                style={{animationDelay: `${index * 50}ms`}}
-                                className={`card-enter bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all duration-200 flex flex-row items-center px-5 py-4 gap-5 border-l-4 ${row.is_active ? 'border-l-green-500' : 'border-l-red-400'} ${selectedRowsInstances[index] ? 'border-[#0866FF] ring-1 ring-[#0866FF]/20' : 'border-[#E4E6EB]'}`}
-                            >
-                                <button onClick={() => handleCheckboxChange(index)}
-                                        className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-[#F0F2F5] flex-shrink-0 transition-colors">
-                                    {selectedRowsInstances[index]
-                                        ? <CheckSquare size={20} className="text-[#0866FF]"/>
-                                        : <Square size={20} className="text-[#BEC3C9]"/>}
-                                </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {data.map((row, index) => {
+                            const selected = selectedRowsInstances[index];
+                            return (
+                                <div
+                                    key={row.instance_id}
+                                    className="card-enter"
+                                    style={{
+                                        animationDelay: `${index * 50}ms`,
+                                        background: T.surface,
+                                        borderRadius: '22px',
+                                        border: `1.5px solid ${selected ? '#2B73FF' : T.border}`,
+                                        boxShadow: selected
+                                            ? '0 0 0 4px rgba(43,115,255,0.10), 0 4px 20px rgba(43,115,255,0.12)'
+                                            : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+                                        display: 'flex', flexDirection: 'row', alignItems: 'center',
+                                        padding: '16px 20px', gap: '14px',
+                                        overflow: 'hidden', position: 'relative',
+                                        transition: 'border-color 0.18s, box-shadow 0.18s',
+                                    }}
+                                >
+                                    {/* Active indicator strip */}
+                                    <div style={{
+                                        position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px',
+                                        background: row.is_active ? '#22C55E' : '#EF4444',
+                                        borderRadius: '22px 0 0 22px',
+                                    }}/>
 
-                                <div className="flex-1 min-w-0">
-                                    <h2 className="text-[15px] font-semibold text-[#1C1E21] truncate">{row.instance_name}</h2>
-                                    <p className="text-sm text-[#65676B] mt-0.5">Test: {row.test_name}</p>
+                                    <button
+                                        onClick={() => handleCheckboxChange(index)}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0, padding: '2px', marginLeft: '8px' }}
+                                    >
+                                        {selected
+                                            ? <CheckSquare size={20} style={{ color: '#2B73FF' }}/>
+                                            : <Square size={20} style={{ color: T.textMuted }}/>}
+                                    </button>
+
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: '14px', fontWeight: '600', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.instance_name}</div>
+                                        <div style={{ fontSize: '12px', color: T.textSec, marginTop: '2px' }}>Test: {row.test_name}</div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0, paddingRight: '16px', borderRight: `1px solid ${T.border}` }}>
+                                        {[
+                                            { label: 'Start',     val: formatDate(row.start_time) },
+                                            { label: 'End',       val: formatDate(row.end_time) },
+                                            { label: 'Time',      val: `${row.test_time} min` },
+                                            { label: 'Questions', val: row.num_questions },
+                                        ].map(({ label, val }) => (
+                                            <div key={label} style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: '11px', color: T.textMuted, marginBottom: '2px', fontWeight: '500' }}>{label}</div>
+                                                <div style={{ fontSize: '13px', fontWeight: '600', color: T.text }}>{val}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={() => handleStatusToggle(row)}
+                                        style={{
+                                            display: 'flex', alignItems: 'center', gap: '6px',
+                                            padding: '5px 12px', borderRadius: '999px',
+                                            border: 'none', cursor: 'pointer', flexShrink: 0,
+                                            fontSize: '12px', fontWeight: '600',
+                                            background: row.is_active
+                                                ? (dk ? 'rgba(34,197,94,0.15)' : '#F0FDF4')
+                                                : (dk ? 'rgba(239,68,68,0.15)' : '#FEF2F2'),
+                                            color: row.is_active ? '#22C55E' : '#EF4444',
+                                            transition: 'all 0.15s',
+                                        }}
+                                    >
+                                        {row.is_active ? <ToggleRight size={15}/> : <ToggleLeft size={15}/>}
+                                        {row.is_active ? 'Active' : 'Inactive'}
+                                    </button>
                                 </div>
-
-                                <div className="flex items-center gap-6 text-sm text-[#65676B] pr-5 border-r border-[#E4E6EB]">
-                                    <div>
-                                        <p className="text-xs text-[#BEC3C9] mb-0.5">Start</p>
-                                        <p className="font-medium text-[#1C1E21] text-[13px]">{formatDate(row.start_time)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-[#BEC3C9] mb-0.5">End</p>
-                                        <p className="font-medium text-[#1C1E21] text-[13px]">{formatDate(row.end_time)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-[#BEC3C9] mb-0.5">Time</p>
-                                        <p className="font-medium text-[#1C1E21] text-[13px]">{row.test_time} min</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-[#BEC3C9] mb-0.5">Questions</p>
-                                        <p className="font-medium text-[#1C1E21] text-[13px]">{row.num_questions}</p>
-                                    </div>
-                                </div>
-
-                                <button onClick={() => handleStatusToggle(row)}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${row.is_active ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
-                                    {row.is_active ? <ToggleRight size={16}/> : <ToggleLeft size={16}/>}
-                                    {row.is_active ? 'Active' : 'Inactive'}
-                                </button>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
-                    <div className="text-center py-20 px-6 bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
-                        <Inbox size={44} className="mx-auto text-[#BEC3C9]"/>
-                        <h3 className="mt-4 text-base font-semibold text-[#1C1E21]">No instances found</h3>
-                        <p className="mt-1 text-sm text-[#65676B]">You can create new instances from the 'Tests' panel.</p>
+                    <div style={{ textAlign: 'center', padding: '64px 24px', background: T.surface, borderRadius: '24px', border: `1px solid ${T.border}` }}>
+                        <Inbox size={44} style={{ margin: '0 auto', color: T.textMuted }}/>
+                        <div style={{ marginTop: '16px', fontSize: '15px', fontWeight: '600', color: T.text }}>No instances found</div>
+                        <div style={{ marginTop: '4px', fontSize: '13px', color: T.textSec }}>You can create new instances from the 'Tests' panel.</div>
                     </div>
                 )}
             </div>

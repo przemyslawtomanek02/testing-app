@@ -1,8 +1,22 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {Save, AlertCircle, Loader, ArrowLeft, RefreshCw} from 'lucide-react';
 import {toast} from 'react-toastify';
+import {useAppContext} from '../../AppContext.jsx';
 
 const CreateGradingScheme = ({scheme_id, onBack}) => {
+    const { darkMode: dk } = useAppContext();
+    const T = {
+        bg:       dk ? '#0F1117' : '#F4F6FB',
+        surface:  dk ? '#171B2D' : '#FFFFFF',
+        surface2: dk ? '#1E2237' : '#F8FAFC',
+        border:   dk ? '#2A2F45' : '#E4E6EB',
+        text:     dk ? '#E2E8F0' : '#0F1623',
+        textSec:  dk ? '#8896B3' : '#64748B',
+        textMuted:dk ? '#5A6483' : '#94A3B8',
+        inputBg:  dk ? '#1E2237' : '#FFFFFF',
+        accent:   '#2B73FF',
+    };
+
     const isEditing = !!scheme_id;
 
     const [schemeName, setSchemeName] = useState('');
@@ -156,113 +170,193 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-full p-8 bg-[#F0F2F5] min-h-screen">
-                <Loader className="h-10 w-10 animate-spin text-[#BEC3C9]"/>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: T.bg }}>
+                <Loader size={36} style={{ color: T.textMuted, animation: 'spin 1s linear infinite' }}/>
             </div>
         );
     }
 
-    const inputCls = "w-full px-3 py-2 border border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] bg-white placeholder:text-[#BEC3C9] focus:outline-none focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] transition-all";
+    const inputStyle = {
+        width: '100%', padding: '8px 12px', borderRadius: '12px',
+        border: `1.5px solid ${T.border}`, background: T.inputBg, color: T.text,
+        fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+        transition: 'border-color 0.15s',
+    };
 
     const Toggle = ({checked, onChange}) => (
         <button
             type="button"
             onClick={() => onChange(!checked)}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-[#0866FF]' : 'bg-[#CED0D4]'}`}
+            style={{
+                position: 'relative', display: 'inline-flex', flexShrink: 0,
+                width: '44px', height: '24px', borderRadius: '999px', border: 'none',
+                cursor: 'pointer', transition: 'background 0.2s',
+                background: checked ? 'linear-gradient(135deg, #2B73FF, #3F99FF)' : (dk ? '#3A4060' : '#CBD5E1'),
+            }}
             aria-checked={checked}
         >
-            <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${checked ? 'translate-x-5' : 'translate-x-0'}`}/>
+            <span style={{
+                position: 'absolute', top: '2px',
+                left: checked ? 'calc(100% - 22px)' : '2px',
+                width: '20px', height: '20px', borderRadius: '50%',
+                background: '#FFFFFF', boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                transition: 'left 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}/>
         </button>
     );
 
+    const SectionCard = ({children, style = {}}) => (
+        <div style={{
+            background: T.surface, borderRadius: '22px',
+            border: `1px solid ${T.border}`,
+            boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+            padding: '24px', ...style,
+        }}>
+            {children}
+        </div>
+    );
+
+    const SectionLabel = ({children}) => (
+        <div style={{ fontSize: '11px', fontWeight: '600', color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>
+            {children}
+        </div>
+    );
+
+    const FieldLabel = ({htmlFor, children}) => (
+        <label htmlFor={htmlFor} style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: T.text, marginBottom: '6px' }}>
+            {children}
+        </label>
+    );
+
     return (
-        <form onSubmit={handleSubmit} className="p-6 bg-[#F0F2F5] min-h-screen">
-            <div className="max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} style={{ padding: '28px', background: T.bg, minHeight: '100%' }}>
+            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         {onBack && (
-                            <button type="button" onClick={onBack}
-                                    className="p-2 rounded-xl hover:bg-white border border-transparent hover:border-[#E4E6EB] text-[#606770] transition-all">
-                                <ArrowLeft size={20}/>
+                            <button
+                                type="button"
+                                onClick={onBack}
+                                style={{
+                                    width: '36px', height: '36px', borderRadius: '999px', border: `1.5px solid ${T.border}`,
+                                    background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', color: T.textSec, transition: 'all 0.15s',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.06)' : '#EEF4FF'; e.currentTarget.style.color = T.accent; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = T.textSec; }}
+                            >
+                                <ArrowLeft size={18}/>
                             </button>
                         )}
-                        <h1 className="text-xl font-bold text-[#1C1E21]">
+                        <h1 style={{ fontSize: '20px', fontWeight: '700', color: T.text, letterSpacing: '-0.02em' }}>
                             {isEditing ? 'Edit Grading Template' : 'Create Grading Template'}
                         </h1>
                     </div>
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="flex items-center gap-2 bg-[#0866FF] text-white hover:bg-[#0757D9] font-semibold py-2 px-5 rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-wait text-sm"
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            height: '38px', padding: '0 20px', borderRadius: '999px', border: 'none',
+                            background: isSubmitting ? T.textMuted : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
+                            color: '#FFFFFF', fontSize: '13px', fontWeight: '600',
+                            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                            boxShadow: isSubmitting ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
+                            transition: 'opacity 0.15s, box-shadow 0.15s',
+                        }}
+                        onMouseEnter={e => { if (!isSubmitting) e.currentTarget.style.opacity = '0.88'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                     >
-                        {isSubmitting ? <Loader size={16} className="animate-spin"/> : <Save size={16}/>}
+                        {isSubmitting ? <Loader size={15} className="animate-spin"/> : <Save size={15}/>}
                         <span>{isEditing ? 'Save Changes' : 'Create Template'}</span>
                     </button>
                 </div>
 
-                <div className="space-y-4">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {/* Basic Info */}
-                    <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
-                        <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider mb-4">Basic Information</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <SectionCard>
+                        <SectionLabel>Basic Information</SectionLabel>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                             <div>
-                                <label htmlFor="schemeName" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Template Name</label>
-                                <input type="text" id="schemeName" value={schemeName}
-                                       onChange={e => setSchemeName(e.target.value)}
-                                       className={inputCls} placeholder="e.g. Standard 2-5" required/>
+                                <FieldLabel htmlFor="schemeName">Template Name</FieldLabel>
+                                <input
+                                    type="text" id="schemeName" value={schemeName}
+                                    onChange={e => setSchemeName(e.target.value)}
+                                    style={inputStyle} placeholder="e.g. Standard 2-5" required
+                                    onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(43,115,255,0.1)'; }}
+                                    onBlur={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = 'none'; }}
+                                />
                             </div>
                             <div>
-                                <label htmlFor="schemeDescription" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Description</label>
-                                <input type="text" id="schemeDescription" value={schemeDescription}
-                                       onChange={e => setSchemeDescription(e.target.value)}
-                                       className={inputCls} placeholder="Optional description"/>
+                                <FieldLabel htmlFor="schemeDescription">Description</FieldLabel>
+                                <input
+                                    type="text" id="schemeDescription" value={schemeDescription}
+                                    onChange={e => setSchemeDescription(e.target.value)}
+                                    style={inputStyle} placeholder="Optional description"
+                                    onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(43,115,255,0.1)'; }}
+                                    onBlur={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = 'none'; }}
+                                />
                             </div>
                         </div>
-                    </div>
+                    </SectionCard>
 
                     {/* Scale & Rules */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         {/* Scale */}
-                        <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
-                            <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider mb-4">Grading Scale</h2>
-                            <div className="flex items-center gap-4">
-                                <div className="flex-1">
-                                    <label htmlFor="minScale" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Minimum Grade</label>
-                                    <input type="number" id="minScale" value={minScale}
-                                           onChange={e => setMinScale(Math.max(1, Number(e.target.value)))}
-                                           min="1" max="10" className={inputCls}/>
+                        <SectionCard>
+                            <SectionLabel>Grading Scale</SectionLabel>
+                            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '16px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <FieldLabel htmlFor="minScale">Minimum Grade</FieldLabel>
+                                    <input
+                                        type="number" id="minScale" value={minScale}
+                                        onChange={e => setMinScale(Math.max(1, Number(e.target.value)))}
+                                        min="1" max="10" style={inputStyle}
+                                        onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; }}
+                                        onBlur={e => { e.currentTarget.style.borderColor = T.border; }}
+                                    />
                                 </div>
-                                <div className="flex-1">
-                                    <label htmlFor="maxScale" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Maximum Grade</label>
-                                    <input type="number" id="maxScale" value={maxScale}
-                                           onChange={e => setMaxScale(Math.max(minScale, Number(e.target.value)))}
-                                           min={minScale} max="10" className={inputCls}/>
+                                <div style={{ flex: 1 }}>
+                                    <FieldLabel htmlFor="maxScale">Maximum Grade</FieldLabel>
+                                    <input
+                                        type="number" id="maxScale" value={maxScale}
+                                        onChange={e => setMaxScale(Math.max(minScale, Number(e.target.value)))}
+                                        min={minScale} max="10" style={inputStyle}
+                                        onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; }}
+                                        onBlur={e => { e.currentTarget.style.borderColor = T.border; }}
+                                    />
                                 </div>
                             </div>
-                        </div>
+                        </SectionCard>
 
                         {/* Rules */}
-                        <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
-                            <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider mb-4">Scoring Rules</h2>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-[#1C1E21]">Use partial points</span>
-                                    <Toggle checked={partialCredit} onChange={setPartialCredit}/>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-[#1C1E21]">Penalize wrong answers</span>
-                                    <Toggle checked={penalizeWrong} onChange={setPenalizeWrong}/>
-                                </div>
+                        <SectionCard>
+                            <SectionLabel>Scoring Rules</SectionLabel>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                {[
+                                    { label: 'Use partial points', checked: partialCredit, onChange: setPartialCredit },
+                                    { label: 'Penalize wrong answers', checked: penalizeWrong, onChange: setPenalizeWrong },
+                                    { label: 'Allow negative points', checked: allowNegativePoints, onChange: setAllowNegativePoints },
+                                ].map(({ label, checked, onChange }) => (
+                                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '13px', fontWeight: '500', color: T.text }}>{label}</span>
+                                        <Toggle checked={checked} onChange={onChange}/>
+                                    </div>
+                                ))}
                                 {penalizeWrong && (
-                                    <div className="flex justify-between items-center pl-4 border-l-2 border-[#E4E6EB]">
-                                        <label htmlFor="penalty-select" className="text-sm text-[#65676B]">Penalty per wrong answer</label>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '12px', borderLeft: `2px solid ${T.border}` }}>
+                                        <label htmlFor="penalty-select" style={{ fontSize: '13px', color: T.textSec }}>Penalty per wrong answer</label>
                                         <select
                                             id="penalty-select"
                                             value={penaltyPerWrong}
                                             onChange={e => setPenaltyPerWrong(Number(e.target.value))}
-                                            className="text-sm border border-[#E4E6EB] rounded-lg px-2 py-1.5 text-[#1C1E21] bg-white focus:outline-none focus:border-[#0866FF]"
+                                            style={{
+                                                fontSize: '13px', border: `1.5px solid ${T.border}`, borderRadius: '10px',
+                                                padding: '4px 8px', color: T.text, background: T.inputBg, outline: 'none',
+                                            }}
                                         >
                                             <option value={0.25}>0.25</option>
                                             <option value={0.5}>0.5</option>
@@ -272,64 +366,80 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
                                         </select>
                                     </div>
                                 )}
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-[#1C1E21]">Allow negative points</span>
-                                    <Toggle checked={allowNegativePoints} onChange={setAllowNegativePoints}/>
-                                </div>
                             </div>
-                        </div>
+                        </SectionCard>
                     </div>
 
                     {/* Thresholds */}
-                    <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-6">
-                        <div className="flex justify-between items-center mb-5">
-                            <h2 className="text-sm font-semibold text-[#65676B] uppercase tracking-wider">Percentage Thresholds</h2>
+                    <SectionCard>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <SectionLabel>Percentage Thresholds</SectionLabel>
                             <button
                                 type="button"
                                 onClick={handleRegenerateThresholds}
                                 disabled={isRegenerating}
-                                className="flex items-center gap-1.5 text-sm text-[#0866FF] hover:text-[#0757D9] font-medium px-3 py-1.5 rounded-lg hover:bg-[#E7F3FF] transition-colors disabled:opacity-50"
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                    fontSize: '13px', fontWeight: '500', color: '#2B73FF',
+                                    background: dk ? 'rgba(43,115,255,0.12)' : '#EEF4FF',
+                                    border: 'none', cursor: 'pointer', padding: '6px 12px',
+                                    borderRadius: '999px', opacity: isRegenerating ? 0.5 : 1,
+                                    transition: 'opacity 0.15s',
+                                }}
                             >
-                                <RefreshCw size={14} className={isRegenerating ? 'animate-spin' : ''}/>
+                                <RefreshCw size={13} className={isRegenerating ? 'is-refreshing' : ''}/>
                                 <span>{isRegenerating ? 'Regenerating…' : 'Regenerate'}</span>
                             </button>
                         </div>
 
-                        <div className="space-y-2">
-                            <div className="grid grid-cols-12 gap-3 px-1 text-xs font-semibold text-[#65676B] uppercase tracking-wider">
-                                <span className="col-span-2">Grade</span>
-                                <span className="col-span-4">Min %</span>
-                                <span className="col-span-4">Max %</span>
-                                <span className="col-span-2"></span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {/* Header */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', gap: '12px', padding: '0 4px' }}>
+                                {['Grade', 'Min %', 'Max %', ''].map(h => (
+                                    <span key={h} style={{ fontSize: '11px', fontWeight: '600', color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</span>
+                                ))}
                             </div>
 
                             {gradingThresholds.map((threshold, i) => {
                                 const error = thresholdErrors[i];
                                 return (
-                                    <div key={i} className="grid grid-cols-12 gap-3 items-center">
-                                        <div className="col-span-2 flex items-center justify-center h-9 bg-[#E7F3FF] text-[#0866FF] font-bold text-sm rounded-xl">
+                                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', gap: '12px', alignItems: 'center' }}>
+                                        <div style={{
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            height: '38px', borderRadius: '12px', fontSize: '14px', fontWeight: '700',
+                                            background: dk ? 'rgba(43,115,255,0.15)' : '#EEF4FF',
+                                            color: '#2B73FF',
+                                        }}>
                                             {threshold.grade}
                                         </div>
-                                        <div className="col-span-4">
-                                            <input type="number" step="any" value={threshold.percentage_min}
-                                                   onChange={e => handleThresholdChange(i, 'percentage_min', e.target.value)}
-                                                   className={`${inputCls} ${error ? 'border-red-400 ring-1 ring-red-400' : ''}`}/>
-                                        </div>
-                                        <div className="col-span-4">
-                                            <input type="number" step="any" value={threshold.percentage_max}
-                                                   onChange={e => handleThresholdChange(i, 'percentage_max', e.target.value)}
-                                                   className={`${inputCls} ${error ? 'border-red-400 ring-1 ring-red-400' : ''}`}/>
-                                        </div>
+                                        <input
+                                            type="number" step="any" value={threshold.percentage_min}
+                                            onChange={e => handleThresholdChange(i, 'percentage_min', e.target.value)}
+                                            style={{
+                                                ...inputStyle,
+                                                border: `1.5px solid ${error ? '#EF4444' : T.border}`,
+                                                boxShadow: error ? '0 0 0 3px rgba(239,68,68,0.1)' : 'none',
+                                            }}
+                                        />
+                                        <input
+                                            type="number" step="any" value={threshold.percentage_max}
+                                            onChange={e => handleThresholdChange(i, 'percentage_max', e.target.value)}
+                                            style={{
+                                                ...inputStyle,
+                                                border: `1.5px solid ${error ? '#EF4444' : T.border}`,
+                                                boxShadow: error ? '0 0 0 3px rgba(239,68,68,0.1)' : 'none',
+                                            }}
+                                        />
                                         {error && (
-                                            <span className="col-span-2 flex items-center gap-1 text-red-500 text-xs">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#EF4444', fontSize: '12px' }}>
                                                 <AlertCircle size={13}/> {error}
-                                            </span>
+                                            </div>
                                         )}
                                     </div>
                                 );
                             })}
                         </div>
-                    </div>
+                    </SectionCard>
                 </div>
             </div>
         </form>

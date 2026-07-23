@@ -1,9 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import {Edit, Trash2, Square, CheckSquare, Inbox, RefreshCw, Loader} from 'lucide-react';
+import {Edit, Trash2, Square, CheckSquare, Inbox, RefreshCw, Loader, FilePlus2} from 'lucide-react';
 import {toast} from 'react-toastify';
 import DeletePopup from "../Adminpage_panels/OverlayComponents/DeletePopup.jsx";
+import {useAppContext} from '../../AppContext.jsx';
 
-const GradingSchemeList = ({onEdit, setOverlay}) => {
+const GradingSchemeList = ({onEdit, onCreateNew, setOverlay}) => {
+    const { darkMode: dk } = useAppContext();
+    const T = {
+        bg:      dk ? '#0F1117' : '#F4F6FB',
+        surface: dk ? '#171B2D' : '#FFFFFF',
+        border:  dk ? '#2A2F45' : '#E4E6EB',
+        text:    dk ? '#E2E8F0' : '#0F1623',
+        textSec: dk ? '#8896B3' : '#65676B',
+        textMuted: dk ? '#5A6483' : '#BEC3C9',
+        hoverBg: dk ? 'rgba(255,255,255,0.06)' : '#F0F2F5',
+        pillSlate: { bg: dk ? 'rgba(255,255,255,0.08)' : '#F0F2F5', color: dk ? '#8896B3' : '#65676B' },
+        pillGreen: { bg: dk ? 'rgba(34,197,94,0.15)' : '#F0FDF4', color: dk ? '#4ADE80' : '#16A34A' },
+        pillRed:   { bg: dk ? 'rgba(239,68,68,0.15)'  : '#FEF2F2', color: dk ? '#F87171' : '#DC2626' },
+        pillAmber: { bg: dk ? 'rgba(245,158,11,0.15)' : '#FFFBEB', color: dk ? '#FCD34D' : '#B45309' },
+        pillBlue:  { bg: dk ? 'rgba(43,115,255,0.15)' : '#EEF4FF', color: dk ? '#6EA8FE' : '#2B73FF' },
+    };
+
     const [schemes, setSchemes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -75,122 +92,185 @@ const GradingSchemeList = ({onEdit, setOverlay}) => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-full p-8 bg-[#F0F2F5] min-h-screen">
-                <Loader className="h-10 w-10 animate-spin text-[#BEC3C9]"/>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: T.bg }}>
+                <Loader size={36} style={{ color: T.textMuted, animation: 'spin 1s linear infinite' }}/>
             </div>
         );
     }
 
-    const PILL = {
-        slate:  "bg-[#F0F2F5] text-[#65676B]",
-        green:  "bg-green-50 text-green-700",
-        red:    "bg-red-50 text-red-600",
-        indigo: "bg-[#E7F3FF] text-[#0866FF]",
-        amber:  "bg-amber-50 text-amber-700",
+    const MetaPill = ({ tone = "slate", children }) => {
+        const style = T[`pill${tone.charAt(0).toUpperCase() + tone.slice(1)}`] || T.pillSlate;
+        return (
+            <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap',
+                borderRadius: '999px', padding: '2px 10px', fontSize: '11px', fontWeight: '600',
+                background: style.bg, color: style.color,
+            }}>
+                {children}
+            </span>
+        );
     };
 
-    const MetaPill = ({tone = "slate", children}) => (
-        <span className={`inline-flex w-fit whitespace-nowrap items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PILL[tone]}`}>
-            {children}
-        </span>
-    );
-
     return (
-        <div className="p-6 bg-[#F0F2F5] min-h-screen">
-            <div className="max-w-5xl mx-auto">
+        <div style={{ padding: '28px', background: T.bg, minHeight: '100%' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+
+                <h1 style={{ fontSize: '20px', fontWeight: '700', color: T.text, marginBottom: '20px', letterSpacing: '-0.02em' }}>Grading Templates</h1>
 
                 {/* Toolbar */}
-                <div className="bg-white rounded-2xl shadow-sm border border-[#E4E6EB] px-5 py-3 mb-5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <button onClick={handleSelectAll} className="p-1.5 rounded-lg hover:bg-[#F0F2F5] transition-colors">
+                <div style={{
+                    background: T.surface, borderRadius: '20px', border: `1px solid ${T.border}`,
+                    padding: '10px 16px', marginBottom: '16px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                    boxShadow: dk ? 'none' : '0 2px 12px rgba(43,115,255,0.07)',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <button
+                            onClick={handleSelectAll}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '8px', display: 'flex', alignItems: 'center' }}
+                        >
                             {allSelected
-                                ? <CheckSquare size={20} className="text-[#0866FF]"/>
-                                : <Square size={20} className="text-[#BEC3C9]"/>}
+                                ? <CheckSquare size={20} style={{ color: '#2B73FF' }}/>
+                                : <Square size={20} style={{ color: T.textMuted }}/>}
                         </button>
-                        <span className="text-sm font-medium text-[#65676B]">
+                        <span style={{ fontSize: '13px', fontWeight: '500', color: T.textSec }}>
                             {selectedCount > 0 ? `${selectedCount} of ${schemes.length} selected` : `${schemes.length} templates`}
                         </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <button
                             onClick={handleRefresh}
                             disabled={isRefreshing}
-                            className="p-2 rounded-lg text-[#606770] hover:bg-[#F0F2F5] transition-colors disabled:opacity-50"
+                            style={{
+                                width: '36px', height: '36px', borderRadius: '999px',
+                                border: `1.5px solid ${T.border}`, background: 'transparent',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: T.textSec, transition: 'all 0.15s', opacity: isRefreshing ? 0.5 : 1,
+                            }}
                         >
-                            <RefreshCw size={17} className={isRefreshing ? 'animate-spin' : ''}/>
+                            <RefreshCw size={14} className={isRefreshing ? 'is-refreshing' : ''}/>
                         </button>
+
+                        <div style={{ width: '1px', height: '22px', background: T.border, margin: '0 4px' }}/>
+
                         <button
-                            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             onClick={() => handleDeleteRequest(schemes.filter((_, i) => selectedRows[i]).map(s => s.scheme_id))}
                             disabled={selectedCount === 0}
+                            style={{
+                                height: '36px', borderRadius: '999px', border: 'none',
+                                padding: '0 16px', display: 'flex', alignItems: 'center', gap: '6px',
+                                fontSize: '13px', fontWeight: '500',
+                                cursor: selectedCount === 0 ? 'not-allowed' : 'pointer',
+                                background: selectedCount > 0 ? (dk ? 'rgba(239,68,68,0.15)' : '#FEF2F2') : (dk ? 'rgba(255,255,255,0.04)' : '#F8FAFC'),
+                                color: selectedCount > 0 ? '#EF4444' : T.textMuted,
+                                transition: 'all 0.15s',
+                            }}
                         >
-                            <Trash2 size={15}/>
-                            <span>Delete selected</span>
+                            <Trash2 size={14}/> Delete
+                        </button>
+
+                        <button
+                            onClick={() => onCreateNew?.()}
+                            style={{
+                                height: '36px', borderRadius: '999px', border: 'none',
+                                padding: '0 18px', display: 'flex', alignItems: 'center', gap: '7px',
+                                fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                                background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
+                                color: '#FFFFFF',
+                                boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
+                                transition: 'opacity 0.15s, box-shadow 0.15s',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(43,115,255,0.45)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(43,115,255,0.35)'; }}
+                        >
+                            <FilePlus2 size={14}/> New Template
                         </button>
                     </div>
                 </div>
 
                 {schemes.length > 0 ? (
-                    <div className="space-y-3">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         {schemes.map((s, index) => {
                             const selected = selectedRows[index];
                             const penalty = s.penalize_wrong && typeof s.penalty_per_wrong === 'number'
                                 ? Number(s.penalty_per_wrong).toLocaleString() : null;
                             return (
-                                <article
+                                <div
                                     key={s.scheme_id}
-                                    style={{animationDelay: `${index * 50}ms`}}
-                                    className={`card-enter bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all duration-200 flex flex-row items-center px-5 py-4 gap-5 ${selected ? 'border-[#0866FF] ring-1 ring-[#0866FF]/20' : 'border-[#E4E6EB]'}`}
+                                    className="card-enter"
+                                    style={{
+                                        animationDelay: `${index * 50}ms`,
+                                        background: T.surface,
+                                        borderRadius: '22px',
+                                        border: `1.5px solid ${selected ? '#2B73FF' : T.border}`,
+                                        boxShadow: selected
+                                            ? '0 0 0 4px rgba(43,115,255,0.10), 0 4px 20px rgba(43,115,255,0.12)'
+                                            : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+                                        display: 'flex', flexDirection: 'row', alignItems: 'center',
+                                        padding: '14px 18px', gap: '14px',
+                                        transition: 'border-color 0.18s, box-shadow 0.18s',
+                                    }}
                                 >
                                     <button
                                         onClick={() => handleCheckboxChange(index)}
-                                        className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-[#F0F2F5] flex-shrink-0 transition-colors"
-                                        aria-pressed={selected}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0, padding: '2px' }}
                                     >
                                         {selected
-                                            ? <CheckSquare size={20} className="text-[#0866FF]"/>
-                                            : <Square size={20} className="text-[#BEC3C9]"/>}
+                                            ? <CheckSquare size={20} style={{ color: '#2B73FF' }}/>
+                                            : <Square size={20} style={{ color: T.textMuted }}/>}
                                     </button>
 
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-[15px] text-[#1C1E21] truncate">{s.name}</h3>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: '14px', fontWeight: '600', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
                                         {s.description && (
-                                            <p className="text-[#65676B] text-sm mt-0.5 truncate">{s.description}</p>
+                                            <div style={{ fontSize: '12px', color: T.textSec, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.description}</div>
                                         )}
                                     </div>
 
-                                    <div className="flex flex-wrap gap-2 items-center px-5 border-x border-[#E4E6EB]">
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center', padding: '0 16px', borderLeft: `1px solid ${T.border}`, borderRight: `1px solid ${T.border}` }}>
                                         {s.scale_type && <MetaPill tone="slate">Scale: {s.scale_type}</MetaPill>}
                                         {s.partial_credit && <MetaPill tone="green">Partial credit</MetaPill>}
                                         {s.penalize_wrong && <MetaPill tone="red">Penalty −{penalty ?? '1'}</MetaPill>}
                                         {s.allow_negative_points && <MetaPill tone="amber">Negative pts</MetaPill>}
                                     </div>
 
-                                    <div className="flex items-center gap-1 flex-shrink-0">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                                         <button
                                             title="Edit template"
                                             onClick={() => onEdit(s.scheme_id)}
-                                            className="p-2 rounded-xl text-[#606770] hover:text-green-600 hover:bg-green-50 transition-colors"
+                                            style={{
+                                                padding: '7px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                                                background: 'none', color: T.textSec, display: 'flex', alignItems: 'center',
+                                                transition: 'all 0.15s',
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.background = dk ? 'rgba(34,197,94,0.15)' : '#F0FDF4'; e.currentTarget.style.color = '#22C55E'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = T.textSec; }}
                                         >
-                                            <Edit size={18}/>
+                                            <Edit size={17}/>
                                         </button>
                                         <button
                                             title="Delete template"
                                             onClick={() => handleDeleteRequest([s.scheme_id])}
-                                            className="p-2 rounded-xl text-[#606770] hover:text-red-500 hover:bg-red-50 transition-colors"
+                                            style={{
+                                                padding: '7px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                                                background: 'none', color: T.textSec, display: 'flex', alignItems: 'center',
+                                                transition: 'all 0.15s',
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.background = dk ? 'rgba(239,68,68,0.15)' : '#FEF2F2'; e.currentTarget.style.color = '#EF4444'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = T.textSec; }}
                                         >
-                                            <Trash2 size={18}/>
+                                            <Trash2 size={17}/>
                                         </button>
                                     </div>
-                                </article>
+                                </div>
                             );
                         })}
                     </div>
                 ) : (
-                    <div className="text-center py-20 px-6 bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
-                        <Inbox size={44} className="mx-auto text-[#BEC3C9]"/>
-                        <h3 className="mt-4 text-base font-semibold text-[#1C1E21]">No grading templates found</h3>
-                        <p className="mt-1 text-sm text-[#65676B]">Create a new template to get started.</p>
+                    <div style={{ textAlign: 'center', padding: '64px 24px', background: T.surface, borderRadius: '24px', border: `1px solid ${T.border}` }}>
+                        <Inbox size={44} style={{ margin: '0 auto', color: T.textMuted }}/>
+                        <div style={{ marginTop: '16px', fontSize: '15px', fontWeight: '600', color: T.text }}>No grading templates found</div>
+                        <div style={{ marginTop: '4px', fontSize: '13px', color: T.textSec }}>Create a new template to get started.</div>
                     </div>
                 )}
             </div>

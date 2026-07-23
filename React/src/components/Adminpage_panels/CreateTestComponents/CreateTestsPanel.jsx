@@ -5,8 +5,21 @@ import { toast } from "react-toastify";
 import { Plus, Save, FileJson, Loader } from "lucide-react";
 import QuestionEditor from "./QuestionEditor.jsx";
 import { QuestionDefaults } from "./EditorQuestionTypes/QuestionDefaults.jsx";
+import { useAppContext } from "../../../AppContext.jsx";
 
 function CreateTestsPanel({ setOverlayImage }) {
+  const { darkMode: dk } = useAppContext();
+  const T = {
+    bg:       dk ? '#0F1117' : '#F4F6FB',
+    surface:  dk ? '#171B2D' : '#FFFFFF',
+    border:   dk ? '#2A2F45' : '#E4E6EB',
+    text:     dk ? '#E2E8F0' : '#0F1623',
+    textSec:  dk ? '#8896B3' : '#64748B',
+    textMuted:dk ? '#5A6483' : '#BEC3C9',
+    inputBg:  dk ? '#1E2237' : '#FFFFFF',
+    divider:  dk ? '#2A2F45' : '#EDF0F7',
+  };
+
   const [images, setImages] = useState([]);
   const [jsonFileName, setJsonFileName] = useState("");
   const jsonFileInputRef = useRef(null);
@@ -151,68 +164,97 @@ function CreateTestsPanel({ setOverlayImage }) {
     }
   };
 
-  const inputCls = "w-full px-3 py-2 border border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] bg-white placeholder:text-[#BEC3C9] focus:outline-none focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] transition-all";
+  const inputStyle = {
+    width: '100%', padding: '8px 12px', borderRadius: '12px',
+    border: `1.5px solid ${T.border}`, background: T.inputBg, color: T.text,
+    fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+    fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+    transition: 'border-color 0.15s',
+  };
+
+  const canAddQuestion = validateQuestions(watchedQuestions).valid;
 
   return (
-    <div className="p-6 bg-[#F0F2F5] min-h-screen">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto">
+    <div style={{ padding: '28px', background: T.bg, minHeight: '100%' }}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: '800px', margin: '0 auto' }}>
 
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <h1 className="text-xl font-bold text-[#1C1E21]">Create Test</h1>
-          <div className="flex items-center gap-2">
-            <input ref={jsonFileInputRef} id="ct_files" type="file" accept=".json" className="hidden" onChange={handleJsonFileUpload}/>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '24px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: '700', color: T.text, letterSpacing: '-0.02em' }}>Create Test</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input ref={jsonFileInputRef} id="ct_files" type="file" accept=".json" style={{ display: 'none' }} onChange={handleJsonFileUpload}/>
             <button
               type="button"
               onClick={() => jsonFileInputRef.current?.click()}
-              className="flex items-center gap-2 border border-[#E4E6EB] bg-white text-[#606770] font-medium py-2 px-4 rounded-xl hover:bg-[#F0F2F5] transition-colors text-sm"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                border: `1.5px solid ${T.border}`, background: T.surface,
+                color: T.textSec, fontWeight: '500', padding: '7px 16px',
+                borderRadius: '999px', cursor: 'pointer', fontSize: '13px',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.06)' : '#EEF4FF'; e.currentTarget.style.color = '#2B73FF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = T.surface; e.currentTarget.style.color = T.textSec; }}
             >
-              <FileJson size={16}/>
+              <FileJson size={15}/>
               <span>Import JSON</span>
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center justify-center gap-2 min-w-[140px] bg-[#0866FF] text-white hover:bg-[#0757D9] font-semibold py-2 px-5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm text-sm"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                minWidth: '140px', background: isSubmitting ? T.textMuted : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
+                color: '#FFFFFF', fontWeight: '600', padding: '7px 20px',
+                borderRadius: '999px', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                fontSize: '13px', boxShadow: isSubmitting ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
+                transition: 'opacity 0.15s',
+              }}
+              onMouseEnter={e => { if (!isSubmitting) e.currentTarget.style.opacity = '0.88'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
             >
-              {isSubmitting ? <Loader size={16} className="animate-spin"/> : <Save size={16}/>}
+              {isSubmitting ? <Loader size={15} className="animate-spin"/> : <Save size={15}/>}
               <span>{isSubmitting ? "Creating…" : "Create Test"}</span>
             </button>
           </div>
         </div>
 
         {jsonFileName && (
-          <p className="text-sm text-[#65676B] mb-4 -mt-2">
-            Imported: <span className="font-medium text-[#1C1E21]">{jsonFileName}</span>
+          <p style={{ fontSize: '13px', color: T.textSec, marginBottom: '16px', marginTop: '-8px' }}>
+            Imported: <span style={{ fontWeight: '600', color: T.text }}>{jsonFileName}</span>
           </p>
         )}
 
         {/* Card */}
-        <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
+        <div style={{ background: T.surface, borderRadius: '22px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)' }}>
           {/* Test info */}
-          <div className="p-6 border-b border-[#E4E6EB] grid md:grid-cols-2 gap-5">
+          <div style={{ padding: '24px', borderBottom: `1px solid ${T.border}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div>
-              <label htmlFor="test_name" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Test Name</label>
+              <label htmlFor="test_name" style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: T.text, marginBottom: '6px' }}>Test Name</label>
               <input
                 id="test_name" type="text" placeholder="e.g., Algebra Basics"
                 {...register("test_name", { required: "Test name is required." })}
-                className={inputCls}
+                style={inputStyle}
+                onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(43,115,255,0.1)'; }}
+                onBlur={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = 'none'; }}
               />
-              {errors.test_name && <p className="text-red-500 text-xs mt-1">{errors.test_name.message}</p>}
+              {errors.test_name && <p style={{ color: '#EF4444', fontSize: '12px', marginTop: '4px' }}>{errors.test_name.message}</p>}
             </div>
             <div>
-              <label htmlFor="test_description" className="block text-sm font-medium text-[#1C1E21] mb-1.5">Description</label>
+              <label htmlFor="test_description" style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: T.text, marginBottom: '6px' }}>Description</label>
               <input
                 id="test_description" type="text" placeholder="Short description of the test"
                 {...register("test_description", { required: "Description is required." })}
-                className={inputCls}
+                style={inputStyle}
+                onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(43,115,255,0.1)'; }}
+                onBlur={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = 'none'; }}
               />
-              {errors.test_description && <p className="text-red-500 text-xs mt-1">{errors.test_description.message}</p>}
+              {errors.test_description && <p style={{ color: '#EF4444', fontSize: '12px', marginTop: '4px' }}>{errors.test_description.message}</p>}
             </div>
           </div>
 
           {/* Questions */}
-          <div className="p-6 divide-y divide-[#E4E6EB] space-y-6">
+          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <AnimatePresence>
               {questions.map((q, index) => (
                 <motion.div
@@ -222,7 +264,7 @@ function CreateTestsPanel({ setOverlayImage }) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto", transition: { duration: 0.3 } }}
                   exit={{ opacity: 0, height: 0, transition: { duration: 0.3 } }}
-                  className="pt-6 first:pt-0 pb-6 overflow-hidden"
+                  style={{ overflow: 'hidden', paddingTop: index > 0 ? '24px' : 0, borderTop: index > 0 ? `1px solid ${T.divider}` : 'none' }}
                 >
                   <QuestionEditor
                     question={q} qIndex={index}
@@ -236,18 +278,29 @@ function CreateTestsPanel({ setOverlayImage }) {
               ))}
             </AnimatePresence>
 
-            <div className="pt-6">
+            <div style={{ paddingTop: '8px', borderTop: `1px solid ${T.divider}` }}>
               <button
                 type="button"
                 onClick={() => addNewQuestion()}
-                disabled={!validateQuestions(watchedQuestions).valid}
-                className="flex items-center gap-2 bg-[#0866FF] text-white font-semibold py-2 px-4 rounded-xl hover:bg-[#0757D9] transition-colors disabled:bg-[#BEC3C9] disabled:cursor-not-allowed text-sm shadow-sm"
+                disabled={!canAddQuestion}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: canAddQuestion ? 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)' : T.textMuted,
+                  color: '#FFFFFF', fontWeight: '600', padding: '8px 18px',
+                  borderRadius: '999px', border: 'none',
+                  cursor: canAddQuestion ? 'pointer' : 'not-allowed',
+                  fontSize: '13px',
+                  boxShadow: canAddQuestion ? '0 4px 14px rgba(43,115,255,0.35)' : 'none',
+                  transition: 'opacity 0.15s',
+                }}
+                onMouseEnter={e => { if (canAddQuestion) e.currentTarget.style.opacity = '0.88'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
               >
-                <Plus size={16}/>
+                <Plus size={15}/>
                 <span>Add New Question</span>
               </button>
-              {!validateQuestions(watchedQuestions).valid && (
-                <p className="text-[#65676B] text-xs mt-2">
+              {!canAddQuestion && (
+                <p style={{ color: T.textSec, fontSize: '12px', marginTop: '8px' }}>
                   Fill all fields and place all answers before adding a new question.
                 </p>
               )}

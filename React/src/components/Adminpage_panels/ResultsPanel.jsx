@@ -93,67 +93,105 @@ const SkeletonParticipants = ({rows = 6, instance}) => (
 // NAGŁÓWEK WYSZUKIWANIA
 // =============================================================
 
-const SearchHeader = ({
-                          searchTerm,
-                          setSearchTerm,
-                          searchType,
-                          setSearchType,
-                          resultsCount,
-                      }) => (
-    <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-[#E4E6EB] px-6 py-3">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-3">
-            <div className="relative w-full sm:flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#BEC3C9]"/>
-                <input
-                    className="w-full py-2 pl-10 pr-4 text-sm bg-[#F0F2F5] border border-[#E4E6EB] text-[#1C1E21] rounded-xl focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] outline-none transition-all placeholder:text-[#BEC3C9]"
-                    type="text"
-                    name="results-search-input"
-                    id="results-search-input"
-                    placeholder={searchType === 'instances' ? 'Search instances…' : 'Search users…'}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+const SearchHeader = ({searchTerm, setSearchTerm, searchType, setSearchType, resultsCount}) => {
+    const { darkMode: dk } = useAppContext();
+    const surface  = dk ? '#171B2D' : '#FFFFFF';
+    const border   = dk ? '#2A2F45' : '#E2E8F0';
+    const inputBg  = dk ? '#1E2237' : '#F4F6FB';
+    const text     = dk ? '#E2E8F0' : '#0F1623';
+    const textSec  = dk ? '#8896B3' : '#64748B';
+    const textMuted= dk ? '#5A6483' : '#94A3B8';
+
+    return (
+        <div style={{ padding: '16px 24px', maxWidth: '980px', margin: '0 auto' }}>
+            <div style={{
+                display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px',
+                background: surface,
+                borderRadius: '22px',
+                border: `1.5px solid ${border}`,
+                padding: '10px 16px',
+                boxShadow: dk ? 'none' : '0 4px 24px rgba(43,115,255,0.08)',
+            }}>
+                {/* Search input */}
+                <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
+                    <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: textMuted, width: '15px', height: '15px' }}/>
+                    <input
+                        type="text"
+                        name="results-search-input"
+                        id="results-search-input"
+                        placeholder={searchType === 'instances' ? 'Search instances…' : 'Search users…'}
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%', height: '36px', borderRadius: '12px',
+                            border: `1.5px solid ${border}`,
+                            background: inputBg, color: text,
+                            paddingLeft: '36px', paddingRight: '12px',
+                            fontSize: '13px', outline: 'none',
+                            transition: 'border-color 0.15s',
+                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                            boxSizing: 'border-box',
+                        }}
+                        onFocus={e => { e.currentTarget.style.borderColor = '#2B73FF'; }}
+                        onBlur={e => { e.currentTarget.style.borderColor = border; }}
+                    />
+                </div>
+
+                {/* Tabs */}
+                <div style={{ display: 'flex', gap: '4px', padding: '4px', background: inputBg, borderRadius: '14px', border: `1px solid ${border}` }}>
+                    {[{ id: 'instances', icon: BookOpen, label: 'Instances' }, { id: 'users', icon: Users, label: 'Users' }].map(({ id, icon: Icon, label }) => {
+                        const active = searchType === id;
+                        return (
+                            <button
+                                key={id}
+                                onClick={() => setSearchType(id)}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                    padding: '5px 12px', borderRadius: '10px', border: 'none',
+                                    fontSize: '12px', fontWeight: '500', cursor: 'pointer',
+                                    background: active ? surface : 'transparent',
+                                    color: active ? '#2B73FF' : textSec,
+                                    boxShadow: active ? (dk ? '0 2px 8px rgba(0,0,0,0.3)' : '0 1px 4px rgba(0,0,0,0.1)') : 'none',
+                                    border: active ? `1px solid ${border}` : '1px solid transparent',
+                                    transition: 'all 0.15s',
+                                    fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                }}
+                            >
+                                <Icon size={13}/> {label}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <span style={{ fontSize: '12px', fontWeight: '500', color: textMuted, whiteSpace: 'nowrap' }}>
+                    {resultsCount} results
+                </span>
             </div>
-            <div className="flex items-center gap-1 p-1 bg-[#F0F2F5] rounded-xl border border-[#E4E6EB]">
-                <button
-                    onClick={() => setSearchType('instances')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                        searchType === 'instances'
-                            ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]'
-                            : 'text-[#65676B] hover:text-[#1C1E21]'
-                    }`}
-                >
-                    <BookOpen size={15}/> Instances
-                </button>
-                <button
-                    onClick={() => setSearchType('users')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                        searchType === 'users'
-                            ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]'
-                            : 'text-[#65676B] hover:text-[#1C1E21]'
-                    }`}
-                >
-                    <Users size={15}/> Users
-                </button>
-            </div>
-            <span className="text-sm font-medium text-[#65676B] shrink-0">{resultsCount} results</span>
         </div>
-    </header>
-);
+    );
+};
 
 // =============================================================
 // LISTY
 // =============================================================
 
-const EmptyState = ({title = 'No Results found', subtitle = 'Search for Instance or User.'}) => (
-    <div className="flex flex-col items-center justify-center w-full h-full px-6">
-        <div className="text-center py-16 px-8 w-full max-w-sm mt-10 bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
-            <Inbox size={44} className="mx-auto text-[#BEC3C9]"/>
-            <h3 className="mt-4 text-base font-semibold text-[#1C1E21]">{title}</h3>
-            <p className="mt-1 text-sm text-[#65676B]">{subtitle}</p>
+const EmptyState = ({title = 'No Results found', subtitle = 'Search for Instance or User.'}) => {
+    const { darkMode: dk } = useAppContext();
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '0 24px' }}>
+            <div style={{
+                textAlign: 'center', padding: '64px 32px', width: '100%', maxWidth: '360px', marginTop: '40px',
+                background: dk ? '#171B2D' : '#FFFFFF', borderRadius: '24px',
+                border: `1px solid ${dk ? '#2A2F45' : '#E4E6EB'}`,
+                boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+            }}>
+                <Inbox size={44} style={{ margin: '0 auto', color: dk ? '#5A6483' : '#BEC3C9' }}/>
+                <h3 style={{ marginTop: '16px', fontSize: '15px', fontWeight: '600', color: dk ? '#E2E8F0' : '#0F1623' }}>{title}</h3>
+                <p style={{ marginTop: '4px', fontSize: '13px', color: dk ? '#8896B3' : '#64748B' }}>{subtitle}</p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 const fmt2 = (v, locale = 'en-US') => {
@@ -163,129 +201,218 @@ const fmt2 = (v, locale = 'en-US') => {
 };
 
 const getPercentColor = (percentage) => {
-    if (percentage >= 80) {
-        return 'text-green-600 dark:text-green-400';
-    }
-    if (percentage >= 50) {
-        return 'text-yellow-500 dark:text-yellow-400';
-    }
-    return 'text-red-600 dark:text-red-500';
+    if (percentage >= 80) return '#22C55E';
+    if (percentage >= 50) return '#F59E0B';
+    return '#EF4444';
 };
 
 const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, config}) => {
+    const { darkMode: dk } = useAppContext();
     if (!Array.isArray(results) || results.length === 0) return <EmptyState/>;
 
     const isInstanceMode = searchType === 'instances';
 
-    const Badge = ({color = 'slate', children}) => {
-        const colorClasses = {
-            slate: 'bg-[#F0F2F5] text-[#65676B]',
-            green: 'bg-green-50 text-green-700',
-            indigo: 'bg-[#E7F3FF] text-[#0866FF]',
-            red: 'bg-red-50 text-red-600',
-        };
-        return (
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${colorClasses[color] || colorClasses.slate}`}>
-                {children}
-            </span>
-        );
-    };
-
-    const Dot = ({on = false}) => (
-        <span className={`inline-block h-1.5 w-1.5 rounded-full ${on ? 'bg-green-500' : 'bg-red-500'}`}/>
-    );
-
-    const InfoItem = ({icon: Icon, children}) => (
-        <div className="flex items-center gap-1.5 text-xs text-[#65676B]">
-            {Icon && <Icon size={13} className="shrink-0 text-[#BEC3C9]"/>}
-            <span className="truncate">{children}</span>
-        </div>
-    );
-
     const Card = ({item, index}) => {
-        const key = isInstanceMode ? item.instance_id : item.activity_id || item.user_id;
+        const [hovered, setHovered] = React.useState(false);
+        const surface  = dk ? '#171B2D' : '#FFFFFF';
+        const border   = dk ? (hovered ? '#4D7FFF' : '#2A2F45') : (hovered ? '#C7D9FF' : '#EDF0F7');
+        const surface2 = dk ? '#1E2237' : '#F8FAFF';
+        const border2  = dk ? '#2A2F45' : '#EDF0F7';
+        const text     = dk ? '#E2E8F0' : '#0F1623';
+        const textSec  = dk ? '#8896B3' : '#64748B';
+        const textMuted= dk ? '#5A6483' : '#94A3B8';
         const created = formatDate(item.created_at);
         const updated = formatDate(item.updated_at || item.last_activity_at);
         const participants = item.participants_count ?? item.users_count ?? item.participants?.length ?? null;
         const avg = item.avg_score ?? item.average_score ?? null;
         const fullName = item.user_surname && item.user_name ? `${item.user_surname} ${item.user_name}` : item.full_name;
-        const initials = (item.user_surname?.[0] || item.surname?.[0] || '') + (item.user_name?.[0] || item.name?.[0] || '');
+        const initials = ((item.user_surname?.[0] || item.surname?.[0] || '') + (item.user_name?.[0] || item.name?.[0] || '')).toUpperCase();
         const handleClick = () => (isInstanceMode ? onInstanceClick(item) : onUserClick(item));
+        const isActive = item.is_active;
+        const completionPct = typeof item.completed_ratio === 'number'
+            ? Math.round(item.completed_ratio * 100)
+            : typeof item.progress === 'number'
+                ? Math.round(item.progress * 100)
+                : null;
 
         return (
             <div
-                key={key}
                 onClick={handleClick}
-                className="card-enter bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
-                style={{animationDelay: `${index * 40}ms`}}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+                className="card-enter"
+                style={{
+                    animationDelay: `${index * 35}ms`,
+                    background: surface,
+                    borderRadius: '22px',
+                    border: `1.5px solid ${border}`,
+                    boxShadow: hovered
+                        ? '0 6px 24px rgba(43,115,255,0.11), 0 2px 8px rgba(0,0,0,0.08)'
+                        : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.18s, box-shadow 0.18s',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
             >
-                <div className="flex items-start gap-3">
-                    {!isInstanceMode && (
-                        item.photo_url ? (
-                            <img src={item.photo_url} alt={fullName || item.login}
-                                 className="h-10 w-10 rounded-full object-cover"/>
-                        ) : (
-                            <div className="h-10 w-10 rounded-full bg-[#E7F3FF] text-[#0866FF] flex items-center justify-center font-semibold text-sm shrink-0">
-                                {initials || 'U'}
-                            </div>
-                        )
-                    )}
+                {/* Top accent bar for active instances */}
+                {isInstanceMode && (
+                    <div style={{
+                        height: '3px',
+                        background: isActive
+                            ? 'linear-gradient(90deg, #2B73FF 0%, #3F99FF 100%)'
+                            : border2,
+                    }}/>
+                )}
 
-                    <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                            <p className="font-semibold text-[#1C1E21] text-[14px] truncate">
-                                {isInstanceMode ? item.instance_name : fullName}
-                            </p>
-                            {isInstanceMode ? (
-                                <Badge color={item.is_active ? 'green' : 'red'}>
-                                    <span className="flex items-center gap-1">
-                                        <Dot on={item.is_active}/> {item.is_active ? 'Active' : 'Inactive'}
-                                    </span>
-                                </Badge>
-                            ) : (
-                                item.role && <Badge color={item.role === 'admin' ? 'indigo' : 'slate'}>{item.role}</Badge>
+                <div style={{ padding: '18px 20px', flex: 1, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+                    {/* Header row */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                            {!isInstanceMode && (
+                                item.photo_url
+                                    ? <img src={item.photo_url} alt={fullName} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}/>
+                                    : (
+                                        <div style={{
+                                            width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
+                                            background: dk ? 'rgba(43,115,255,0.18)' : 'linear-gradient(135deg, #EEF4FF, #DDE9FF)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontSize: '12px', fontWeight: '700', color: '#2B73FF',
+                                        }}>
+                                            {initials || 'U'}
+                                        </div>
+                                    )
                             )}
+                            <div style={{ minWidth: 0 }}>
+                                <div style={{ fontSize: '14px', fontWeight: '600', color: text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.01em' }}>
+                                    {isInstanceMode ? item.instance_name : fullName}
+                                </div>
+                                {!isInstanceMode && item.user_index && config.use_index && (
+                                    <div style={{ fontSize: '11px', color: textMuted, marginTop: '1px' }}>#{item.user_index}</div>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="mt-1.5 flex flex-col gap-0.5">
-                            {isInstanceMode ? (
-                                <>
-                                    {created && <InfoItem icon={CalendarDays}>Created: {created}</InfoItem>}
-                                    {updated && <InfoItem icon={Activity}>Last activity: {updated}</InfoItem>}
-                                    {participants != null && <InfoItem icon={Users}>Participants: {participants}</InfoItem>}
-                                    {avg != null && <InfoItem icon={Percent}>Avg score: {fmt2(avg)}</InfoItem>}
-                                </>
-                            ) : (
-                                <>
-                                    {item.user_index && config.use_index && <InfoItem icon={Hash}>Index: {item.user_index}</InfoItem>}
-                                    {updated && <InfoItem icon={Activity}>Last active: {updated}</InfoItem>}
-                                </>
+                        {/* Status badge */}
+                        {isInstanceMode ? (
+                            <div style={{
+                                flexShrink: 0,
+                                display: 'flex', alignItems: 'center', gap: '5px',
+                                padding: '3px 10px', borderRadius: '999px',
+                                background: isActive ? (dk ? 'rgba(34,197,94,0.15)' : '#F0FDF4') : (dk ? 'rgba(239,68,68,0.15)' : '#FEF2F2'),
+                                border: `1px solid ${isActive ? (dk ? 'rgba(34,197,94,0.3)' : '#BBF7D0') : (dk ? 'rgba(239,68,68,0.3)' : '#FECACA')}`,
+                                fontSize: '11px', fontWeight: '600',
+                                color: isActive ? '#22C55E' : '#EF4444',
+                            }}>
+                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isActive ? '#22C55E' : '#EF4444', flexShrink: 0 }}/>
+                                {isActive ? 'Active' : 'Inactive'}
+                            </div>
+                        ) : (
+                            item.role && (
+                                <div style={{
+                                    flexShrink: 0,
+                                    padding: '3px 10px', borderRadius: '999px',
+                                    background: item.role === 'admin' ? (dk ? 'rgba(43,115,255,0.15)' : '#EEF4FF') : (dk ? 'rgba(255,255,255,0.06)' : '#F4F6FB'),
+                                    border: `1px solid ${item.role === 'admin' ? (dk ? 'rgba(43,115,255,0.3)' : '#B8D0FF') : border2}`,
+                                    fontSize: '11px', fontWeight: '600',
+                                    color: item.role === 'admin' ? '#2B73FF' : textSec,
+                                }}>
+                                    {item.role}
+                                </div>
+                            )
+                        )}
+                    </div>
+
+                    {/* Stats row – big numbers for instance mode */}
+                    {isInstanceMode && (participants != null || avg != null) && (
+                        <div style={{
+                            display: 'flex', gap: '0',
+                            background: surface2,
+                            borderRadius: '14px',
+                            border: `1px solid ${border2}`,
+                            overflow: 'hidden',
+                        }}>
+                            {participants != null && (
+                                <div style={{ flex: 1, padding: '10px 14px', borderRight: avg != null ? `1px solid ${border2}` : 'none' }}>
+                                    <div style={{ fontSize: '20px', fontWeight: '700', color: text, letterSpacing: '-0.03em', lineHeight: 1 }}>{participants}</div>
+                                    <div style={{ fontSize: '11px', color: textMuted, marginTop: '3px', fontWeight: '500' }}>Participants</div>
+                                </div>
                             )}
+                            {avg != null && (
+                                <div style={{ flex: 1, padding: '10px 14px' }}>
+                                    <div style={{ fontSize: '20px', fontWeight: '700', color: text, letterSpacing: '-0.03em', lineHeight: 1 }}>{fmt2(avg)}</div>
+                                    <div style={{ fontSize: '11px', color: textMuted, marginTop: '3px', fontWeight: '500' }}>Avg score</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Completion bar */}
+                    {isInstanceMode && completionPct !== null && (
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                <span style={{ fontSize: '11px', color: textMuted, fontWeight: '500' }}>Completion</span>
+                                <span style={{ fontSize: '11px', fontWeight: '700', color: getPercentColor(completionPct) }}>{completionPct}%</span>
+                            </div>
+                            <div style={{ height: '6px', borderRadius: '999px', background: border2, overflow: 'hidden' }}>
+                                <div style={{
+                                    height: '100%', borderRadius: '999px',
+                                    background: completionPct >= 80
+                                        ? 'linear-gradient(90deg, #22C55E, #4ADE80)'
+                                        : completionPct >= 50
+                                            ? 'linear-gradient(90deg, #F59E0B, #FCD34D)'
+                                            : 'linear-gradient(90deg, #EF4444, #F87171)',
+                                    width: `${completionPct}%`,
+                                    transition: 'width 0.4s ease',
+                                }}/>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Date metadata */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {created && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <CalendarDays size={12} style={{ color: textMuted, flexShrink: 0 }}/>
+                                <span style={{ fontSize: '11px', color: textMuted }}>Created {created}</span>
+                            </div>
+                        )}
+                        {updated && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Activity size={12} style={{ color: textMuted, flexShrink: 0 }}/>
+                                <span style={{ fontSize: '11px', color: textMuted }}>Last activity {updated}</span>
+                            </div>
+                        )}
+                        {!isInstanceMode && updated && !created && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Activity size={12} style={{ color: textMuted, flexShrink: 0 }}/>
+                                <span style={{ fontSize: '11px', color: textMuted }}>Last active {updated}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Arrow hint on hover */}
+                    <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                        opacity: hovered ? 1 : 0, transition: 'opacity 0.18s',
+                    }}>
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: '4px',
+                            fontSize: '11px', fontWeight: '600', color: '#2B73FF',
+                        }}>
+                            View details <ArrowRight size={12}/>
                         </div>
                     </div>
                 </div>
-
-                {isInstanceMode && (typeof item.completed_ratio === 'number' || typeof item.progress === 'number') && (
-                    <div className="mt-3">
-                        <div className="flex items-center justify-between text-xs text-[#65676B] mb-1">
-                            <span>Completion</span>
-                            <span className="font-semibold text-[#1C1E21]">
-                                {Math.round((item.completed_ratio ?? item.progress) * 100)}%
-                            </span>
-                        </div>
-                        <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
-                            <div className="h-1.5 rounded-full bg-[#0866FF]"
-                                 style={{width: `${Math.round((item.completed_ratio ?? item.progress) * 100)}%`}}/>
-                        </div>
-                    </div>
-                )}
             </div>
         );
     };
 
     return (
         <div className="p-6 max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {results.map((item, index) => (
                     <Card key={(isInstanceMode ? item.instance_id : item.activity_id || item.user_id) ?? index}
                           item={item} index={index}/>
@@ -301,6 +428,17 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
 // =============================================================
 
 const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => {
+    const { darkMode: dk } = useAppContext();
+    const T = {
+        bg:       dk ? '#0F1117' : '#F4F6FB',
+        surface:  dk ? '#171B2D' : '#FFFFFF',
+        surface2: dk ? '#1E2237' : '#F8FAFC',
+        border:   dk ? '#2A2F45' : '#E4E6EB',
+        text:     dk ? '#E2E8F0' : '#0F1623',
+        textSec:  dk ? '#8896B3' : '#64748B',
+        textMuted:dk ? '#5A6483' : '#BEC3C9',
+        hoverBg:  dk ? 'rgba(255,255,255,0.06)' : '#F0F2F5',
+    };
     const [sortKey, setSortKey] = useState('percentDesc');
     const [openSort, setOpenSort] = useState(false);
     const [activeTab, setActiveTab] = useState('participants');
@@ -410,56 +548,86 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
     const Avatar = ({user}) => {
         const initials = `${user.user_surname?.[0] || ''}${user.user_name?.[0] || ''}` || 'U';
         return (
-            <div className="h-10 w-10 rounded-full bg-[#E7F3FF] text-[#0866FF] flex items-center justify-center font-semibold text-sm shrink-0">
+            <div style={{
+                width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
+                background: dk ? 'rgba(43,115,255,0.18)' : '#EEF4FF',
+                color: '#2B73FF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: '600', fontSize: '13px',
+            }}>
                 {initials}
             </div>
         );
     };
 
+    const barColor = (pct) => pct >= 80 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444';
+
     return (
-        <div className="p-6 max-w-5xl mx-auto card-enter">
+        <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }} className="card-enter">
             {/* HEADER */}
-            <header className="mb-5">
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-center gap-3">
-                        <button onClick={onBack}
-                                className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
-                            <ChevronLeft size={20}/>
+            <header style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <button
+                            onClick={onBack}
+                            style={{ width: '36px', height: '36px', borderRadius: '999px', border: `1.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textSec, transition: 'all 0.15s' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                        >
+                            <ChevronLeft size={18}/>
                         </button>
                         <div>
-                            <h2 className="text-xl font-bold text-[#1C1E21]">{instance.instance_name}</h2>
-                            <p className="text-sm text-[#65676B] mt-0.5">Participants: {users.length}</p>
+                            <h2 style={{ fontSize: '18px', fontWeight: '700', color: T.text, letterSpacing: '-0.02em' }}>{instance.instance_name}</h2>
+                            <p style={{ fontSize: '13px', color: T.textSec, marginTop: '2px' }}>Participants: {users.length}</p>
                         </div>
                     </div>
 
                     {activeTab === 'participants' && users.length > 0 && (
-                        <div className="flex gap-2">
-                            <div className="relative" ref={menuRef}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <div style={{ position: 'relative' }} ref={menuRef}>
                                 <button
                                     type="button"
                                     onClick={() => setOpenSort((v) => !v)}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-[#E4E6EB] bg-white px-3 py-2 text-sm font-medium text-[#1C1E21] hover:bg-[#F0F2F5] transition-colors shadow-sm"
+                                    style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                        borderRadius: '999px', border: `1.5px solid ${T.border}`,
+                                        background: T.surface, padding: '7px 14px',
+                                        fontSize: '13px', fontWeight: '500', color: T.text,
+                                        cursor: 'pointer', boxShadow: dk ? 'none' : '0 2px 6px rgba(0,0,0,0.06)',
+                                    }}
                                 >
-                                    <ArrowUpDown size={15}/>
-                                    <span className="truncate max-w-[12rem]">{currentSortLabel}</span>
-                                    <ChevronDown size={15} className={`transition-transform text-[#65676B] ${openSort ? 'rotate-180' : ''}`}/>
+                                    <ArrowUpDown size={14}/>
+                                    <span style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentSortLabel}</span>
+                                    <ChevronDown size={14} style={{ color: T.textSec, transform: openSort ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}/>
                                 </button>
                                 <AnimatePresence>
                                     {openSort && (
                                         <motion.div
                                             initial={{opacity: 0, y: -5}} animate={{opacity: 1, y: 0}}
                                             exit={{opacity: 0, y: -5}}
-                                            className="absolute z-20 mt-2 w-56 rounded-2xl border border-[#E4E6EB] bg-white p-1 shadow-xl">
+                                            style={{
+                                                position: 'absolute', zIndex: 20, marginTop: '8px', width: '220px',
+                                                borderRadius: '18px', border: `1px solid ${T.border}`,
+                                                background: T.surface, padding: '4px',
+                                                boxShadow: dk ? '0 8px 32px rgba(0,0,0,0.6)' : '0 8px 32px rgba(0,0,0,0.12)',
+                                            }}
+                                        >
                                             {sortOptions.map((opt) => {
                                                 const active = opt.value === sortKey;
                                                 return (
                                                     <button
                                                         key={opt.value}
                                                         onClick={() => { setSortKey(opt.value); setOpenSort(false); }}
-                                                        className={`w-full text-left px-3 py-2 rounded-xl text-sm flex items-center justify-between transition-colors ${active ? 'bg-[#E7F3FF] text-[#0866FF]' : 'text-[#1C1E21] hover:bg-[#F0F2F5]'}`}
+                                                        style={{
+                                                            width: '100%', textAlign: 'left', padding: '8px 12px',
+                                                            borderRadius: '12px', fontSize: '13px', border: 'none',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                                            cursor: 'pointer', transition: 'all 0.12s',
+                                                            background: active ? (dk ? 'rgba(43,115,255,0.15)' : '#EEF4FF') : 'transparent',
+                                                            color: active ? '#2B73FF' : T.text,
+                                                        }}
                                                     >
                                                         <span>{opt.label}</span>
-                                                        {active && <Check size={15}/>}
+                                                        {active && <Check size={14}/>}
                                                     </button>
                                                 );
                                             })}
@@ -474,19 +642,29 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
             </header>
 
             {/* TABS */}
-            <div className="flex gap-1 mb-5 bg-[#F0F2F5] p-1 rounded-xl w-fit border border-[#E4E6EB]">
-                <button
-                    onClick={() => setActiveTab('participants')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'participants' ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]' : 'text-[#65676B] hover:text-[#1C1E21]'}`}
-                >
-                    <Users size={14}/> Participants
-                </button>
-                <button
-                    onClick={() => setActiveTab('stats')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'stats' ? 'bg-white text-[#0866FF] shadow-sm border border-[#E4E6EB]' : 'text-[#65676B] hover:text-[#1C1E21]'}`}
-                >
-                    <BarChart2 size={14}/> Statistics
-                </button>
+            <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: T.surface2, padding: '4px', borderRadius: '14px', width: 'fit-content', border: `1px solid ${T.border}` }}>
+                {[
+                    { id: 'participants', icon: Users, label: 'Participants' },
+                    { id: 'stats', icon: BarChart2, label: 'Statistics' },
+                ].map(({ id, icon: Icon, label }) => {
+                    const active = activeTab === id;
+                    return (
+                        <button
+                            key={id}
+                            onClick={() => setActiveTab(id)}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                padding: '6px 14px', borderRadius: '10px', border: active ? `1px solid ${T.border}` : '1px solid transparent',
+                                fontSize: '13px', fontWeight: '500', cursor: 'pointer', transition: 'all 0.15s',
+                                background: active ? T.surface : 'transparent',
+                                color: active ? '#2B73FF' : T.textSec,
+                                boxShadow: active ? (dk ? '0 2px 8px rgba(0,0,0,0.3)' : '0 1px 4px rgba(0,0,0,0.08)') : 'none',
+                            }}
+                        >
+                            <Icon size={13}/> {label}
+                        </button>
+                    );
+                })}
             </div>
 
             {/* PARTICIPANTS */}
@@ -494,44 +672,50 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
                 users.length === 0 ? (
                     <EmptyState title="No participants yet" subtitle="This test instance has no participants."/>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
                         {viewUsers.map((user) => {
                             const score = Number(user.score) || 0;
                             const maxScore = Number(user.max_score) || 0;
                             const percent = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-                            const bar = percent >= 80 ? 'bg-green-500' : percent >= 50 ? 'bg-amber-400' : 'bg-red-500';
 
                             return (
                                 <div
                                     key={user.activity_id || `${user.user_id}-${user.user_index}`}
                                     onClick={() => onUserClick(user, {fromInstance: true})}
-                                    className="bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                                    style={{
+                                        background: T.surface, padding: '16px', borderRadius: '18px',
+                                        border: `1.5px solid ${T.border}`, cursor: 'pointer',
+                                        boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)',
+                                        transition: 'border-color 0.18s, box-shadow 0.18s, transform 0.18s',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(43,115,255,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                 >
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="flex items-start gap-3 min-w-0">
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', minWidth: 0 }}>
                                             <Avatar user={user}/>
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-[#1C1E21] text-[14px] truncate">
+                                            <div style={{ minWidth: 0 }}>
+                                                <p style={{ fontWeight: '600', color: T.text, fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {user.user_surname} {user.user_name}
                                                 </p>
-                                                <div className="mt-1 flex items-center gap-3 text-xs text-[#65676B]">
+                                                <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: T.textSec }}>
                                                     {config?.use_index && user.user_index && (
-                                                        <span className="inline-flex items-center gap-1">
-                                                            <Hash className="h-3 w-3 text-[#BEC3C9]"/> {user.user_index}
+                                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                                            <Hash size={11} style={{ color: T.textMuted }}/> {user.user_index}
                                                         </span>
                                                     )}
                                                     <span>{fmt2(score)} / {fmt2(maxScore)} pts</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right shrink-0 flex items-center gap-2">
-                                            <span className={`text-sm font-bold ${getPercentColor(percent)}`}>{percent}%</span>
-                                            <ArrowRight className="text-[#BEC3C9]" size={16}/>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                                            <span style={{ fontSize: '14px', fontWeight: '700', color: getPercentColor(percent) }}>{percent}%</span>
+                                            <ArrowRight style={{ color: T.textMuted }} size={15}/>
                                         </div>
                                     </div>
-                                    <div className="mt-3">
-                                        <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
-                                            <div className={`h-1.5 rounded-full ${bar}`} style={{width: `${percent}%`}}/>
+                                    <div style={{ marginTop: '12px' }}>
+                                        <div style={{ height: '6px', width: '100%', borderRadius: '999px', background: T.surface2, overflow: 'hidden' }}>
+                                            <div style={{ height: '100%', borderRadius: '999px', background: barColor(percent), width: `${percent}%`, transition: 'width 0.4s ease' }}/>
                                         </div>
                                     </div>
                                 </div>
@@ -544,50 +728,44 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
             {/* STATISTICS */}
             {activeTab === 'stats' && (
                 questionStatsLoading ? (
-                    <div className="flex items-center justify-center p-16">
-                        <Loader className="animate-spin h-8 w-8 text-[#BEC3C9]"/>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '64px' }}>
+                        <Loader size={32} style={{ color: T.textMuted, animation: 'spin 1s linear infinite' }}/>
                     </div>
                 ) : !questionStats || questionStats.length === 0 ? (
                     <EmptyState title="No statistics yet" subtitle="Statistics appear once students complete the test."/>
                 ) : (
-                    <div className="space-y-3">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {questionStats.map((q, idx) => (
-                            <div key={q.question_id} className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm p-5">
-                                <div className="flex items-start justify-between gap-4 mb-3">
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-semibold text-[#BEC3C9] uppercase tracking-wider mb-1">
+                            <div key={q.question_id} style={{ background: T.surface, borderRadius: '18px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', padding: '20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginBottom: '12px' }}>
+                                    <div style={{ minWidth: 0 }}>
+                                        <p style={{ fontSize: '11px', fontWeight: '600', color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
                                             Q{idx + 1} · {q.question_type}
                                         </p>
-                                        <p className="font-semibold text-[#1C1E21] text-[14px]">{q.question_text}</p>
+                                        <p style={{ fontWeight: '600', color: T.text, fontSize: '14px' }}>{q.question_text}</p>
                                     </div>
-                                    <div className="text-right shrink-0">
-                                        <p className={`text-2xl font-bold ${getPercentColor(q.correct_percent)}`}>
+                                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                        <p style={{ fontSize: '24px', fontWeight: '700', color: getPercentColor(q.correct_percent) }}>
                                             {q.correct_percent}%
                                         </p>
-                                        <p className="text-xs text-[#65676B]">{q.correct_count}/{q.total_responses} correct</p>
+                                        <p style={{ fontSize: '12px', color: T.textSec }}>{q.correct_count}/{q.total_responses} correct</p>
                                     </div>
                                 </div>
-                                <div className="h-1.5 w-full rounded-full bg-[#F0F2F5] mb-4">
-                                    <div
-                                        className={`h-1.5 rounded-full transition-all ${q.correct_percent >= 80 ? 'bg-green-500' : q.correct_percent >= 50 ? 'bg-amber-400' : 'bg-red-500'}`}
-                                        style={{width: `${q.correct_percent}%`}}
-                                    />
+                                <div style={{ height: '6px', width: '100%', borderRadius: '999px', background: T.surface2, marginBottom: '16px', overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', borderRadius: '999px', background: barColor(q.correct_percent), width: `${q.correct_percent}%`, transition: 'width 0.4s ease' }}/>
                                 </div>
                                 {q.answers && q.answers.length > 0 && (
-                                    <div className="space-y-2 mt-3 border-t border-[#E4E6EB] pt-3">
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px', borderTop: `1px solid ${T.border}`, paddingTop: '12px' }}>
                                         {q.answers.map(a => (
-                                            <div key={a.answer_id} className="flex items-center gap-3">
-                                                <span className={`flex-shrink-0 h-2.5 w-2.5 rounded-sm ${a.is_correct ? 'bg-green-500' : 'bg-[#E4E6EB]'}`}/>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between items-center text-xs mb-1">
-                                                        <span className="text-[#1C1E21] truncate">{a.text}</span>
-                                                        <span className="text-[#65676B] ml-2 shrink-0">{a.chosen_count} ({a.chosen_percent}%)</span>
+                                            <div key={a.answer_id} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: '3px', background: a.is_correct ? '#22C55E' : T.border }}/>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', marginBottom: '4px' }}>
+                                                        <span style={{ color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.text}</span>
+                                                        <span style={{ color: T.textSec, marginLeft: '8px', flexShrink: 0 }}>{a.chosen_count} ({a.chosen_percent}%)</span>
                                                     </div>
-                                                    <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
-                                                        <div
-                                                            className={`h-1.5 rounded-full ${a.is_correct ? 'bg-green-500' : 'bg-[#CED0D4]'}`}
-                                                            style={{width: `${a.chosen_percent}%`}}
-                                                        />
+                                                    <div style={{ height: '4px', width: '100%', borderRadius: '999px', background: T.surface2, overflow: 'hidden' }}>
+                                                        <div style={{ height: '100%', borderRadius: '999px', background: a.is_correct ? '#22C55E' : (dk ? '#3A4060' : '#CBD5E1'), width: `${a.chosen_percent}%` }}/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -605,6 +783,16 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
 
 
 const UserDetailsView = ({user, userDetails, onBack, config}) => {
+    const { darkMode: dk } = useAppContext();
+    const T = {
+        surface:  dk ? '#171B2D' : '#FFFFFF',
+        surface2: dk ? '#1E2237' : '#F8FAFC',
+        border:   dk ? '#2A2F45' : '#E4E6EB',
+        text:     dk ? '#E2E8F0' : '#0F1623',
+        textSec:  dk ? '#8896B3' : '#64748B',
+        textMuted:dk ? '#5A6483' : '#BEC3C9',
+        hoverBg:  dk ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
+    };
     const [expandedQuestions, setExpandedQuestions] = useState([]);
 
     const toggleQuestion = (questionId) => {
@@ -618,52 +806,66 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
     }, [userDetails]);
 
     return (
-        <div className="p-6 max-w-5xl mx-auto card-enter">
-            <header className="flex justify-between items-center mb-5">
-                <div className="flex items-center gap-3">
-                    <button onClick={onBack} className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
-                        <ChevronLeft size={20}/>
+        <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }} className="card-enter">
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                        onClick={onBack}
+                        style={{ width: '36px', height: '36px', borderRadius: '999px', border: `1.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textSec, transition: 'all 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                        <ChevronLeft size={18}/>
                     </button>
                     <div>
-                        <h2 className="text-xl font-bold text-[#1C1E21]">
+                        <h2 style={{ fontSize: '18px', fontWeight: '700', color: T.text, letterSpacing: '-0.02em' }}>
                             {userDetails.user_name} {userDetails.user_surname}
                         </h2>
-                        <p className="text-sm text-[#65676B] mt-0.5">
+                        <p style={{ fontSize: '13px', color: T.textSec, marginTop: '2px' }}>
                             {config.use_index && userDetails.user_index && `Index: ${userDetails.user_index} · `}
                             {userDetails.instance_name}
                         </p>
                     </div>
                 </div>
-                <div className="text-right bg-white rounded-2xl border border-[#E4E6EB] shadow-sm px-4 py-2">
-                    <p className={`text-2xl font-bold ${getPercentColor(percent)}`}>{percent}%</p>
-                    <p className="text-xs text-[#65676B]">
+                <div style={{ textAlign: 'right', background: T.surface, borderRadius: '18px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', padding: '10px 18px' }}>
+                    <p style={{ fontSize: '24px', fontWeight: '700', color: getPercentColor(percent) }}>{percent}%</p>
+                    <p style={{ fontSize: '12px', color: T.textSec }}>
                         {fmt2(userDetails.user_score)} / {fmt2(userDetails.max_score_for_activity)} pts
                     </p>
                 </div>
             </header>
-            <div className="space-y-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {userDetails.questions.map((q, index) => {
                     const isCorrect = q.points_collected === q.points_value;
                     const isExpanded = expandedQuestions.includes(q.question_id);
 
                     return (
-                        <div key={q.question_id} className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm overflow-hidden">
+                        <div key={q.question_id} style={{ background: T.surface, borderRadius: '18px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
                             <div
-                                className="px-5 py-4 flex justify-between items-center cursor-pointer hover:bg-[#F0F2F5] transition-colors"
-                                onClick={() => toggleQuestion(q.question_id)}>
-                                <div className="flex items-center gap-3 min-w-0">
-                                    {isCorrect
-                                        ? <div className="h-6 w-6 rounded-full bg-green-50 flex items-center justify-center shrink-0"><Check className="h-3.5 w-3.5 text-green-600"/></div>
-                                        : <div className="h-6 w-6 rounded-full bg-red-50 flex items-center justify-center shrink-0"><X className="h-3.5 w-3.5 text-red-500"/></div>
-                                    }
-                                    <p className="font-medium text-[#1C1E21] text-[14px] truncate">Q{index + 1}: {q.question_text}</p>
+                                style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'background 0.15s' }}
+                                onClick={() => toggleQuestion(q.question_id)}
+                                onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                                    <div style={{
+                                        width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        background: isCorrect ? (dk ? 'rgba(34,197,94,0.15)' : '#F0FDF4') : (dk ? 'rgba(239,68,68,0.15)' : '#FEF2F2'),
+                                    }}>
+                                        {isCorrect
+                                            ? <Check size={13} style={{ color: '#22C55E' }}/>
+                                            : <X size={13} style={{ color: '#EF4444' }}/>
+                                        }
+                                    </div>
+                                    <p style={{ fontWeight: '500', color: T.text, fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Q{index + 1}: {q.question_text}</p>
                                 </div>
-                                <div className="flex items-center gap-3 shrink-0 ml-4">
-                                    <span className={`font-semibold text-sm ${isCorrect ? 'text-green-600' : 'text-red-500'}`}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: '16px' }}>
+                                    <span style={{ fontWeight: '600', fontSize: '13px', color: isCorrect ? '#22C55E' : '#EF4444' }}>
                                         {fmt2(q.points_collected)} / {fmt2(q.points_value)} pts
                                     </span>
                                     <motion.div animate={{rotate: isExpanded ? 180 : 0}}>
-                                        <ChevronDown className="h-4 w-4 text-[#BEC3C9]"/>
+                                        <ChevronDown size={16} style={{ color: T.textMuted }}/>
                                     </motion.div>
                                 </div>
                             </div>
@@ -676,18 +878,18 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
                                         animate={{height: 'auto', opacity: 1}}
                                         exit={{height: 0, opacity: 0}}
                                         transition={{duration: 0.25, ease: 'easeInOut'}}
-                                        className="overflow-hidden"
+                                        style={{ overflow: 'hidden' }}
                                     >
-                                        <div className="px-5 py-4 border-t border-[#E4E6EB] grid md:grid-cols-2 gap-4 text-sm bg-[#F0F2F5]/50">
+                                        <div style={{ padding: '16px 20px', borderTop: `1px solid ${T.border}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '13px', background: dk ? 'rgba(255,255,255,0.02)' : 'rgba(248,250,252,0.8)' }}>
                                             <div>
-                                                <p className="font-semibold text-[#65676B] text-xs uppercase tracking-wider mb-2">Your Answer</p>
-                                                <div className="bg-white rounded-xl p-3 border border-[#E4E6EB]">
+                                                <p style={{ fontWeight: '600', color: T.textSec, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Your Answer</p>
+                                                <div style={{ background: T.surface, borderRadius: '12px', padding: '12px', border: `1px solid ${T.border}` }}>
                                                     <RenderUserAnswer result={q}/>
                                                 </div>
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-[#65676B] text-xs uppercase tracking-wider mb-2">Correct Answer</p>
-                                                <div className="bg-white rounded-xl p-3 border border-[#E4E6EB]">
+                                                <p style={{ fontWeight: '600', color: T.textSec, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Correct Answer</p>
+                                                <div style={{ background: T.surface, borderRadius: '12px', padding: '12px', border: `1px solid ${T.border}` }}>
                                                     <RenderCorrectAnswer result={q}/>
                                                 </div>
                                             </div>
@@ -704,6 +906,18 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
 };
 
 const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
+    const { darkMode: dk } = useAppContext();
+    const T = {
+        surface:  dk ? '#171B2D' : '#FFFFFF',
+        surface2: dk ? '#1E2237' : '#F8FAFC',
+        border:   dk ? '#2A2F45' : '#E4E6EB',
+        text:     dk ? '#E2E8F0' : '#0F1623',
+        textSec:  dk ? '#8896B3' : '#64748B',
+        textMuted:dk ? '#5A6483' : '#BEC3C9',
+        hoverBg:  dk ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
+    };
+    const barColor = (pct) => pct >= 80 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444';
+
     const attempts = history?.length ?? 0;
     const {avgPercent, bestPercent} = useMemo(() => {
         if (!Array.isArray(history) || history.length === 0) return {avgPercent: 0, bestPercent: 0};
@@ -720,34 +934,43 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
     }, [history]);
 
     const Stat = ({label, value}) => (
-        <div className="rounded-2xl bg-white border border-[#E4E6EB] shadow-sm px-4 py-2 text-center">
-            <div className="text-xs text-[#65676B]">{label}</div>
-            <div className="text-base font-bold text-[#1C1E21]">{value}</div>
+        <div style={{ borderRadius: '18px', background: T.surface, border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)', padding: '8px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: '12px', color: T.textSec }}>{label}</div>
+            <div style={{ fontSize: '16px', fontWeight: '700', color: T.text }}>{value}</div>
         </div>
     );
 
     const StatusPill = ({finished}) => (
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-            finished ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
-        }`}>
-            {finished
-                ? <><Check size={12}/> Finished</>
-                : <><X size={12}/> In Progress</>
-            }
+        <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '4px', borderRadius: '999px',
+            padding: '2px 8px', fontSize: '11px', fontWeight: '600',
+            background: finished ? (dk ? 'rgba(34,197,94,0.15)' : '#F0FDF4') : (dk ? 'rgba(245,158,11,0.15)' : '#FFFBEB'),
+            color: finished ? '#22C55E' : '#F59E0B',
+        }}>
+            {finished ? <><Check size={11}/> Finished</> : <><X size={11}/> In Progress</>}
         </span>
+    );
+
+    const BackBtn = () => (
+        <button
+            onClick={onBack}
+            style={{ width: '36px', height: '36px', borderRadius: '999px', border: `1.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textSec, transition: 'all 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+        >
+            <ChevronLeft size={18}/>
+        </button>
     );
 
     if (!Array.isArray(history) || history.length === 0) {
         return (
-            <div className="p-6 max-w-5xl mx-auto card-enter">
-                <header className="flex items-center gap-3 mb-5">
-                    <button onClick={onBack} className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
-                        <ChevronLeft size={20}/>
-                    </button>
+            <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }} className="card-enter">
+                <header style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                    <BackBtn/>
                     <div>
-                        <h2 className="text-xl font-bold text-[#1C1E21]">{user.user_surname} {user.user_name}</h2>
+                        <h2 style={{ fontSize: '18px', fontWeight: '700', color: T.text, letterSpacing: '-0.02em' }}>{user.user_surname} {user.user_name}</h2>
                         {config?.use_index && user.user_index && (
-                            <p className="text-sm text-[#65676B]">Index: {user.user_index}</p>
+                            <p style={{ fontSize: '13px', color: T.textSec }}>Index: {user.user_index}</p>
                         )}
                     </div>
                 </header>
@@ -757,27 +980,25 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
     }
 
     return (
-        <div className="p-6 max-w-5xl mx-auto card-enter">
-            <header className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3">
-                    <button onClick={onBack} className="p-2 rounded-xl hover:bg-[#F0F2F5] text-[#606770] transition-colors">
-                        <ChevronLeft size={20}/>
-                    </button>
+        <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }} className="card-enter">
+            <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <BackBtn/>
                     <div>
-                        <h2 className="text-xl font-bold text-[#1C1E21]">{user.user_surname} {user.user_name}</h2>
-                        <p className="text-sm text-[#65676B] mt-0.5">
+                        <h2 style={{ fontSize: '18px', fontWeight: '700', color: T.text, letterSpacing: '-0.02em' }}>{user.user_surname} {user.user_name}</h2>
+                        <p style={{ fontSize: '13px', color: T.textSec, marginTop: '2px' }}>
                             {config?.use_index && user.user_index && `Index: ${user.user_index} · `}
                             {attempts} {attempts === 1 ? 'attempt' : 'attempts'}
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div style={{ display: 'flex', gap: '8px' }}>
                     <Stat label="Average" value={`${avgPercent}%`}/>
                     <Stat label="Best" value={`${bestPercent}%`}/>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
                 {history.map((item) => {
                     const s = Number(item.score) || 0;
                     const m = Number(item.max_score) || 0;
@@ -787,34 +1008,38 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
                         <div
                             key={item.activity_id}
                             onClick={() => onInstanceClick(item)}
-                            className="bg-white p-4 rounded-2xl border border-[#E4E6EB] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                            style={{
+                                background: T.surface, padding: '16px', borderRadius: '18px',
+                                border: `1.5px solid ${T.border}`, cursor: 'pointer',
+                                boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)',
+                                transition: 'border-color 0.18s, box-shadow 0.18s, transform 0.18s',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(43,115,255,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="min-w-0">
-                                    <p className="font-semibold text-[#1C1E21] text-[14px] truncate">{item.instance_name}</p>
-                                    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-[#65676B]">
-                                        <span className="inline-flex items-center gap-1">
-                                            <CalendarDays size={12} className="text-[#BEC3C9]"/> {formatDate(item.timestamp)}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                                <div style={{ minWidth: 0 }}>
+                                    <p style={{ fontWeight: '600', color: T.text, fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.instance_name}</p>
+                                    <div style={{ marginTop: '6px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px', fontSize: '12px', color: T.textSec }}>
+                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                            <CalendarDays size={11} style={{ color: T.textMuted }}/> {formatDate(item.timestamp)}
                                         </span>
-                                        <span className="text-[#CED0D4]">·</span>
+                                        <span style={{ color: T.textMuted }}>·</span>
                                         <span>{fmt2(s)} / {fmt2(m)} pts</span>
-                                        <span className="text-[#CED0D4]">·</span>
+                                        <span style={{ color: T.textMuted }}>·</span>
                                         <StatusPill finished={item.is_finished}/>
                                     </div>
                                 </div>
-                                <ArrowRight className="text-[#BEC3C9] shrink-0" size={16}/>
+                                <ArrowRight style={{ color: T.textMuted, flexShrink: 0 }} size={15}/>
                             </div>
 
-                            <div className="mt-3">
-                                <div className="flex items-center justify-between text-xs text-[#65676B] mb-1">
+                            <div style={{ marginTop: '12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: T.textSec, marginBottom: '4px' }}>
                                     <span>Score</span>
-                                    <span className="font-semibold text-[#1C1E21]">{pct}%</span>
+                                    <span style={{ fontWeight: '600', color: T.text }}>{pct}%</span>
                                 </div>
-                                <div className="h-1.5 w-full rounded-full bg-[#F0F2F5]">
-                                    <div
-                                        className={`h-1.5 rounded-full ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-amber-400' : 'bg-red-500'}`}
-                                        style={{width: `${pct}%`}}
-                                    />
+                                <div style={{ height: '6px', width: '100%', borderRadius: '999px', background: T.surface2, overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', borderRadius: '999px', background: barColor(pct), width: `${pct}%`, transition: 'width 0.4s ease' }}/>
                                 </div>
                             </div>
                         </div>
@@ -830,7 +1055,11 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
 // =============================================================
 
 function ResultsPanel({reset}) {
-    const {config} = useAppContext();
+    const {config, darkMode: dk} = useAppContext();
+    const T = {
+        bg:   dk ? '#0F1117' : '#F4F6FB',
+        text: dk ? '#E2E8F0' : '#0F1623',
+    };
 
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('instances');
@@ -1056,8 +1285,12 @@ function ResultsPanel({reset}) {
     };
 
     return (
-        <div className="bg-[#F0F2F5] min-h-full">
+        <div style={{ background: T.bg, minHeight: '100%' }}>
             <style>{`.card-enter { animation: fadeInUp 0.4s ease-out both; } @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+            <div style={{ padding: '24px 24px 4px', maxWidth: '980px', margin: '0 auto' }}>
+                <h1 style={{ fontSize: '20px', fontWeight: '700', color: T.text, marginBottom: '4px', letterSpacing: '-0.02em' }}>Results</h1>
+            </div>
 
             <TopLinearLoader show={loading}/>
 
