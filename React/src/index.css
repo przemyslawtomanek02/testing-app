@@ -66,25 +66,25 @@ body {
 /* Surfaces */
 [data-theme="dark"] .bg-white                     { background-color: #171B2D !important; }
 [data-theme="dark"] .bg-white\/90                 { background-color: rgba(23,27,45,0.92) !important; }
-[data-theme="dark"] .bg-\[#F0F2F5\]               { background-color: #0F1117 !important; }
-[data-theme="dark"] .bg-\[#F4F6FB\]               { background-color: #0F1117 !important; }
-[data-theme="dark"] .bg-\[#F2F3F5\]               { background-color: #1E2237 !important; }
-[data-theme="dark"] .bg-\[#F8FAFC\]               { background-color: #1E2237 !important; }
+[data-theme="dark"] .bg-\[\#F0F2F5\]               { background-color: #0F1117 !important; }
+[data-theme="dark"] .bg-\[\#F4F6FB\]               { background-color: #0F1117 !important; }
+[data-theme="dark"] .bg-\[\#F2F3F5\]               { background-color: #1E2237 !important; }
+[data-theme="dark"] .bg-\[\#F8FAFC\]               { background-color: #1E2237 !important; }
 
 /* Text */
-[data-theme="dark"] .text-\[#1C1E21\]             { color: #E2E8F0 !important; }
-[data-theme="dark"] .text-\[#65676B\]             { color: #8896B3 !important; }
-[data-theme="dark"] .text-\[#606770\]             { color: #8896B3 !important; }
-[data-theme="dark"] .text-\[#BEC3C9\]             { color: #5A6483 !important; }
+[data-theme="dark"] .text-\[\#1C1E21\]             { color: #E2E8F0 !important; }
+[data-theme="dark"] .text-\[\#65676B\]             { color: #8896B3 !important; }
+[data-theme="dark"] .text-\[\#606770\]             { color: #8896B3 !important; }
+[data-theme="dark"] .text-\[\#BEC3C9\]             { color: #5A6483 !important; }
 
 /* Borders */
-[data-theme="dark"] .border-\[#E4E6EB\]           { border-color: #2A2F45 !important; }
-[data-theme="dark"] .border-\[#E2E8F0\]           { border-color: #2A2F45 !important; }
-[data-theme="dark"] .border-t-\[#E4E6EB\]         { border-top-color: #2A2F45 !important; }
+[data-theme="dark"] .border-\[\#E4E6EB\]           { border-color: #2A2F45 !important; }
+[data-theme="dark"] .border-\[\#E2E8F0\]           { border-color: #2A2F45 !important; }
+[data-theme="dark"] .border-t-\[\#E4E6EB\]         { border-top-color: #2A2F45 !important; }
 
 /* Hover states */
-[data-theme="dark"] .hover\:bg-\[#F0F2F5\]:hover  { background-color: rgba(255,255,255,0.06) !important; }
-[data-theme="dark"] .hover\:bg-\[#F2F3F5\]:hover  { background-color: rgba(255,255,255,0.06) !important; }
+[data-theme="dark"] .hover\:bg-\[\#F0F2F5\]:hover  { background-color: rgba(255,255,255,0.06) !important; }
+[data-theme="dark"] .hover\:bg-\[\#F2F3F5\]:hover  { background-color: rgba(255,255,255,0.06) !important; }
 
 /* Shadows */
 [data-theme="dark"] .shadow-sm                    { box-shadow: 0 2px 8px rgba(0,0,0,0.35) !important; }
@@ -101,18 +101,18 @@ body {
 [data-theme="dark"] input::placeholder              { color: #5A6483 !important; }
 
 /* Focus rings */
-[data-theme="dark"] .focus\:border-\[#2B73FF\]:focus { border-color: #2B73FF !important; }
-[data-theme="dark"] .focus\:border-\[#0866FF\]:focus  { border-color: #2B73FF !important; }
+[data-theme="dark"] .focus\:border-\[\#2B73FF\]:focus { border-color: #2B73FF !important; }
+[data-theme="dark"] .focus\:border-\[\#0866FF\]:focus  { border-color: #2B73FF !important; }
 
 /* Active/selected states using old blue */
-[data-theme="dark"] .text-\[#0866FF\]             { color: #4D8EFF !important; }
-[data-theme="dark"] .bg-\[#E7F3FF\]               { background-color: rgba(77,142,255,0.15) !important; }
-[data-theme="dark"] .bg-\[#EEF4FF\]               { background-color: rgba(77,142,255,0.12) !important; }
-[data-theme="dark"] .ring-\[#0866FF\]\/20          { --tw-ring-color: rgba(77,142,255,0.2) !important; }
+[data-theme="dark"] .text-\[\#0866FF\]             { color: #4D8EFF !important; }
+[data-theme="dark"] .bg-\[\#E7F3FF\]               { background-color: rgba(77,142,255,0.15) !important; }
+[data-theme="dark"] .bg-\[\#EEF4FF\]               { background-color: rgba(77,142,255,0.12) !important; }
+[data-theme="dark"] .ring-\[\#0866FF\]\/20          { --tw-ring-color: rgba(77,142,255,0.2) !important; }
 
 /* Round pills / tabs */
-[data-theme="dark"] .bg-\[#F0F2F5\].rounded-xl,
-[data-theme="dark"] .bg-\[#F4F6FB\].rounded-xl     { background-color: #1E2237 !important; }
+[data-theme="dark"] .bg-\[\#F0F2F5\].rounded-xl,
+[data-theme="dark"] .bg-\[\#F4F6FB\].rounded-xl     { background-color: #1E2237 !important; }
 
 /* Skeleton / loader backgrounds */
 [data-theme="dark"] .bg-gray-200                  { background-color: #2A2F45 !important; }

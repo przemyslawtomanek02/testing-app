@@ -144,11 +144,18 @@ export default function InstancesPanel({data, setOverlay, onRefresh}) {
                             <RefreshCw size={17} className={isRefreshing ? 'is-refreshing' : ''}/>
                         </button>
                         <button
-                            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             onClick={handleDeleteClick}
                             disabled={selectedCount === 0}
+                            style={{
+                                height: '36px', borderRadius: '999px', border: 'none',
+                                padding: '0 16px', display: 'flex', alignItems: 'center', gap: '6px',
+                                fontSize: '13px', fontWeight: '500', cursor: selectedCount === 0 ? 'not-allowed' : 'pointer',
+                                background: selectedCount > 0 ? (dk ? 'rgba(239,68,68,0.12)' : '#FEF2F2') : (dk ? T.surface : '#F8FAFC'),
+                                color: selectedCount > 0 ? '#EF4444' : T.textMuted,
+                                transition: 'all 0.15s',
+                            }}
                         >
-                            <Trash2 size={15}/>
+                            <Trash2 size={14}/>
                             <span>Delete</span>
                         </button>
                     </div>

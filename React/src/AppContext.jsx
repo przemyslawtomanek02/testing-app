@@ -39,8 +39,6 @@ export const AppContextProvider = ({children}) => {
         return match ? match[2] : null;
     }
 
-    const toggleDarkMode = () => setDarkMode(prev => !prev);
-
     const getBackendConfig = useCallback(async () => {
         const response = await fetch('/api/config');
         if (!response.ok) throw new Error("Error fetching config");
@@ -59,6 +57,20 @@ export const AppContextProvider = ({children}) => {
         }
         return await response.json();
     }, []);
+
+    const toggleDarkMode = useCallback(async () => {
+        const newValue = !darkMode;
+        setDarkMode(newValue);
+
+        if (user?.role === 'admin') {
+            try {
+                await setBackendConfig({dark_mode: newValue});
+                setConfig(prev => prev ? {...prev, dark_mode: newValue} : prev);
+            } catch (err) {
+                console.error('APP CONTEXT: ❌ Nie udało się zapisać trybu ciemnego w konfiguracji:', err);
+            }
+        }
+    }, [darkMode, user, setBackendConfig]);
 
     const validateSession = useCallback(async () => {
         console.log("Wywołanie validateSession z AppContextProvider.")

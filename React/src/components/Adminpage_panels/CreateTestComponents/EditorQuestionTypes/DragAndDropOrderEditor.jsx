@@ -47,7 +47,7 @@ const SortableItem = ({field, aIndex, qIndex, control, setValue, onRemove, isDra
             <button
                 type="button"
                 onClick={() => onRemove(aIndex)}
-                className="p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
             >
                 <Trash2 size={16}/>
             </button>
@@ -176,7 +176,7 @@ const DragAndDropOrderEditor = ({qIndex, control, register, setValue}) => {
                 type="button"
                 onClick={handleAddItem}
                 disabled={fields.length >= 8}
-                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] dark:hover:text-[#3F99FF] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
             >
                 <PlusCircle size={16}/>
                 Add Item

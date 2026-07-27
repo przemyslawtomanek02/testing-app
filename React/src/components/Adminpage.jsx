@@ -74,7 +74,6 @@ export default function Adminpage() {
         border:        dk ? '#2A2F45' : '#EDF0F7',
         sidebarBg:     dk ? '#12151F' : '#FFFFFF',
         sidebarBorder: dk ? '#1E2438' : '#EDF0F7',
-        topbar:        dk ? '#171B2D' : '#FFFFFF',
         text:          dk ? '#E2E8F0' : '#0F1623',
         textSec:       dk ? '#8896B3' : '#64748B',
         textMuted:     dk ? '#5A6483' : '#94A3B8',
@@ -241,8 +240,8 @@ export default function Adminpage() {
                 <header style={{
                     height: '68px', flexShrink: 0, display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', padding: '0 28px',
-                    background: T.topbar, borderBottom: `1px solid ${T.border}`,
-                    boxShadow: dk ? 'none' : '0 2px 12px rgba(43,115,255,0.05)', gap: '16px',
+                    background: 'transparent',
+                    gap: '16px',
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                         {/* Toggle – circle */}
@@ -250,13 +249,14 @@ export default function Adminpage() {
                             onClick={() => setSidebarOpen(o => !o)}
                             style={{
                                 width: '36px', height: '36px', borderRadius: '999px',
-                                border: `1.5px solid ${T.border}`, background: 'transparent',
+                                border: `1.5px solid ${T.border}`, background: T.surface,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 cursor: 'pointer', color: T.textSec, flexShrink: 0,
+                                boxShadow: '0 2px 8px rgba(43,115,255,0.12)',
                                 transition: 'all 0.15s',
                             }}
                             onMouseEnter={e => { e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.06)' : '#EEF4FF'; e.currentTarget.style.borderColor = dk ? '#3D4F6B' : '#B8D0FF'; e.currentTarget.style.color = '#2B73FF'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSec; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = T.surface; e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSec; }}
                         >
                             {sidebarOpen ? <X size={15}/> : <Menu size={15}/>}
                         </button>

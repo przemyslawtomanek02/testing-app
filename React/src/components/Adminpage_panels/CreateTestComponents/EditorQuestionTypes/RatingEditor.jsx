@@ -39,7 +39,7 @@ const RatingEditor = memo(({qIndex, control, register, setValue}) => {
         <button
             type="button"
             onClick={onChange}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-[#0866FF]' : 'bg-[#CED0D4]'}`}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-[#0866FF]' : 'bg-[#CED0D4] dark:bg-darkCustom-600'}`}
             aria-checked={checked}
         >
             <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${checked ? 'translate-x-5' : 'translate-x-0'}`}/>
@@ -103,7 +103,7 @@ const RatingEditor = memo(({qIndex, control, register, setValue}) => {
                                                 onValueChange={(newRange) => setValue(`questions.${qIndex}.extra_data.correct_range`, newRange)}
                                                 min={min} max={max} step={1}
                                             >
-                                                <Slider.Track className="bg-[#E4E6EB] relative grow rounded-full h-1.5">
+                                                <Slider.Track className="bg-[#E4E6EB] dark:bg-darkCustom-600 relative grow rounded-full h-1.5">
                                                     <Slider.Range className="absolute bg-[#0866FF] rounded-full h-full"/>
                                                 </Slider.Track>
                                                 <Slider.Thumb className="block w-5 h-5 bg-white shadow-md rounded-full border-2 border-[#0866FF] focus:outline-none focus:ring-2 focus:ring-[#0866FF]/20" aria-label="Min"/>

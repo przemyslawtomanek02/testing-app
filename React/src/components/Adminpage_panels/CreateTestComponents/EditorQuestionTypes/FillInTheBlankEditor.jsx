@@ -277,7 +277,7 @@ const FillInTheBlankEditor = ({qIndex, control, register, setValue, getValues}) 
                     <button
                         type="button"
                         onClick={addAnswer}
-                        className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] transition-colors"
+                        className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] dark:hover:text-[#3F99FF] transition-colors"
                     >
                         <PlusCircle size={16}/> Add Answer
                     </button>

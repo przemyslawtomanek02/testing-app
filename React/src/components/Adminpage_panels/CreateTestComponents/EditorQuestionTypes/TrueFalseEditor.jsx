@@ -58,14 +58,14 @@ const TrueFalseEditor = ({qIndex, register, control, setValue}) => {
                                 <button
                                     type="button"
                                     onClick={() => setCorrectness(aIndex, true)}
-                                    className={`relative z-10 w-1/2 py-2 px-3 text-sm font-semibold transition-colors duration-150 ${isCorrect ? 'text-white' : 'text-[#65676B] hover:bg-black/5'}`}
+                                    className={`relative z-10 w-1/2 py-2 px-3 text-sm font-semibold transition-colors duration-150 ${isCorrect ? 'text-white' : 'text-[#65676B] hover:bg-black/5 dark:hover:bg-white/5'}`}
                                 >
                                     True
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setCorrectness(aIndex, false)}
-                                    className={`relative z-10 w-1/2 py-2 px-3 text-sm font-semibold transition-colors duration-150 ${!isCorrect ? 'text-white' : 'text-[#65676B] hover:bg-black/5'}`}
+                                    className={`relative z-10 w-1/2 py-2 px-3 text-sm font-semibold transition-colors duration-150 ${!isCorrect ? 'text-white' : 'text-[#65676B] hover:bg-black/5 dark:hover:bg-white/5'}`}
                                 >
                                     False
                                 </button>
@@ -80,7 +80,7 @@ const TrueFalseEditor = ({qIndex, register, control, setValue}) => {
                                 type="button"
                                 onClick={() => handleRemoveAnswer(aIndex)}
                                 disabled={fields.length <= 1}
-                                className="flex-shrink-0 p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                className="flex-shrink-0 p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 aria-label={`Remove option ${aIndex + 1}`}
                             >
                                 <Trash2 size={16}/>
@@ -94,7 +94,7 @@ const TrueFalseEditor = ({qIndex, register, control, setValue}) => {
                 type="button"
                 onClick={handleAddAnswer}
                 disabled={fields.length >= 10}
-                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] dark:hover:text-[#3F99FF] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
             >
                 <PlusCircle size={16}/>
                 Add Statement

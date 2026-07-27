@@ -16,11 +16,11 @@ export function RoleFilterMenu({ selectedRole, onSelectRole }) {
         <Menu as="div" className="relative inline-block text-left w-full md:max-w-xs">
             <div>
                 <Menu.Button
-                    className="inline-flex w-full justify-between items-center rounded-lg bg-white dark:bg-darkCustom-900 p-2.5 text-base font-medium text-black dark:text-darkCustom-100 shadow-md hover:bg-opacity-95 focus:outline-none focus:ring-2 focus:ring-slate-600 dark:focus:ring-darkCustom-300"
+                    className="inline-flex w-full justify-between items-center gap-2 rounded-full border border-[#E4E6EB] dark:border-darkCustom-600 bg-white dark:bg-darkCustom-900 px-4 py-2.5 text-sm font-medium text-[#1C1E21] dark:text-darkCustom-100 shadow-sm hover:bg-[#F4F6FB] dark:hover:bg-darkCustom-800 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF]"
                 >
                     {selectedLabel}
                     <ChevronDownIcon
-                        className="ml-2 -mr-1 h-5 w-5 text-slate-400 dark:text-darkCustom-400"
+                        className="ml-2 -mr-1 h-5 w-5 text-[#94A3B8] dark:text-darkCustom-400"
                         aria-hidden="true"
                     />
                 </Menu.Button>
@@ -35,7 +35,7 @@ export function RoleFilterMenu({ selectedRole, onSelectRole }) {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
             >
-                <Menu.Items className="absolute right-0 mt-2 w-full origin-top-right divide-y divide-slate-100 dark:divide-darkCustom-700 rounded-md bg-white dark:bg-darkCustom-900 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                <Menu.Items className="absolute right-0 mt-2 w-full origin-top-right divide-y divide-[#E4E6EB] dark:divide-darkCustom-700 rounded-2xl border border-[#E4E6EB] dark:border-darkCustom-700 bg-white dark:bg-darkCustom-900 shadow-lg focus:outline-none z-10 overflow-hidden">
                     <div className="px-1 py-1">
 
                         {roleOptions.map((option) => (
@@ -45,12 +45,12 @@ export function RoleFilterMenu({ selectedRole, onSelectRole }) {
                                         type="button"
                                         onClick={() => onSelectRole(option.value)}
                                         className={`${
-                                            active ? 'bg-slate-100 dark:bg-darkCustom-700' : 'text-slate-900 dark:text-darkCustom-100'
-                                        } group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
+                                            active ? 'bg-[#F4F6FB] dark:bg-darkCustom-800' : ''
+                                        } text-[#1C1E21] dark:text-darkCustom-100 group flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-colors`}
                                     >
                                         <span>{option.label}</span>
                                         {selectedRole === option.value && (
-                                            <CheckIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                            <CheckIcon className="h-4 w-4 text-[#2B73FF] dark:text-[#4D8EFF]" />
                                         )}
                                     </button>
                                 )}

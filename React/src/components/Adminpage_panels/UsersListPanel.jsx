@@ -26,27 +26,54 @@ import {Menu, Transition} from "@headlessui/react";
 import ConfirmationPopup from "./OverlayComponents/ConfirmationPopup.jsx";
 import {RoleFilterMenu} from "../Reusable/RoleFilterMenu.jsx";
 
-const InputField = ({name, type, placeholder, value, onChange, icon: IconComponent, required = false}) => (
-    <div>
-        <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                {IconComponent && <IconComponent className="h-5 w-5 text-slate-400 dark:text-darkCustom-400"/>}
-            </div>
-            <input
-                name={name}
-                type={type}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                required={required}
-                className="w-full pr-4 rounded-md border border-slate-300 bg-slate-50 p-2 pl-10 text-slate-800 transition-colors duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-darkCustom-700 dark:border-darkCustom-600 dark:text-darkCustom-100 dark:placeholder:text-darkCustom-400 dark:focus:bg-darkCustom-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
-            />
-        </div>
-    </div>
+const FIELD_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+
+const FieldLabel = ({children, T}) => (
+    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: T.label, marginBottom: '6px', letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+        {children}
+    </label>
 );
 
-const PasswordInputField = ({value, onChange, onGenerate, placeholder, required}) => {
+const InputField = ({name, type, placeholder, label, value, onChange, icon: IconComponent, required = false, T}) => {
+    const [focused, setFocused] = useState(false);
+    return (
+        <div>
+            {label && <FieldLabel T={T}>{label}</FieldLabel>}
+            <div style={{ position: 'relative' }}>
+                {IconComponent && (
+                    <IconComponent size={16} style={{
+                        position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+                        color: focused ? '#2B73FF' : T.textMuted, transition: 'color 0.15s', pointerEvents: 'none',
+                    }}/>
+                )}
+                <input
+                    name={name}
+                    type={type}
+                    value={value}
+                    onChange={onChange}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                    placeholder={placeholder}
+                    required={required}
+                    style={{
+                        width: '100%', height: '44px', borderRadius: '14px',
+                        border: `1.5px solid ${focused ? '#2B73FF' : T.border}`,
+                        background: focused ? T.inputBgFocus : T.inputBg,
+                        paddingLeft: IconComponent ? '40px' : '14px', paddingRight: '14px',
+                        fontSize: '14px', color: T.text, outline: 'none',
+                        transition: 'border-color 0.15s, background 0.15s',
+                        boxSizing: 'border-box', fontFamily: FIELD_FONT,
+                        boxShadow: focused ? '0 0 0 3px rgba(43,115,255,0.1)' : 'none',
+                    }}
+                />
+            </div>
+        </div>
+    );
+};
+
+const PasswordInputField = ({value, onChange, onGenerate, placeholder, label, required, T}) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [focused, setFocused] = useState(false);
 
     const toggleVisibility = () => setIsPasswordVisible(prevState => !prevState);
 
@@ -60,41 +87,115 @@ const PasswordInputField = ({value, onChange, onGenerate, placeholder, required}
     };
 
     return (
-        <div className="flex items-center justify-between gap-2">
-            <div className="relative grow">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Lock className="h-5 w-5 text-slate-400 dark:text-darkCustom-400"/>
-                </div>
+        <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                {label && <FieldLabel T={T}>{label}</FieldLabel>}
+                <button
+                    type="button"
+                    onClick={onGenerate}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '4px', border: 'none', background: 'none',
+                        cursor: 'pointer', fontSize: '11px', fontWeight: '600', color: '#2B73FF',
+                        letterSpacing: '0.02em', padding: 0,
+                    }}
+                >
+                    <Wand2 size={12}/>
+                    Generate
+                </button>
+            </div>
+            <div style={{ position: 'relative' }}>
+                <Lock size={16} style={{
+                    position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+                    color: focused ? '#2B73FF' : T.textMuted, transition: 'color 0.15s', pointerEvents: 'none',
+                }}/>
                 <input
                     name="password"
                     type={isPasswordVisible ? 'text' : 'password'}
                     value={value}
                     onChange={onChange}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
                     placeholder={placeholder}
                     required={required}
-                    className="w-full rounded-md border border-slate-300 bg-slate-50 p-2 pl-10 pr-20 text-slate-800 transition-colors duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-darkCustom-700 dark:border-darkCustom-600 dark:text-darkCustom-100 dark:placeholder:text-darkCustom-400 dark:focus:bg-darkCustom-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                    style={{
+                        width: '100%', height: '44px', borderRadius: '14px',
+                        border: `1.5px solid ${focused ? '#2B73FF' : T.border}`,
+                        background: focused ? T.inputBgFocus : T.inputBg,
+                        paddingLeft: '40px', paddingRight: '76px',
+                        fontSize: '14px', color: T.text, outline: 'none',
+                        transition: 'border-color 0.15s, background 0.15s',
+                        boxSizing: 'border-box', fontFamily: FIELD_FONT,
+                        boxShadow: focused ? '0 0 0 3px rgba(43,115,255,0.1)' : 'none',
+                    }}
                 />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <div style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '2px' }}>
                     <button type="button" onClick={copyToClipboard}
-                            className="p-1 text-slate-400 hover:text-slate-600 dark:text-darkCustom-400 dark:hover:text-darkCustom-200">
-                        <Copy size={16}/>
+                            style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted, display: 'flex', borderRadius: '8px' }}>
+                        <Copy size={15}/>
                     </button>
                     <button type="button" onClick={toggleVisibility}
-                            className="p-1 text-slate-400 hover:text-slate-600 dark:text-darkCustom-400 dark:hover:text-darkCustom-200">
-                        {isPasswordVisible ? <EyeOff size={16}/> : <Eye size={16}/>}
+                            style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted, display: 'flex', borderRadius: '8px' }}>
+                        {isPasswordVisible ? <EyeOff size={15}/> : <Eye size={15}/>}
                     </button>
                 </div>
             </div>
-            <div>
-                <button
-                    type="button"
-                    onClick={onGenerate}
-                    className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
+        </div>
+    );
+};
+
+const RoleSelect = ({value, onChange, options, T}) => {
+    const selectedLabel = options.find(opt => opt.value === value)?.label || 'Select a role';
+    return (
+        <div>
+            <FieldLabel T={T}>Role</FieldLabel>
+            <Menu as="div" style={{ position: 'relative' }}>
+                <Menu.Button style={{
+                    width: '100%', height: '44px', borderRadius: '14px',
+                    border: `1.5px solid ${T.border}`, background: T.inputBg,
+                    padding: '0 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    fontSize: '14px', fontWeight: '500', color: T.text, cursor: 'pointer',
+                    fontFamily: FIELD_FONT, boxSizing: 'border-box',
+                }}>
+                    {selectedLabel}
+                    <ChevronDownIcon style={{ width: '16px', height: '16px', color: T.textMuted }} aria-hidden="true"/>
+                </Menu.Button>
+                <Transition
+                    as={React.Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
                 >
-                    <Wand2 size={14}/>
-                    Generate
-                </button>
-            </div>
+                    <Menu.Items style={{
+                        position: 'absolute', left: 0, right: 0, marginTop: '6px', zIndex: 20,
+                        background: T.surface, border: `1px solid ${T.border}`, borderRadius: '16px',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.16)', padding: '6px', outline: 'none',
+                    }}>
+                        {options.map((option) => (
+                            <Menu.Item key={option.value}>
+                                {({focus}) => (
+                                    <button
+                                        type="button"
+                                        onClick={() => onChange(option.value)}
+                                        style={{
+                                            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                            padding: '9px 10px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                                            fontSize: '14px', fontFamily: FIELD_FONT,
+                                            background: focus ? T.inputBg : 'transparent',
+                                            color: T.text,
+                                        }}
+                                    >
+                                        <span>{option.label}</span>
+                                        {value === option.value && <CheckIcon style={{ width: '16px', height: '16px', color: '#2B73FF' }}/>}
+                                    </button>
+                                )}
+                            </Menu.Item>
+                        ))}
+                    </Menu.Items>
+                </Transition>
+            </Menu>
         </div>
     );
 };
@@ -108,7 +209,17 @@ const UserForm = ({onCancel, onSuccess, initialData = null}) => {
     const [photoPreview, setPhotoPreview] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const {config} = useAppContext();
+    const {config, darkMode: dk} = useAppContext();
+    const T = {
+        surface:      dk ? '#171B2D' : '#FFFFFF',
+        text:         dk ? '#E2E8F0' : '#0F1623',
+        textSec:      dk ? '#8896B3' : '#64748B',
+        inputBg:      dk ? '#1E2237' : '#FAFAFA',
+        inputBgFocus: dk ? '#1A2040' : '#F8FBFF',
+        border:       dk ? '#2A2F45' : '#E2E8F0',
+        label:        dk ? '#8896B3' : '#64748B',
+        textMuted:    dk ? '#5A6483' : '#94A3B8',
+    };
 
     useEffect(() => {
         if (isEditMode && initialData) {
@@ -187,114 +298,99 @@ const UserForm = ({onCancel, onSuccess, initialData = null}) => {
         {value: 'admin', label: 'Admin'},
     ];
 
-    const selectedLabel = roleOptions.find(opt => opt.value === formData.role)?.label || 'Select a role';
-
     const handleRoleChange = (roleValue) => {
         setFormData(prev => ({...prev, role: roleValue}));
     };
 
     return (
-        <div className="w-full max-w-md rounded-xl bg-white dark:bg-darkCustom-900 p-8 shadow-lg">
-            <div className="mb-6 flex items-center gap-3">
-                {isEditMode ? <Save className="h-7 w-7 text-slate-600 dark:text-darkCustom-300"/> :
-                    <UserPlus className="h-7 w-7 text-slate-600 dark:text-darkCustom-300"/>}
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-darkCustom-100">{isEditMode ? 'Edit User' : 'Create User'}</h2>
+        <div style={{
+            width: '100%', maxWidth: '440px', borderRadius: '28px',
+            background: T.surface, border: `1px solid ${T.border}`,
+            padding: '36px', boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+            fontFamily: FIELD_FONT,
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
+                <div style={{ width: '48px', height: '48px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {isEditMode
+                        ? <Save size={26} style={{ color: '#3F99FF' }}/>
+                        : <UserPlus size={26} style={{ color: '#3F99FF' }}/>}
+                </div>
+                <div>
+                    <h2 style={{ fontSize: '19px', fontWeight: '700', color: T.text, margin: 0, letterSpacing: '-0.02em' }}>
+                        {isEditMode ? 'Edit User' : 'Create User'}
+                    </h2>
+                    <p style={{ fontSize: '13px', color: T.textSec, margin: '2px 0 0' }}>
+                        {isEditMode ? 'Update account details' : 'Add a new account to the platform'}
+                    </p>
+                </div>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <AvatarUploadField onFileSelect={handleFileSelect} previewUrl={photoPreview}
                                    initialImageUrl={initialData?.photo_url}/>
                 <InputField
-                    name="login"
-                    placeholder="Login*"
-                    value={formData.login}
-                    onChange={handleChange}
-                    icon={User}
-                    required
+                    name="login" label="Login" placeholder="admin"
+                    value={formData.login} onChange={handleChange} icon={User} required T={T}
                 />
 
                 <PasswordInputField
                     value={formData.password}
                     onChange={handleChange}
                     onGenerate={generateRandomPassword}
-                    placeholder={isEditMode ? "New Password " : "Password*"}
+                    placeholder={isEditMode ? 'Leave blank to keep current' : '••••••••'}
+                    label="Password"
                     required={!isEditMode}
+                    T={T}
                 />
 
-                <Menu as="div" className="relative inline-block text-left w-full">
-                    <div>
-                        <Menu.Button
-                            className="inline-flex w-full justify-between items-center rounded-md border border-slate-300 bg-slate-50 p-2.5 text-sm font-medium text-slate-800 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-darkCustom-700 dark:border-darkCustom-600 dark:text-darkCustom-100 dark:hover:bg-darkCustom-600">
-                            {selectedLabel}
-                            <ChevronDownIcon
-                                className="ml-2 -mr-1 h-5 w-5 text-slate-400 dark:text-darkCustom-400"
-                                aria-hidden="true"
-                            />
-                        </Menu.Button>
-                    </div>
+                <RoleSelect value={formData.role} onChange={handleRoleChange} options={roleOptions} T={T}/>
 
-                    <Transition
-                        as={React.Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                    >
-                        <Menu.Items
-                            className="absolute right-0 mt-2 w-full origin-top-right divide-y divide-slate-100 dark:divide-darkCustom-700 rounded-md bg-white dark:bg-darkCustom-900 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-darkCustom-700 focus:outline-none dark:text-darkCustom-100 z-10">
-                            <div className="px-1 py-1">
-                                {roleOptions.map((option) => (
-                                    <Menu.Item key={option.value}>
-                                        {({focus}) => (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRoleChange(option.value)}
-                                                className={`${
-                                                    focus ? 'bg-slate-100 dark:bg-darkCustom-700' : 'text-slate-900 dark:text-darkCustom-100'
-                                                } group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
-                                            >
-                                                <span>{option.label}</span>
-                                                {formData.role === option.value && (
-                                                    <CheckIcon
-                                                        className="h-5 w-5 text-indigo-600 dark:text-indigo-400"/>
-                                                )}
-                                            </button>
-                                        )}
-                                    </Menu.Item>
-                                ))}
-                            </div>
-                        </Menu.Items>
-                    </Transition>
-                </Menu>
-
-
-                <div className="grid mt-12 grid-cols-1 gap-4 md:grid-cols-2">
-                    <InputField name="name" placeholder="Name" value={formData.name} onChange={handleChange}
-                                icon={UserCircle}/>
-                    <InputField name="surname" placeholder="Surname" value={formData.surname}
-                                onChange={handleChange}
-                                icon={IdCard}/>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                    <InputField name="name" label="Name" placeholder="John" value={formData.name} onChange={handleChange}
+                                icon={UserCircle} T={T}/>
+                    <InputField name="surname" label="Surname" placeholder="Doe" value={formData.surname}
+                                onChange={handleChange} icon={IdCard} T={T}/>
                 </div>
-                <InputField name="email" type="email" placeholder="Email" value={formData.email}
-                            onChange={handleChange}
-                            icon={Mail}/>
+                <InputField name="email" type="email" label="Email" placeholder="john.doe@example.com" value={formData.email}
+                            onChange={handleChange} icon={Mail} T={T}/>
                 {config && config.use_index && (
-                    <InputField name="user_index" type="number" placeholder="Index Number" value={formData.user_index}
-                                onChange={handleChange} icon={Hash}/>
+                    <InputField name="user_index" type="number" label="Index Number" placeholder="e.g., 12345"
+                                value={formData.user_index} onChange={handleChange} icon={Hash} T={T}/>
                 )}
 
-
-                <div className="flex justify-end gap-3 pt-4">
-                    <button type="button" onClick={onCancel}
-                            className="flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-200 dark:bg-darkCustom-700 dark:text-darkCustom-200 dark:hover:bg-darkCustom-600">
-                        <X size={16}/> Cancel
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px' }}>
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '7px',
+                            height: '42px', padding: '0 18px', borderRadius: '999px',
+                            border: `1.5px solid ${T.border}`, background: 'transparent',
+                            color: T.textSec, fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                            fontFamily: FIELD_FONT, transition: 'all 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = T.inputBg; e.currentTarget.style.color = T.text; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = T.textSec; }}
+                    >
+                        <X size={15}/> Cancel
                     </button>
-                    <button type="submit" disabled={isLoading}
-                            className="flex items-center gap-2 rounded-md bg-slate-600 px-4 py-2 font-semibold text-white hover:bg-slate-700 disabled:bg-slate-400 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:disabled:bg-darkCustom-600">
-                        {isLoading ? <Loader2 className="animate-spin" size={20}/> : (isEditMode ? <Save size={16}/> :
-                            <UserPlus size={16}/>)}
-                        {isLoading ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save changes' : 'Create user')}
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            height: '42px', padding: '0 22px', borderRadius: '999px', border: 'none',
+                            background: isLoading ? '#94A3B8' : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
+                            color: '#FFFFFF', fontSize: '13px', fontWeight: '600',
+                            cursor: isLoading ? 'not-allowed' : 'pointer',
+                            boxShadow: isLoading ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
+                            transition: 'opacity 0.15s, box-shadow 0.15s', fontFamily: FIELD_FONT,
+                        }}
+                        onMouseEnter={e => { if (!isLoading) e.currentTarget.style.opacity = '0.88'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                    >
+                        {isLoading ? <Loader2 size={16} className="animate-spin"/> : (isEditMode ? <Save size={15}/> : <UserPlus size={15}/>)}
+                        {isLoading ? (isEditMode ? 'Saving…' : 'Creating…') : (isEditMode ? 'Save changes' : 'Create user')}
                     </button>
                 </div>
             </form>
@@ -309,11 +405,11 @@ const SortableHeader = ({children, columnKey, sortConfig, onSort}) => {
     const Icon = isSorted ? (isAsc ? ArrowUp : ArrowDown) : ArrowUpDown;
 
     return (
-        <th className="px-4 py-3 text-xs font-semibold text-[#65676B] uppercase tracking-wider cursor-pointer hover:bg-[#F0F2F5] transition-colors"
+        <th className="px-4 py-3 text-xs font-semibold text-[#65676B] dark:text-darkCustom-400 uppercase tracking-wider cursor-pointer hover:bg-[#F0F2F5] dark:hover:bg-darkCustom-800 transition-colors"
             onClick={() => onSort(columnKey)}>
             <div className="flex items-center gap-1.5">
                 <span>{children}</span>
-                <Icon size={12} className="text-[#BEC3C9]"/>
+                <Icon size={12} className="text-[#BEC3C9] dark:text-darkCustom-500"/>
             </div>
         </th>
     );
@@ -491,24 +587,24 @@ export default function UsersListPanel({setOverlay, onRefresh}) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full bg-[#F0F2F5]">
-                <Loader2 className="animate-spin h-8 w-8 text-[#BEC3C9]"/>
+            <div className="flex items-center justify-center h-full bg-[#F0F2F5] dark:bg-darkCustom-800">
+                <Loader2 className="animate-spin h-8 w-8 text-[#BEC3C9] dark:text-darkCustom-500"/>
             </div>
         );
     }
 
     return (
-        <div className="p-6 bg-[#F0F2F5] min-h-screen">
+        <div className="p-6 bg-[#F0F2F5] dark:bg-darkCustom-800 min-h-screen">
             <div className="max-w-5xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-5">
                     <div className="relative w-full md:mr-auto md:max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#BEC3C9]"/>
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#BEC3C9] dark:text-darkCustom-500"/>
                         <input
                             type="text"
                             placeholder="Search users..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="w-full py-2 pl-9 pr-3 bg-white border border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] outline-none transition-all placeholder:text-[#BEC3C9] shadow-sm"
+                            className="w-full py-2 pl-9 pr-3 bg-white dark:bg-darkCustom-900 border border-[#E4E6EB] dark:border-darkCustom-600 rounded-xl text-sm text-[#1C1E21] dark:text-darkCustom-100 focus:ring-2 focus:ring-[#0866FF]/20 focus:border-[#0866FF] outline-none transition-all placeholder:text-[#BEC3C9] dark:placeholder:text-darkCustom-500 shadow-sm"
                         />
                     </div>
 
@@ -516,62 +612,75 @@ export default function UsersListPanel({setOverlay, onRefresh}) {
                         <RoleFilterMenu selectedRole={roleFilter} onSelectRole={setRoleFilter}/>
                     </div>
 
-                    <button onClick={openCreateForm}
-                            className="w-full md:w-auto flex items-center justify-center gap-2 bg-[#0866FF] text-white font-semibold py-2 px-4 rounded-xl hover:bg-[#0757D9] transition-colors text-sm shadow-sm">
-                        <UserPlus size={16}/>
+                    <button
+                        onClick={openCreateForm}
+                        className="w-full md:w-auto"
+                        style={{
+                            height: '40px', borderRadius: '999px', border: 'none',
+                            padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
+                            fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                            background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
+                            color: '#FFFFFF',
+                            boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
+                            transition: 'opacity 0.15s, box-shadow 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(43,115,255,0.45)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(43,115,255,0.35)'; }}
+                    >
+                        <UserPlus size={15}/>
                         <span>Add New User</span>
                     </button>
                 </div>
 
-                <div className="bg-white border border-[#E4E6EB] rounded-2xl shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-darkCustom-900 border border-[#E4E6EB] dark:border-darkCustom-700 rounded-2xl shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="border-b border-[#E4E6EB]">
+                            <thead className="border-b border-[#E4E6EB] dark:border-darkCustom-700">
                             <tr>
                                 <SortableHeader columnKey="surname" sortConfig={sortConfig} onSort={handleSort}>User</SortableHeader>
                                 <SortableHeader columnKey="login" sortConfig={sortConfig} onSort={handleSort}>Login</SortableHeader>
                                 <SortableHeader columnKey="email" sortConfig={sortConfig} onSort={handleSort}>Email</SortableHeader>
                                 <SortableHeader columnKey="role" sortConfig={sortConfig} onSort={handleSort}>Role</SortableHeader>
                                 <SortableHeader columnKey="user_index" sortConfig={sortConfig} onSort={handleSort}>Index</SortableHeader>
-                                <th className="px-4 py-3 text-xs font-semibold text-[#65676B] uppercase tracking-wider">Actions</th>
+                                <th className="px-4 py-3 text-xs font-semibold text-[#65676B] dark:text-darkCustom-400 uppercase tracking-wider">Actions</th>
                             </tr>
                             </thead>
-                            <tbody className="divide-y divide-[#E4E6EB]">
+                            <tbody className="divide-y divide-[#E4E6EB] dark:divide-darkCustom-700">
                             {filteredAndSortedUsers.map(user => (
-                                <tr key={user.user_id} className="hover:bg-[#F0F2F5] transition-colors">
+                                <tr key={user.user_id} className="hover:bg-[#F0F2F5] dark:hover:bg-darkCustom-800 transition-colors">
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
                                             {user.photo_url ? (
                                                 <img src={user.photo_url} alt={`${user.name} ${user.surname}`}
                                                      className="h-9 w-9 rounded-full object-cover"/>
                                             ) : (
-                                                <div className="flex h-9 w-9 items-center justify-center font-semibold rounded-full bg-[#E7F3FF] text-[#0866FF] text-sm">
+                                                <div className="flex h-9 w-9 items-center justify-center font-semibold rounded-full bg-[#E7F3FF] dark:bg-[#0866FF]/15 text-[#0866FF] dark:text-[#4D8EFF] text-sm">
                                                     <span>{(user?.surname?.[0] || '').toUpperCase()}{(user?.name?.[0] || '').toUpperCase()}</span>
                                                 </div>
                                             )}
-                                            <p className="font-medium text-[#1C1E21] text-sm">{user.surname} {user.name}</p>
+                                            <p className="font-medium text-[#1C1E21] dark:text-darkCustom-100 text-sm">{user.surname} {user.name}</p>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3 text-[#65676B] text-sm">{user.login}</td>
-                                    <td className="px-4 py-3 text-[#65676B] text-sm">{user.email || '—'}</td>
+                                    <td className="px-4 py-3 text-[#65676B] dark:text-darkCustom-400 text-sm">{user.login}</td>
+                                    <td className="px-4 py-3 text-[#65676B] dark:text-darkCustom-400 text-sm">{user.email || '—'}</td>
                                     <td className="px-4 py-3">
-                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-[#E7F3FF] text-[#0866FF]' : 'bg-[#F0F2F5] text-[#65676B]'}`}>
+                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-[#E7F3FF] dark:bg-[#0866FF]/15 text-[#0866FF] dark:text-[#4D8EFF]' : 'bg-[#F0F2F5] dark:bg-darkCustom-700 text-[#65676B] dark:text-darkCustom-300'}`}>
                                             {capitalize(user.role)}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-[#65676B] text-sm">{user.user_index || '—'}</td>
+                                    <td className="px-4 py-3 text-[#65676B] dark:text-darkCustom-400 text-sm">{user.user_index || '—'}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex gap-1">
                                             <button onClick={() => openEditForm(user)} title="Edit user"
-                                                    className="p-1.5 rounded-lg text-[#606770] hover:text-green-600 hover:bg-green-50 transition-colors">
+                                                    className="p-1.5 rounded-lg text-[#606770] dark:text-darkCustom-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors">
                                                 <Edit size={15}/>
                                             </button>
                                             <button onClick={() => handleRequestPasswordReset(user)} title="Force password reset"
-                                                    className="p-1.5 rounded-lg text-[#606770] hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                                                    className="p-1.5 rounded-lg text-[#606770] dark:text-darkCustom-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors">
                                                 <KeyRound size={15}/>
                                             </button>
                                             <button onClick={() => handleDelete(user.user_id)} title="Delete user"
-                                                    className="p-1.5 rounded-lg text-[#606770] hover:text-red-500 hover:bg-red-50 transition-colors">
+                                                    className="p-1.5 rounded-lg text-[#606770] dark:text-darkCustom-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                                                 <Trash2 size={15}/>
                                             </button>
                                         </div>

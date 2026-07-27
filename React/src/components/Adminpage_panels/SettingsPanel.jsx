@@ -6,12 +6,12 @@ import {Moon, Users, IdCard} from 'lucide-react';
 
 function SettingToggle({icon, label, description, value, onChange, disabled}) {
     return (
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4E6EB] last:border-b-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4E6EB] dark:border-darkCustom-700 last:border-b-0">
             <div className="flex items-center gap-4">
-                <div className="text-[#606770]">{icon}</div>
+                <div className="text-[#606770] dark:text-darkCustom-400">{icon}</div>
                 <div className="flex flex-col">
-                    <h3 className="font-semibold text-[#1C1E21] text-sm">{label}</h3>
-                    <p className="text-xs text-[#65676B] mt-0.5">{description}</p>
+                    <h3 className="font-semibold text-[#1C1E21] dark:text-darkCustom-100 text-sm">{label}</h3>
+                    <p className="text-xs text-[#65676B] dark:text-darkCustom-400 mt-0.5">{description}</p>
                 </div>
             </div>
 
@@ -20,7 +20,7 @@ function SettingToggle({icon, label, description, value, onChange, disabled}) {
                 onClick={onChange}
                 disabled={disabled}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
-                    value ? 'bg-[#0866FF]' : 'bg-[#CED0D4]'
+                    value ? 'bg-[#0866FF]' : 'bg-[#CED0D4] dark:bg-darkCustom-600'
                 }`}
                 aria-checked={value}
             >
@@ -36,8 +36,9 @@ function SettingToggle({icon, label, description, value, onChange, disabled}) {
 
 
 export default function SettingsPanel() {
-    const {config, setConfig, getBackendConfig, setBackendConfig} = useAppContext();
+    const {config, setConfig, getBackendConfig, setBackendConfig, darkMode, toggleDarkMode} = useAppContext();
     const [loadingKey, setLoadingKey] = useState(null);
+    const [isTogglingTheme, setIsTogglingTheme] = useState(false);
 
     if (!config || Object.keys(config).length === 0) {
         return (
@@ -66,21 +67,33 @@ export default function SettingsPanel() {
         }
     };
 
+    const handleDarkModeChange = async () => {
+        setIsTogglingTheme(true);
+        try {
+            await toggleDarkMode();
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to save theme preference.');
+        } finally {
+            setIsTogglingTheme(false);
+        }
+    };
+
     return (
-        <div className="p-6 bg-[#F0F2F5] min-h-screen">
+        <div className="p-6 bg-[#F0F2F5] dark:bg-darkCustom-800 min-h-screen">
             <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-2xl border border-[#E4E6EB] shadow-sm">
-                    <header className="px-6 py-4 border-b border-[#E4E6EB]">
-                        <h2 className="text-[15px] font-semibold text-[#1C1E21]">Application Settings</h2>
+                <div className="bg-white dark:bg-darkCustom-900 rounded-2xl border border-[#E4E6EB] dark:border-darkCustom-700 shadow-sm">
+                    <header className="px-6 py-4 border-b border-[#E4E6EB] dark:border-darkCustom-700">
+                        <h2 className="text-[15px] font-semibold text-[#1C1E21] dark:text-darkCustom-100">Application Settings</h2>
                     </header>
                     <div className="space-y-0">
                         <SettingToggle
                             icon={<Moon size={20}/>}
                             label="Dark Mode"
                             description="Enable or disable dark theme for the application."
-                            value={config.dark_mode}
-                            onChange={() => handleChange('dark_mode')}
-                            disabled={loadingKey === 'dark_mode'}
+                            value={darkMode}
+                            onChange={handleDarkModeChange}
+                            disabled={isTogglingTheme}
                         />
                         <SettingToggle
                             icon={<Users size={20}/>}

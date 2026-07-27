@@ -78,7 +78,7 @@ const SingleChoiceEditor = ({qIndex, register, control, setValue}) => {
                             type="button"
                             onClick={() => handleRemoveAnswer(aIndex)}
                             disabled={fields.length <= 1}
-                            className="flex-shrink-0 p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="flex-shrink-0 p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             aria-label={`Remove option ${aIndex + 1}`}
                         >
                             <Trash2 size={16}/>
@@ -91,7 +91,7 @@ const SingleChoiceEditor = ({qIndex, register, control, setValue}) => {
                 type="button"
                 onClick={handleAddAnswer}
                 disabled={fields.length >= 5}
-                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] dark:hover:text-[#3F99FF] disabled:text-[#BEC3C9] disabled:cursor-not-allowed transition-colors"
             >
                 <PlusCircle size={16}/>
                 Add Option

@@ -29,7 +29,7 @@ const MatchingItemRow = ({field, index, qIndex, register, onRemove, isDragging, 
                 <span
                     {...attributes}
                     {...listeners}
-                    className={`p-1 pr-2 ${isOrderImportant ? 'cursor-grab text-[#BEC3C9] hover:text-[#65676B]' : 'cursor-not-allowed text-[#E4E6EB]'}`}
+                    className={`p-1 pr-2 ${isOrderImportant ? 'cursor-grab text-[#BEC3C9] hover:text-[#65676B]' : 'cursor-not-allowed text-[#E4E6EB] dark:text-darkCustom-700'}`}
                 >
                     <GripVertical size={18}/>
                 </span>
@@ -43,7 +43,7 @@ const MatchingItemRow = ({field, index, qIndex, register, onRemove, isDragging, 
             <button
                 type="button"
                 onClick={() => onRemove(index)}
-                className="p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 text-[#BEC3C9] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
             >
                 <Trash2 size={16}/>
             </button>
@@ -120,7 +120,7 @@ const MatchingMultipleEditor = ({qIndex, control, register, setValue}) => {
                 <button
                     type="button"
                     onClick={() => setValue(`questions.${qIndex}.extra_data.hasCorrectOrder`, !hasCorrectOrder, {shouldDirty: true})}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${hasCorrectOrder ? 'bg-[#0866FF]' : 'bg-[#CED0D4]'}`}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${hasCorrectOrder ? 'bg-[#0866FF]' : 'bg-[#CED0D4] dark:bg-darkCustom-600'}`}
                 >
                     <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${hasCorrectOrder ? 'translate-x-5' : 'translate-x-0'}`}/>
                 </button>
@@ -176,7 +176,7 @@ const MatchingMultipleEditor = ({qIndex, control, register, setValue}) => {
             <button
                 type="button"
                 onClick={handleAddItem}
-                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] transition-colors"
+                className="flex items-center gap-1.5 text-sm font-medium text-[#0866FF] hover:text-[#0757D9] dark:hover:text-[#3F99FF] transition-colors"
             >
                 <PlusCircle size={16}/>
                 Add Pair
