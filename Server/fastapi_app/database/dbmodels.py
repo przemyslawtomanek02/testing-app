@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional, List
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer, Float, Text
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer, Float, Text, UniqueConstraint
 from sqlalchemy import JSON
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
@@ -115,6 +115,9 @@ class Question(Base):
     test_id: Mapped[str] = mapped_column(
         String, ForeignKey("Tests.test_id", ondelete="SET NULL"), nullable=True
     )
+    course_page_id: Mapped[Optional[str]] = mapped_column(
+        String, ForeignKey("CoursePages.page_id", ondelete="SET NULL"), nullable=True
+    )
 
     question_text: Mapped[Optional[str]] = mapped_column(Text)
     question_type: Mapped[Optional[str]] = mapped_column(String)
@@ -124,6 +127,7 @@ class Question(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default='true')
 
     test = relationship("Test", back_populates="questions")
+    course_page = relationship("CoursePage", back_populates="question", uselist=False)
     answers = relationship("Answer", back_populates="question")
     results = relationship("Result", back_populates="question", passive_deletes=True)
 
@@ -261,3 +265,78 @@ class GradingThreshold(Base):
     grade: Mapped[Optional[int]] = mapped_column(Integer)
 
     scheme = relationship("GradingScheme", back_populates="thresholds")
+
+
+class Course(Base):
+    __tablename__ = "Courses"
+
+    course_id: Mapped[str] = mapped_column(String, primary_key=True)
+    title: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    cover_image_path: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    is_published: Mapped[bool] = mapped_column(Boolean, server_default="0", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        index=True
+    )
+
+    pages: Mapped[List["CoursePage"]] = relationship(
+        "CoursePage",
+        back_populates="course",
+        order_by="CoursePage.order_index",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    progress: Mapped[List["CourseProgress"]] = relationship(
+        "CourseProgress", back_populates="course", passive_deletes=True
+    )
+
+
+class CoursePage(Base):
+    __tablename__ = "CoursePages"
+
+    page_id: Mapped[str] = mapped_column(String, primary_key=True)
+    course_id: Mapped[str] = mapped_column(
+        String, ForeignKey("Courses.course_id", ondelete="CASCADE"), nullable=False
+    )
+    order_index: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    page_type: Mapped[str] = mapped_column(String, nullable=False)
+
+    title: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    content_markdown: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    image_path: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
+    course = relationship("Course", back_populates="pages")
+    question = relationship("Question", back_populates="course_page", uselist=False)
+
+
+class CourseProgress(Base):
+    __tablename__ = "CourseProgress"
+    __table_args__ = (UniqueConstraint("user_id", "course_id", name="uq_course_progress_user_course"),)
+
+    progress_id: Mapped[str] = mapped_column(String, primary_key=True)
+    # No FK to Users: in open_mode, student user_id is a session-only ephemeral id
+    # with no row in Users (same convention as UserActivity.user_id).
+    user_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    course_id: Mapped[str] = mapped_column(
+        String, ForeignKey("Courses.course_id", ondelete="CASCADE"), nullable=False, index=True
+    )
+
+    current_page_index: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    completed_page_ids: Mapped[Optional[MutableList[str]]] = mapped_column(
+        MutableList.as_mutable(JSON),
+        nullable=True,
+        default=list,
+    )
+    page_answers: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, default=dict)
+    is_completed: Mapped[bool] = mapped_column(Boolean, server_default="0", nullable=False)
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        index=True
+    )
+
+    course = relationship("Course", back_populates="progress")

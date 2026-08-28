@@ -85,7 +85,7 @@ function CreateInstancePopup({test_id, max_score, setOverlay, onRefresh}) {
 
     return (
         <div className="bg-white dark:bg-darkCustom-900 rounded-lg shadow-xl w-full max-w-2xl">
-            {/* Nagłówek */}
+            {/* Header */}
             <header
                 className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-darkCustom-700">
                 <h2 className="text-xl font-bold text-slate-800 dark:text-darkCustom-100">Create Instance</h2>

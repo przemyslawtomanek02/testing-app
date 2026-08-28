@@ -280,7 +280,7 @@ const UserForm = ({onCancel, onSuccess, initialData = null}) => {
             const response = await fetch(endpoint, {method, body: data});
             const result = await response.json();
             if (!response.ok) {
-                throw new Error(result.detail || 'Wystąpił nieznany błąd serwera.');
+                throw new Error(result.detail || 'An unknown server error occurred.');
             }
             toast.success(isEditMode ? 'User updated!' : 'User created!');
             if (onSuccess) {

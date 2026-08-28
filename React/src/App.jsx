@@ -18,6 +18,8 @@ const Solvingtestpage = lazy(() => import('./components/Solvingtestpage'));
 const ResultPage = lazy(() => import('./components/ResultPage'));
 const UserPage = lazy(() => import('./components/UserPage'));
 const NotFoundPage = lazy(() => import('./components/NotFoundPage'));
+const CoursesListPage = lazy(() => import('./components/CoursesListPage'));
+const CourseReaderPage = lazy(() => import('./components/CourseReaderPage'));
 
 const TestLayout = () => (
     <TestProvider>
@@ -47,10 +49,13 @@ const App = () => {
                             {config && !config.open_mode && (
                                 <Route path="/profile" element={<UserPage/>}/>
                             )}
+                            <Route path="/courses" element={<CoursesListPage/>}/>
                         </Route>
 
                         {/* Strona egzaminu — bez sidebara */}
                         <Route path="/test" element={<Solvingtestpage/>}/>
+                        {/* Czytnik kursu — bez sidebara, pełny ekran jak /test */}
+                        <Route path="/courses/:courseId" element={<CourseReaderPage/>}/>
 
                     </Route>
                 </Route>

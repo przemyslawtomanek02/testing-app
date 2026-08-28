@@ -444,6 +444,98 @@ class TestAdminDetail(BaseModel):
 
 
 # -------------------------------------------------------------------
+# COURSES (E-learning)
+# -------------------------------------------------------------------
+
+class CourseAdminSummary(BaseModel):
+    """Model dla podsumowania kursu na liście w panelu admina."""
+    course_id: str
+    title: str
+    description: Optional[str] = None
+    cover_image_path: Optional[str] = None
+    is_published: bool
+    created_at: datetime
+    page_count: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CoursePageAdmin(BaseModel):
+    """Model strony kursu na potrzeby panelu admina."""
+    page_id: str
+    order_index: int
+    page_type: str
+    title: Optional[str] = None
+    content_markdown: Optional[str] = None
+    image: Optional[str] = None
+    question: Optional[QuestionAdmin] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CourseAdminDetail(BaseModel):
+    """Model odpowiedzi ze wszystkimi szczegółami kursu dla panelu admina."""
+    course_id: str
+    title: str
+    description: Optional[str] = None
+    cover_image_path: Optional[str] = None
+    is_published: bool
+    pages: List[CoursePageAdmin]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CoursePageStudent(BaseModel):
+    """Model strony kursu dla ucznia (bez informacji o poprawności odpowiedzi)."""
+    page_id: str
+    order_index: int
+    page_type: str
+    title: Optional[str] = None
+    content_markdown: Optional[str] = None
+    image: Optional[str] = None
+    question: Optional[QuestionUser] = None
+    is_completed: bool = False
+
+
+class CourseStudentSummary(BaseModel):
+    """Model dla podsumowania kursu na liście kursów ucznia."""
+    course_id: str
+    title: str
+    description: Optional[str] = None
+    cover_image_path: Optional[str] = None
+    total_pages: int
+    current_page_index: int
+    is_completed: bool
+
+
+class CourseStudentDetail(BaseModel):
+    """Model odpowiedzi z pełną zawartością kursu i postępem dla ucznia."""
+    course_id: str
+    title: str
+    description: Optional[str] = None
+    current_page_index: int
+    is_completed: bool
+    pages: List[CoursePageStudent]
+
+
+class CourseAnswerPayload(BaseModel):
+    """Dane wejściowe dla odpowiedzi ucznia na stronę-pytanie kursu."""
+    user_response: Any = None
+
+
+class CourseAnswerResponse(BaseModel):
+    """Wynik sprawdzenia odpowiedzi na stronie-pytaniu kursu."""
+    is_correct: bool
+    attempts: int
+    current_page_index: int
+
+
+class CourseProgressUpdate(BaseModel):
+    """Aktualizacja bieżącej pozycji ucznia w kursie."""
+    current_page_index: int
+
+
+# -------------------------------------------------------------------
 # Search
 # -------------------------------------------------------------------
 

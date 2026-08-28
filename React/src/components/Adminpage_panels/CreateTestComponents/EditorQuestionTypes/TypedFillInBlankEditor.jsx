@@ -71,13 +71,13 @@ const TypedFillInBlankEditor = ({qIndex, register, control, setValue, getValues}
                     rows="3"
                 />
                 <p className="text-xs text-[#BEC3C9] mt-1">
-                    Użyj <code className="bg-[#F0F2F5] px-1 rounded text-[#65676B]">___</code> (trzy podkreślenia) aby zaznaczyć miejsca na luki.
+                    Use <code className="bg-[#F0F2F5] px-1 rounded text-[#65676B]">___</code> (three underscores) to mark blank spaces.
                 </p>
             </div>
 
             {questionText.trim() && (
                 <div className="p-3 bg-[#F0F2F5] border border-dashed border-[#E4E6EB] rounded-xl text-sm text-[#1C1E21] leading-loose">
-                    <span className="block text-xs text-[#BEC3C9] mb-1 font-medium uppercase tracking-wide">Podgląd dla studenta</span>
+                    <span className="block text-xs text-[#BEC3C9] mb-1 font-medium uppercase tracking-wide">Student preview</span>
                     {renderPreview()}
                 </div>
             )}
@@ -104,14 +104,14 @@ const TypedFillInBlankEditor = ({qIndex, register, control, setValue, getValues}
                         </div>
                     ))}
                     <p className="text-xs text-[#BEC3C9]">
-                        Odpowiedź studenta jest porównywana bez uwzględnienia wielkości liter i białych znaków.
+                        The student's answer is compared ignoring case and whitespace.
                     </p>
                 </div>
             )}
 
             {blankCount === 0 && questionText.trim() && (
                 <p className="text-sm text-amber-600">
-                    Brak luk — dodaj <code className="bg-[#F0F2F5] px-1 rounded">___</code> do treści pytania.
+                    No blanks — add <code className="bg-[#F0F2F5] px-1 rounded">___</code> to the question text.
                 </p>
             )}
         </div>

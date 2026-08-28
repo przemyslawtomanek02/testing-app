@@ -174,7 +174,7 @@ const QuestionEditor = ({
                 style={{ width: '16px', height: '16px', accentColor: '#2B73FF' }}
               />
               <span style={{ fontSize: '13px', fontWeight: '500', color: T.text }}>
-                Timed reveal (czytanie + odpowiedź)
+                Timed reveal (reading + answer)
               </span>
             </label>
 
@@ -182,7 +182,7 @@ const QuestionEditor = ({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>
                   <label htmlFor={`rd-${qIndex}`} style={{ display: 'block', fontSize: '13px', color: T.textSec, marginBottom: '4px' }}>
-                    Czas czytania (sekundy)
+                    Reading time (seconds)
                   </label>
                   <input
                     id={`rd-${qIndex}`}
@@ -195,12 +195,12 @@ const QuestionEditor = ({
                     onBlur={e => { e.currentTarget.style.borderColor = T.border; }}
                   />
                   <p style={{ fontSize: '12px', color: T.textMuted, marginTop: '4px' }}>
-                    Pytanie będzie widoczne przez ten czas, potem zniknie i pojawią się odpowiedzi.
+                    The question will stay visible for this long, then it will disappear and the answers will appear.
                   </p>
                 </div>
                 <div>
                   <label htmlFor={`at-${qIndex}`} style={{ display: 'block', fontSize: '13px', color: T.textSec, marginBottom: '4px' }}>
-                    Czas na odpowiedź (sekundy)
+                    Answer time (seconds)
                   </label>
                   <input
                     id={`at-${qIndex}`}
@@ -213,7 +213,7 @@ const QuestionEditor = ({
                     onBlur={e => { e.currentTarget.style.borderColor = T.border; }}
                   />
                   <p style={{ fontSize: '12px', color: T.textMuted, marginTop: '4px' }}>
-                    Po tym czasie nastąpi automatyczne przejście. Wpisz 0, aby wyłączyć limit.
+                    It will move on automatically after this time. Enter 0 to disable the limit.
                   </p>
                 </div>
               </div>

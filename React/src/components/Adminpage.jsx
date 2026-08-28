@@ -5,6 +5,7 @@ import {
     BookOpen, Hash, BarChart3, Percent,
     ListChecks, PlusSquare, Settings, LogOut,
     FilePlus2, Users, ChevronRight, Menu, X,
+    GraduationCap,
 } from 'lucide-react';
 
 import { useAppContext } from '../AppContext.jsx';
@@ -21,6 +22,7 @@ import EditTestPanel from './Adminpage_panels/CreateTestComponents/EditTestPanel
 import UsersListPanel from './Adminpage_panels/UsersListPanel.jsx';
 import DarkModeSwitcher from './Reusable/DarkModeSwitcher.jsx';
 import TestPreviewPanel from './Adminpage_panels/TestPreviewPanel.jsx';
+import CoursesPanel from './Adminpage_panels/CourseComponents/CoursesPanel.jsx';
 
 /* ─── nav config ─────────────────────────────────────────── */
 const NAV_GENERAL = [
@@ -28,6 +30,7 @@ const NAV_GENERAL = [
     { id: 'instances',       icon: Hash,       label: 'Instances' },
     { id: 'results',         icon: BarChart3,  label: 'Results' },
     { id: 'grading_schemes', icon: Percent,    label: 'Grading' },
+    { id: 'courses',         icon: GraduationCap, label: 'E-learning' },
 ];
 const NAV_CREATE = [
     { id: 'create_test',            icon: PlusSquare, label: 'Create Test' },
@@ -45,6 +48,7 @@ const BREADCRUMBS = {
     instances:                ['General', 'Instances'],
     results:                  ['General', 'Results'],
     grading_schemes:          ['General', 'Grading'],
+    courses:                  ['General', 'E-learning'],
     create_test:              ['Create', 'New Test'],
     create_grading_schemes:   ['Create', 'New Grading'],
     users_list:               ['Admin', 'Users'],
@@ -159,6 +163,7 @@ export default function Adminpage() {
             case 'instances':       return <InstancesPanel data={instances} setOverlay={setOverlay} onRefresh={fetchData}/>;
             case 'results':         return <ResultsPanel reset={activePanel === null}/>;
             case 'grading_schemes': return <GradingSchemePanel setOverlay={setOverlay}/>;
+            case 'courses':         return <CoursesPanel setOverlay={setOverlay} setOverlayImage={setOverlayImage}/>;
             case 'create_test':     return <CreateTestsPanel setOverlayImage={setOverlayImage}/>;
             case 'create_grading_schemes': return <CreateGradingScheme scheme_id={null}/>;
             case 'users_list':      return <UsersListPanel setOverlay={setOverlay} onRefresh={'nic'}/>;

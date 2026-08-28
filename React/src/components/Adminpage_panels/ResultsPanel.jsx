@@ -26,7 +26,7 @@ import {RenderUserAnswer, RenderCorrectAnswer} from '../Reusable/ResultBlocks.js
 import formatDate from "../Reusable/FormatDate.jsx";
 
 // =============================================================
-// SKELETONY + WSPÓLNE ELEMENTY
+// SKELETONS + SHARED ELEMENTS
 // =============================================================
 
 const TopLinearLoader = ({show}) => (
@@ -90,7 +90,7 @@ const SkeletonParticipants = ({rows = 6, instance}) => (
 );
 
 // =============================================================
-// NAGŁÓWEK WYSZUKIWANIA
+// SEARCH HEADER
 // =============================================================
 
 const SearchHeader = ({searchTerm, setSearchTerm, searchType, setSearchType, resultsCount}) => {
@@ -1051,7 +1051,7 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
 };
 
 // =============================================================
-// GŁÓWNY KOMPONENT
+// MAIN COMPONENT
 // =============================================================
 
 function ResultsPanel({reset}) {
@@ -1214,7 +1214,7 @@ function ResultsPanel({reset}) {
 
         if (fromInstance) {
             if (!user?.activity_id) {
-                toast.error('Brak activity_id dla wybranego podejścia.');
+                toast.error('Missing activity_id for the selected attempt.');
                 return;
             }
             setSelectedUserForHistory(null);
@@ -1270,7 +1270,7 @@ function ResultsPanel({reset}) {
             );
         }
 
-        // LISTA (instancji / użytkowników)
+        // LIST (instances / users)
         return loading ? (
             <SkeletonGrid count={6}/>
         ) : (

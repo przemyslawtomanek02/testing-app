@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { ListChecks, User, LogOut, ChevronsLeft, ChevronsRight, Palette } from 'lucide-react';
+import { ListChecks, User, LogOut, ChevronsLeft, ChevronsRight, Palette, GraduationCap } from 'lucide-react';
 import { useAppContext } from '../../AppContext.jsx';
 import DarkModeSwitcher from '../Reusable/DarkModeSwitcher.jsx';
 
@@ -63,6 +63,12 @@ export default function StudentLayout() {
                         icon={<ListChecks size={20} />}
                         text="Exams"
                         to="/exams"
+                        isSidebarOpen={isSidebarOpen}
+                    />
+                    <SidebarLink
+                        icon={<GraduationCap size={20} />}
+                        text="E-learning"
+                        to="/courses"
                         isSidebarOpen={isSidebarOpen}
                     />
                     {!config?.open_mode && (
