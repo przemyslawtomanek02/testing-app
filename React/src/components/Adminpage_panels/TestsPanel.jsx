@@ -139,14 +139,14 @@ export default function TestsPanel({ data, setOverlay, setOverlayImage, onRefres
                 <div style={{
                     background: T.surface,
                     borderRadius: '20px',
-                    border: `1px solid ${T.border}`,
+                    border: dk ? `1px solid ${T.border}` : 'none',
                     padding: '10px 16px',
                     marginBottom: '16px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '12px',
-                    boxShadow: dk ? 'none' : '0 2px 12px rgba(43,115,255,0.07)',
+                    boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)',
                 }}>
                     {/* Left: select all + count */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -227,12 +227,11 @@ export default function TestsPanel({ data, setOverlay, setOverlayImage, onRefres
                                 fontSize: '13px', fontWeight: '600', cursor: 'pointer',
                                 background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                                 color: '#FFFFFF',
-                                boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
-                                transition: 'opacity 0.15s, box-shadow 0.15s',
+                                transition: 'opacity 0.15s',
                                 fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(43,115,255,0.45)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(43,115,255,0.35)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}
+                            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                         >
                             <FilePlus2 size={14}/> New Test
                         </button>
@@ -251,10 +250,10 @@ export default function TestsPanel({ data, setOverlay, setOverlayImage, onRefres
                                         animationDelay: `${index * 40}ms`,
                                         background: T.surface,
                                         borderRadius: '22px',
-                                        border: `1.5px solid ${selected ? '#2B73FF' : T.border}`,
+                                        border: selected ? '1.5px solid #2B73FF' : (dk ? `1.5px solid ${T.border}` : 'none'),
                                         boxShadow: selected
                                             ? '0 0 0 4px rgba(43,115,255,0.10), 0 4px 20px rgba(43,115,255,0.12)'
-                                            : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+                                            : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.06)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         padding: '16px 20px',
@@ -329,19 +328,13 @@ export default function TestsPanel({ data, setOverlay, setOverlayImage, onRefres
                     <div style={{
                         background: T.surface,
                         borderRadius: '24px',
-                        border: `1px solid ${T.border}`,
+                        border: dk ? `1px solid ${T.border}` : 'none',
                         padding: '72px 24px',
                         textAlign: 'center',
-                        boxShadow: dk ? 'none' : '0 2px 12px rgba(43,115,255,0.05)',
+                        boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)',
                     }}>
-                        <div style={{
-                            width: '60px', height: '60px', borderRadius: '20px',
-                            background: 'linear-gradient(135deg, #EEF4FF, #DDE9FF)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            margin: '0 auto 18px',
-                            boxShadow: '0 4px 14px rgba(43,115,255,0.12)',
-                        }}>
-                            <Inbox size={26} style={{ color: '#2B73FF' }}/>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                            <Inbox size={32} style={{ color: '#2B73FF' }}/>
                         </div>
                         <div style={{ fontSize: '15px', fontWeight: '600', color: T.text, marginBottom: '6px' }}>No tests yet</div>
                         <div style={{ fontSize: '13px', color: T.textSec, marginBottom: '24px' }}>Create your first test to get started.</div>
@@ -352,7 +345,7 @@ export default function TestsPanel({ data, setOverlay, setOverlayImage, onRefres
                                 padding: '0 24px', display: 'inline-flex', alignItems: 'center', gap: '7px',
                                 fontSize: '13px', fontWeight: '600', cursor: 'pointer',
                                 background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
-                                color: '#FFFFFF', boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
+                                color: '#FFFFFF',
                                 fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
                             }}
                         >

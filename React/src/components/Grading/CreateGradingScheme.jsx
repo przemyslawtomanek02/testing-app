@@ -209,8 +209,8 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
     const SectionCard = ({children, style = {}}) => (
         <div style={{
             background: T.surface, borderRadius: '22px',
-            border: `1px solid ${T.border}`,
-            boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+            border: dk ? `1px solid ${T.border}` : 'none',
+            boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.06)',
             padding: '24px', ...style,
         }}>
             {children}
@@ -264,8 +264,7 @@ const CreateGradingScheme = ({scheme_id, onBack}) => {
                             background: isSubmitting ? T.textMuted : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                             color: '#FFFFFF', fontSize: '13px', fontWeight: '600',
                             cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                            boxShadow: isSubmitting ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
-                            transition: 'opacity 0.15s, box-shadow 0.15s',
+                            transition: 'opacity 0.15s',
                         }}
                         onMouseEnter={e => { if (!isSubmitting) e.currentTarget.style.opacity = '0.88'; }}
                         onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}

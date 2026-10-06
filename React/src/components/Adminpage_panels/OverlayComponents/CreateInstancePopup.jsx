@@ -133,7 +133,7 @@ function CreateInstancePopup({test_id, max_score, setOverlay, onRefresh}) {
                             />
                         </div>
                         {showSuggestions && (
-                            <ul className="absolute top-full mt-1 w-full bg-white dark:bg-darkCustom-800 border border-slate-200 dark:border-darkCustom-600 rounded-md shadow-lg max-h-40 overflow-y-auto z-10">
+                            <ul className="absolute top-full mt-1 w-full bg-white dark:bg-darkCustom-800 dark:border dark:border-darkCustom-600 rounded-md shadow-lg max-h-40 overflow-y-auto z-10">
                                 {filteredSchemes.length > 0 ? filteredSchemes.map(g => (
                                     <li key={g.scheme_id}
                                         className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-darkCustom-700 dark:text-darkCustom-100 cursor-pointer"

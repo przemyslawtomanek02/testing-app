@@ -20,7 +20,6 @@ export default function DarkModeSwitcher() {
                     : '#E2E8F0',
                 transition: 'background 0.25s',
                 flexShrink: 0,
-                boxShadow: darkMode ? '0 2px 10px rgba(43,115,255,0.35)' : 'none',
             }}
         >
             {/* thumb */}

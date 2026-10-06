@@ -108,9 +108,9 @@ const SearchHeader = ({searchTerm, setSearchTerm, searchType, setSearchType, res
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px',
                 background: surface,
                 borderRadius: '22px',
-                border: `1.5px solid ${border}`,
+                border: dk ? `1.5px solid ${border}` : 'none',
                 padding: '10px 16px',
-                boxShadow: dk ? 'none' : '0 4px 24px rgba(43,115,255,0.08)',
+                boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)',
             }}>
                 {/* Search input */}
                 <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
@@ -182,8 +182,8 @@ const EmptyState = ({title = 'No Results found', subtitle = 'Search for Instance
             <div style={{
                 textAlign: 'center', padding: '64px 32px', width: '100%', maxWidth: '360px', marginTop: '40px',
                 background: dk ? '#171B2D' : '#FFFFFF', borderRadius: '24px',
-                border: `1px solid ${dk ? '#2A2F45' : '#E4E6EB'}`,
-                boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+                border: dk ? '1px solid #2A2F45' : 'none',
+                boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.06)',
             }}>
                 <Inbox size={44} style={{ margin: '0 auto', color: dk ? '#5A6483' : '#BEC3C9' }}/>
                 <h3 style={{ marginTop: '16px', fontSize: '15px', fontWeight: '600', color: dk ? '#E2E8F0' : '#0F1623' }}>{title}</h3>
@@ -215,7 +215,7 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
     const Card = ({item, index}) => {
         const [hovered, setHovered] = React.useState(false);
         const surface  = dk ? '#171B2D' : '#FFFFFF';
-        const border   = dk ? (hovered ? '#4D7FFF' : '#2A2F45') : (hovered ? '#C7D9FF' : '#EDF0F7');
+        const border   = dk ? (hovered ? '#4D7FFF' : '#2A2F45') : (hovered ? '#C7D9FF' : 'transparent');
         const surface2 = dk ? '#1E2237' : '#F8FAFF';
         const border2  = dk ? '#2A2F45' : '#EDF0F7';
         const text     = dk ? '#E2E8F0' : '#0F1623';
@@ -248,7 +248,7 @@ const SearchResultsList = ({results, searchType, onInstanceClick, onUserClick, c
                     border: `1.5px solid ${border}`,
                     boxShadow: hovered
                         ? '0 6px 24px rgba(43,115,255,0.11), 0 2px 8px rgba(0,0,0,0.08)'
-                        : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)',
+                        : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
                     cursor: 'pointer',
                     transition: 'border-color 0.18s, box-shadow 0.18s',
                     overflow: 'hidden',
@@ -606,7 +606,7 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
                                             exit={{opacity: 0, y: -5}}
                                             style={{
                                                 position: 'absolute', zIndex: 20, marginTop: '8px', width: '220px',
-                                                borderRadius: '18px', border: `1px solid ${T.border}`,
+                                                borderRadius: '18px', border: dk ? `1px solid ${T.border}` : 'none',
                                                 background: T.surface, padding: '4px',
                                                 boxShadow: dk ? '0 8px 32px rgba(0,0,0,0.6)' : '0 8px 32px rgba(0,0,0,0.12)',
                                             }}
@@ -684,12 +684,12 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
                                     onClick={() => onUserClick(user, {fromInstance: true})}
                                     style={{
                                         background: T.surface, padding: '16px', borderRadius: '18px',
-                                        border: `1.5px solid ${T.border}`, cursor: 'pointer',
-                                        boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)',
+                                        border: `1.5px solid ${dk ? T.border : 'transparent'}`, cursor: 'pointer',
+                                        boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
                                         transition: 'border-color 0.18s, box-shadow 0.18s, transform 0.18s',
                                     }}
                                     onMouseEnter={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(43,115,255,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? T.border : 'transparent'; e.currentTarget.style.boxShadow = dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', minWidth: 0 }}>
@@ -736,7 +736,7 @@ const InstanceDetailsView = ({instance, users, onUserClick, onBack, config}) => 
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {questionStats.map((q, idx) => (
-                            <div key={q.question_id} style={{ background: T.surface, borderRadius: '18px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', padding: '20px' }}>
+                            <div key={q.question_id} style={{ background: T.surface, borderRadius: '18px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)', padding: '20px' }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginBottom: '12px' }}>
                                     <div style={{ minWidth: 0 }}>
                                         <p style={{ fontSize: '11px', fontWeight: '600', color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
@@ -827,7 +827,7 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
                         </p>
                     </div>
                 </div>
-                <div style={{ textAlign: 'right', background: T.surface, borderRadius: '18px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.04)', padding: '10px 18px' }}>
+                <div style={{ textAlign: 'right', background: T.surface, borderRadius: '18px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)', padding: '10px 18px' }}>
                     <p style={{ fontSize: '24px', fontWeight: '700', color: getPercentColor(percent) }}>{percent}%</p>
                     <p style={{ fontSize: '12px', color: T.textSec }}>
                         {fmt2(userDetails.user_score)} / {fmt2(userDetails.max_score_for_activity)} pts
@@ -840,7 +840,7 @@ const UserDetailsView = ({user, userDetails, onBack, config}) => {
                     const isExpanded = expandedQuestions.includes(q.question_id);
 
                     return (
-                        <div key={q.question_id} style={{ background: T.surface, borderRadius: '18px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+                        <div key={q.question_id} style={{ background: T.surface, borderRadius: '18px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
                             <div
                                 style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'background 0.15s' }}
                                 onClick={() => toggleQuestion(q.question_id)}
@@ -934,7 +934,7 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
     }, [history]);
 
     const Stat = ({label, value}) => (
-        <div style={{ borderRadius: '18px', background: T.surface, border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)', padding: '8px 16px', textAlign: 'center' }}>
+        <div style={{ borderRadius: '18px', background: T.surface, border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.06)', padding: '8px 16px', textAlign: 'center' }}>
             <div style={{ fontSize: '12px', color: T.textSec }}>{label}</div>
             <div style={{ fontSize: '16px', fontWeight: '700', color: T.text }}>{value}</div>
         </div>
@@ -1010,12 +1010,12 @@ const UserHistoryView = ({user, history, onInstanceClick, onBack, config}) => {
                             onClick={() => onInstanceClick(item)}
                             style={{
                                 background: T.surface, padding: '16px', borderRadius: '18px',
-                                border: `1.5px solid ${T.border}`, cursor: 'pointer',
-                                boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)',
+                                border: `1.5px solid ${dk ? T.border : 'transparent'}`, cursor: 'pointer',
+                                boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.06)',
                                 transition: 'border-color 0.18s, box-shadow 0.18s, transform 0.18s',
                             }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = '#2B73FF'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(43,115,255,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? T.border : 'transparent'; e.currentTarget.style.boxShadow = dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                                 <div style={{ minWidth: 0 }}>

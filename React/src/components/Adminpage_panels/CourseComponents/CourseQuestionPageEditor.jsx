@@ -46,6 +46,12 @@ export default function CourseQuestionPageEditor({ courseId, pageId, initialLabe
     const { register, control, setValue, getValues, watch } = useForm({
         defaultValues: { questions: [transformQuestionForForm(initialQuestion)] },
     });
+    // Subskrypcja na poziomie tego komponentu jest wymagana, żeby zmiana typu pytania
+    // (setValue na całym questions.0 w QuestionEditor) wymusiła tu re-render — bez tego
+    // watch(`questions.0.type`) wywoływany wewnątrz QuestionEditor nie odświeża widoku,
+    // bo nic nie subskrybuje zmian na tym poziomie drzewa (ten sam wzorzec co
+    // watch("questions") w CreateTestsPanel.jsx).
+    watch('questions.0');
 
     const handleImageUpload = useCallback((_qIndex, file) => {
         if (file.size > 2 * 1024 * 1024) { toast.error('Image too large. Max: 2MB.'); return; }
@@ -103,7 +109,7 @@ export default function CourseQuestionPageEditor({ courseId, pageId, initialLabe
                 />
             </div>
 
-            <div style={{ background: T.surface, borderRadius: '16px', border: `1px solid ${T.border}` }}>
+            <div style={{ background: T.surface, borderRadius: '16px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}>
                 <QuestionEditor
                     question={{}}
                     qIndex={0}

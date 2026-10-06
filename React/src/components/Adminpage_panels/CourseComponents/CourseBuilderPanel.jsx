@@ -145,7 +145,8 @@ export default function CourseBuilderPanel({ courseId, onBack, setOverlay, setOv
 
                 {/* Course meta */}
                 <div style={{
-                    background: T.surface, border: `1px solid ${T.border}`, borderRadius: '22px',
+                    background: T.surface, border: dk ? `1px solid ${T.border}` : 'none', borderRadius: '22px',
+                    boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)',
                     padding: '20px', marginBottom: '20px', display: 'grid',
                     gridTemplateColumns: '2fr 2fr auto auto', gap: '16px', alignItems: 'end',
                 }}>
@@ -178,7 +179,7 @@ export default function CourseBuilderPanel({ courseId, onBack, setOverlay, setOv
 
                 <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', alignItems: 'start' }}>
                     {/* Page list */}
-                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: '22px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ background: T.surface, border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)', borderRadius: '22px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <h3 style={{ fontSize: '13px', fontWeight: '600', color: T.textSec, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                             Pages ({course.pages.length})
                         </h3>
@@ -229,7 +230,7 @@ export default function CourseBuilderPanel({ courseId, onBack, setOverlay, setOv
                     </div>
 
                     {/* Editor */}
-                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: '22px', padding: '20px' }}>
+                    <div style={{ background: T.surface, border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)', borderRadius: '22px', padding: '20px' }}>
                         {addingType === 'content' && (
                             <CourseContentPageEditor courseId={courseId} pageId={null} showOverlay={setOverlayImage} onSaved={handlePageSaved}/>
                         )}

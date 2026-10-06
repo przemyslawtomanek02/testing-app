@@ -144,6 +144,7 @@ const PasswordInputField = ({value, onChange, onGenerate, placeholder, label, re
 };
 
 const RoleSelect = ({value, onChange, options, T}) => {
+    const { darkMode: dk } = useAppContext();
     const selectedLabel = options.find(opt => opt.value === value)?.label || 'Select a role';
     return (
         <div>
@@ -170,7 +171,7 @@ const RoleSelect = ({value, onChange, options, T}) => {
                 >
                     <Menu.Items style={{
                         position: 'absolute', left: 0, right: 0, marginTop: '6px', zIndex: 20,
-                        background: T.surface, border: `1px solid ${T.border}`, borderRadius: '16px',
+                        background: T.surface, border: dk ? `1px solid ${T.border}` : 'none', borderRadius: '16px',
                         boxShadow: '0 8px 24px rgba(0,0,0,0.16)', padding: '6px', outline: 'none',
                     }}>
                         {options.map((option) => (
@@ -305,7 +306,7 @@ const UserForm = ({onCancel, onSuccess, initialData = null}) => {
     return (
         <div style={{
             width: '100%', maxWidth: '440px', borderRadius: '28px',
-            background: T.surface, border: `1px solid ${T.border}`,
+            background: T.surface, border: dk ? `1px solid ${T.border}` : 'none',
             padding: '36px', boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
             fontFamily: FIELD_FONT,
         }}>
@@ -383,8 +384,7 @@ const UserForm = ({onCancel, onSuccess, initialData = null}) => {
                             background: isLoading ? '#94A3B8' : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                             color: '#FFFFFF', fontSize: '13px', fontWeight: '600',
                             cursor: isLoading ? 'not-allowed' : 'pointer',
-                            boxShadow: isLoading ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
-                            transition: 'opacity 0.15s, box-shadow 0.15s', fontFamily: FIELD_FONT,
+                            transition: 'opacity 0.15s', fontFamily: FIELD_FONT,
                         }}
                         onMouseEnter={e => { if (!isLoading) e.currentTarget.style.opacity = '0.88'; }}
                         onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
@@ -621,18 +621,17 @@ export default function UsersListPanel({setOverlay, onRefresh}) {
                             fontSize: '13px', fontWeight: '600', cursor: 'pointer',
                             background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                             color: '#FFFFFF',
-                            boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
-                            transition: 'opacity 0.15s, box-shadow 0.15s',
+                            transition: 'opacity 0.15s',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(43,115,255,0.45)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(43,115,255,0.35)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                     >
                         <UserPlus size={15}/>
                         <span>Add New User</span>
                     </button>
                 </div>
 
-                <div className="bg-white dark:bg-darkCustom-900 border border-[#E4E6EB] dark:border-darkCustom-700 rounded-2xl shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-darkCustom-900 dark:border dark:border-darkCustom-700 rounded-2xl shadow-md dark:shadow-none overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="border-b border-[#E4E6EB] dark:border-darkCustom-700">

@@ -3,12 +3,10 @@ import { AlertTriangle, X } from 'lucide-react';
 
 export default function DeletePopup({ onConfirm, onCancel }) {
     return (
-        <div className="bg-white dark:bg-darkCustom-900 rounded-[28px] border border-[#E4E6EB] dark:border-darkCustom-700 shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="bg-white dark:bg-darkCustom-900 rounded-[28px] dark:border dark:border-darkCustom-700 shadow-2xl w-full max-w-md overflow-hidden">
             <header className="flex justify-between items-center px-6 py-5">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-500/10">
-                        <AlertTriangle size={20} className="text-red-500 dark:text-red-400" />
-                    </div>
+                    <AlertTriangle size={24} className="text-red-500 dark:text-red-400" />
                     <h2 className="text-lg font-bold text-[#0F1623] dark:text-darkCustom-100">Confirm Deletion</h2>
                 </div>
                 <button onClick={onCancel} className="p-2 rounded-full text-[#606770] dark:text-darkCustom-400 hover:bg-[#F0F2F5] dark:hover:bg-darkCustom-700 transition-colors">

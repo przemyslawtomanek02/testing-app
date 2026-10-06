@@ -119,10 +119,10 @@ const GradingSchemeList = ({onEdit, onCreateNew, setOverlay}) => {
 
                 {/* Toolbar */}
                 <div style={{
-                    background: T.surface, borderRadius: '20px', border: `1px solid ${T.border}`,
+                    background: T.surface, borderRadius: '20px', border: dk ? `1px solid ${T.border}` : 'none',
                     padding: '10px 16px', marginBottom: '16px',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
-                    boxShadow: dk ? 'none' : '0 2px 12px rgba(43,115,255,0.07)',
+                    boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)',
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <button
@@ -177,11 +177,10 @@ const GradingSchemeList = ({onEdit, onCreateNew, setOverlay}) => {
                                 fontSize: '13px', fontWeight: '600', cursor: 'pointer',
                                 background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                                 color: '#FFFFFF',
-                                boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
-                                transition: 'opacity 0.15s, box-shadow 0.15s',
+                                transition: 'opacity 0.15s',
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(43,115,255,0.45)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(43,115,255,0.35)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}
+                            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                         >
                             <FilePlus2 size={14}/> New Template
                         </button>
@@ -202,10 +201,10 @@ const GradingSchemeList = ({onEdit, onCreateNew, setOverlay}) => {
                                         animationDelay: `${index * 50}ms`,
                                         background: T.surface,
                                         borderRadius: '22px',
-                                        border: `1.5px solid ${selected ? '#2B73FF' : T.border}`,
+                                        border: selected ? '1.5px solid #2B73FF' : (dk ? `1.5px solid ${T.border}` : 'none'),
                                         boxShadow: selected
                                             ? '0 0 0 4px rgba(43,115,255,0.10), 0 4px 20px rgba(43,115,255,0.12)'
-                                            : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)',
+                                            : dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.06)',
                                         display: 'flex', flexDirection: 'row', alignItems: 'center',
                                         padding: '14px 18px', gap: '14px',
                                         transition: 'border-color 0.18s, box-shadow 0.18s',
@@ -267,7 +266,7 @@ const GradingSchemeList = ({onEdit, onCreateNew, setOverlay}) => {
                         })}
                     </div>
                 ) : (
-                    <div style={{ textAlign: 'center', padding: '64px 24px', background: T.surface, borderRadius: '24px', border: `1px solid ${T.border}` }}>
+                    <div style={{ textAlign: 'center', padding: '64px 24px', background: T.surface, borderRadius: '24px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}>
                         <Inbox size={44} style={{ margin: '0 auto', color: T.textMuted }}/>
                         <div style={{ marginTop: '16px', fontSize: '15px', fontWeight: '600', color: T.text }}>No grading templates found</div>
                         <div style={{ marginTop: '4px', fontSize: '13px', color: T.textSec }}>Create a new template to get started.</div>

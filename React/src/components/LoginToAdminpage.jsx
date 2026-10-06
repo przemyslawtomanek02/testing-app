@@ -90,32 +90,7 @@ const Login = () => {
                 <div style={{ position: 'absolute', top: '40%', left: '60%', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}/>
 
                 <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '340px' }}>
-                    <div style={{
-                        width: '64px', height: '64px', borderRadius: '22px',
-                        background: 'rgba(255,255,255,0.2)',
-                        backdropFilter: 'blur(10px)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 28px',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                    }}>
-                        <img src="/media/logo.png" alt="Logo" style={{ width: '34px', height: '34px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}/>
-                    </div>
-                    <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#FFFFFF', margin: '0 0 12px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
-                        Admin Control Center
-                    </h1>
-                    <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.6, margin: 0 }}>
-                        Manage tests, instances, and results from one unified platform.
-                    </p>
-
-                    {/* Feature bullets */}
-                    <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {['Test management & editing', 'Instance control & grading', 'User management & results'].map(f => (
-                            <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.7)', flexShrink: 0 }}/>
-                                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)' }}>{f}</span>
-                            </div>
-                        ))}
-                    </div>
+                    <img src="/media/logo.png" alt="Logo" style={{ width: '64px', height: '64px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}/>
                 </div>
             </div>
 
@@ -129,7 +104,7 @@ const Login = () => {
                 justifyContent: 'center',
                 padding: '48px 40px',
                 background: T.surface,
-                boxShadow: dk ? 'none' : '-8px 0 40px rgba(43,115,255,0.08)',
+                boxShadow: dk ? 'none' : '-8px 0 40px rgba(0,0,0,0.06)',
             }}>
                 <div style={{ width: '100%', maxWidth: '340px' }}>
                     <h2 style={{ fontSize: '22px', fontWeight: '700', color: T.text, margin: '0 0 6px', letterSpacing: '-0.025em' }}>
@@ -251,8 +226,7 @@ const Login = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '8px',
-                                boxShadow: isLoading ? 'none' : '0 4px 16px rgba(43,115,255,0.35)',
-                                transition: 'opacity 0.15s, box-shadow 0.15s',
+                                transition: 'opacity 0.15s',
                                 letterSpacing: '-0.01em',
                                 fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
                             }}

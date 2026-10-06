@@ -156,7 +156,7 @@ function EditTestPanel({testId, setOverlayImage, setActivePanel}) {
                             minWidth: '150px', background: isSubmitting ? T.textMuted : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                             color: '#FFFFFF', fontWeight: '600', padding: '7px 20px',
                             borderRadius: '999px', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                            fontSize: '13px', boxShadow: isSubmitting ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
+                            fontSize: '13px',
                             transition: 'opacity 0.15s',
                         }}
                         onMouseEnter={e => { if (!isSubmitting) e.currentTarget.style.opacity = '0.88'; }}
@@ -168,7 +168,7 @@ function EditTestPanel({testId, setOverlayImage, setActivePanel}) {
                 </div>
 
                 {/* Card */}
-                <div style={{ background: T.surface, borderRadius: '22px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)' }}>
+                <div style={{ background: T.surface, borderRadius: '22px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.06)' }}>
                     {/* Test info */}
                     <div style={{ padding: '24px', borderBottom: `1px solid ${T.border}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                         <div>
@@ -228,7 +228,7 @@ function EditTestPanel({testId, setOverlayImage, setActivePanel}) {
                                     background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                                     color: '#FFFFFF', fontWeight: '600', padding: '8px 18px',
                                     borderRadius: '999px', border: 'none', cursor: 'pointer',
-                                    fontSize: '13px', boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
+                                    fontSize: '13px',
                                     transition: 'opacity 0.15s',
                                 }}
                                 onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}

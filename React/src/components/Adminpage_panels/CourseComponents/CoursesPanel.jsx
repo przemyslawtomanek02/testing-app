@@ -109,7 +109,6 @@ export default function CoursesPanel({ setOverlay, setOverlayImage }) {
                                 background: 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                                 color: '#FFFFFF', fontWeight: '600', padding: '0 18px', borderRadius: '999px',
                                 border: 'none', cursor: 'pointer', fontSize: '13px',
-                                boxShadow: '0 4px 14px rgba(43,115,255,0.35)',
                             }}
                         >
                             <FilePlus2 size={14}/> New Course
@@ -118,7 +117,7 @@ export default function CoursesPanel({ setOverlay, setOverlayImage }) {
                 </div>
 
                 {creating && (
-                    <div style={{ background: T.surface, borderRadius: '20px', border: `1px solid ${T.border}`, padding: '16px', marginBottom: '16px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ background: T.surface, borderRadius: '20px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)', padding: '16px', marginBottom: '16px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <input
                             autoFocus
                             value={newTitle}
@@ -153,7 +152,8 @@ export default function CoursesPanel({ setOverlay, setOverlayImage }) {
                             <div
                                 key={course.course_id}
                                 style={{
-                                    background: T.surface, borderRadius: '22px', border: `1.5px solid ${T.border}`,
+                                    background: T.surface, borderRadius: '22px', border: dk ? `1.5px solid ${T.border}` : 'none',
+                                    boxShadow: dk ? 'none' : '0 2px 10px rgba(0,0,0,0.06)',
                                     display: 'flex', alignItems: 'center', padding: '16px 20px', gap: '14px',
                                 }}
                             >
@@ -190,9 +190,9 @@ export default function CoursesPanel({ setOverlay, setOverlayImage }) {
                         ))}
                     </div>
                 ) : (
-                    <div style={{ background: T.surface, borderRadius: '24px', border: `1px solid ${T.border}`, padding: '72px 24px', textAlign: 'center' }}>
-                        <div style={{ width: '60px', height: '60px', borderRadius: '20px', background: 'linear-gradient(135deg, #EEF4FF, #DDE9FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-                            <GraduationCap size={26} style={{ color: '#2B73FF' }}/>
+                    <div style={{ background: T.surface, borderRadius: '24px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? 'none' : '0 2px 12px rgba(0,0,0,0.06)', padding: '72px 24px', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                            <GraduationCap size={32} style={{ color: '#2B73FF' }}/>
                         </div>
                         <div style={{ fontSize: '15px', fontWeight: '600', color: T.text, marginBottom: '6px' }}>No courses yet</div>
                         <div style={{ fontSize: '13px', color: T.textSec, marginBottom: '24px' }}>Create your first course to get started.</div>
