@@ -81,6 +81,7 @@ const FillInTheBlankEditor = ({qIndex, control, register, setValue, getValues}) 
     const [activePart, setActivePart] = useState(null);
     const isInitialMount = useRef(true);
     const firstEffectInitialized = useRef(false);
+    const hasShownBlanks = useRef(false);
 
     const {fields: answerFields, append, remove} = useFieldArray({
         control, name: `questions.${qIndex}.answers`, keyName: 'key',
@@ -91,10 +92,26 @@ const FillInTheBlankEditor = ({qIndex, control, register, setValue, getValues}) 
     const debouncedQuestionText = useDebounce(questionText, 300);
     const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {distance: 8}}));
 
+    /* Luki zapisane w formularzu - zrodlo prawdy, dopoki edytor ich nie odtworzy. */
+    const formBlankCount = Array.isArray(question?.extra_data)
+        ? question.extra_data.filter(part => part.type === 'blank').length
+        : 0;
+
+    /* Gdy edytor choc raz pokazal luke, uznajemy go za zainicjowany - zeby
+       usuniecie ostatniej luki przez uzytkownika nie przywrocilo jej z formularza. */
     useEffect(() => {
-        if (firstEffectInitialized.current) return;
+        if (editorParts.some(part => part.type === 'answer')) hasShownBlanks.current = true;
+    }, [editorParts]);
+
+    useEffect(() => {
         if (!question) return;
         const {answers = [], extra_data = [], question: questionText = ''} = question;
+
+        // useWatch zwraca undefined na pierwszym renderze, wiec pierwsze
+        // wejscie tutaj moze wypasc na danych juz wyczyszczonych. Jesli
+        // formularz ma luki, ktorych edytor nigdy nie pokazal - odtwarzamy je.
+        const needsRecovery = !hasShownBlanks.current && formBlankCount > 0;
+        if (firstEffectInitialized.current && !needsRecovery) return;
 
         if (Array.isArray(extra_data) && extra_data.length > 0) {
             const reconstructedParts = extra_data.map((part, index) => {
@@ -111,11 +128,14 @@ const FillInTheBlankEditor = ({qIndex, control, register, setValue, getValues}) 
             })));
         }
         firstEffectInitialized.current = true;
-    }, [question]);
+    }, [question, formBlankCount]);
 
     useEffect(() => {
         if (isInitialMount.current) { isInitialMount.current = false; return; }
         if (debouncedQuestionText === undefined) return;
+        // Przebudowa z samego tekstu nie zna luk - czekamy, az efekt wyzej
+        // odtworzy je z extra_data, inaczej zniknelyby bezpowrotnie.
+        if (!hasShownBlanks.current && formBlankCount > 0) return;
 
         const currentTextInEditor = editorParts.filter(p => p.type === 'text').map(p => p.text).join(' ');
         if (currentTextInEditor === debouncedQuestionText) return;
@@ -141,9 +161,14 @@ const FillInTheBlankEditor = ({qIndex, control, register, setValue, getValues}) 
         });
 
         if (JSON.stringify(finalParts) !== JSON.stringify(editorParts)) setEditorParts(finalParts);
-    }, [debouncedQuestionText, editorParts]);
+    }, [debouncedQuestionText, editorParts, formBlankCount]);
 
     useEffect(() => {
+        // Na pierwszym renderze editorParts jest pusta, a extra_data moze juz
+        // zawierac luki (import JSON / draft z generatora AI). Zapis pustego
+        // stanu wyczyscilby je, zanim useWatch zdazy je odtworzyc.
+        if (editorParts.length === 0) return;
+
         const new_extra_data = editorParts.map(part => {
             if (part.type === 'answer') return {type: 'blank', correct_answer_id: part.id.replace('answer-', '')};
             return {type: 'text', value: part.text};

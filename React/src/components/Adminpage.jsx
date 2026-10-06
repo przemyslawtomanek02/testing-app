@@ -5,7 +5,7 @@ import {
     BookOpen, Hash, BarChart3, Percent,
     ListChecks, PlusSquare, Settings, LogOut,
     FilePlus2, Users, ChevronRight, Menu, X,
-    GraduationCap,
+    GraduationCap, Sparkles,
 } from 'lucide-react';
 
 import { useAppContext } from '../AppContext.jsx';
@@ -23,6 +23,7 @@ import UsersListPanel from './Adminpage_panels/UsersListPanel.jsx';
 import DarkModeSwitcher from './Reusable/DarkModeSwitcher.jsx';
 import TestPreviewPanel from './Adminpage_panels/TestPreviewPanel.jsx';
 import CoursesPanel from './Adminpage_panels/CourseComponents/CoursesPanel.jsx';
+import AiGeneratorPanel from './Adminpage_panels/AiGeneratorPanel.jsx';
 
 /* ─── nav config ─────────────────────────────────────────── */
 const NAV_GENERAL = [
@@ -34,6 +35,7 @@ const NAV_GENERAL = [
 ];
 const NAV_CREATE = [
     { id: 'create_test',            icon: PlusSquare, label: 'Create Test' },
+    { id: 'ai_generator',           icon: Sparkles,   label: 'AI Generator' },
     { id: 'create_grading_schemes', icon: FilePlus2,  label: 'Create Grading' },
 ];
 const NAV_BOTTOM = [
@@ -50,6 +52,7 @@ const BREADCRUMBS = {
     grading_schemes:          ['General', 'Grading'],
     courses:                  ['General', 'E-learning'],
     create_test:              ['Create', 'New Test'],
+    ai_generator:             ['Create', 'AI Generator'],
     create_grading_schemes:   ['Create', 'New Grading'],
     users_list:               ['Admin', 'Users'],
     settings:                 ['Admin', 'Settings'],
@@ -65,6 +68,7 @@ export default function Adminpage() {
     const [tests, setTests] = useState([]);
     const [editingTestId, setEditingTestId] = useState(null);
     const [previewTestId, setPreviewTestId] = useState(null);
+    const [aiDraft, setAiDraft] = useState(null);
     const [instances, setInstances] = useState([]);
     const [overlay, setOverlay] = useState(null);
     const [overlayImage, setOverlayImage] = useState(null);
@@ -114,6 +118,9 @@ export default function Adminpage() {
     };
 
     const handleEditTest    = id => { setEditingTestId(id); setActivePanel('edit_test'); };
+    /* Draft z generatora AI nie jest zapisywany - ladujemy go do edytora,
+       zeby wykladowca sprawdzil pytania przed utworzeniem testu. */
+    const handleUseAiDraft  = draft => { setAiDraft(draft); setActivePanel('create_test'); };
     const handlePreviewTest = id => { setPreviewTestId(id); setActivePanel('preview_test'); };
 
     const handleExportTest = async (testId, testName) => {
@@ -164,7 +171,8 @@ export default function Adminpage() {
             case 'results':         return <ResultsPanel reset={activePanel === null}/>;
             case 'grading_schemes': return <GradingSchemePanel setOverlay={setOverlay}/>;
             case 'courses':         return <CoursesPanel setOverlay={setOverlay} setOverlayImage={setOverlayImage}/>;
-            case 'create_test':     return <CreateTestsPanel setOverlayImage={setOverlayImage}/>;
+            case 'create_test':     return <CreateTestsPanel setOverlayImage={setOverlayImage} initialTest={aiDraft} onInitialTestConsumed={() => setAiDraft(null)}/>;
+            case 'ai_generator':    return <AiGeneratorPanel onUseDraft={handleUseAiDraft}/>;
             case 'create_grading_schemes': return <CreateGradingScheme scheme_id={null}/>;
             case 'users_list':      return <UsersListPanel setOverlay={setOverlay} onRefresh={'nic'}/>;
             case 'settings':        return <SettingsPanel/>;
@@ -191,7 +199,7 @@ export default function Adminpage() {
                 transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1)',
                 overflow: 'hidden',
                 position: 'relative',
-                boxShadow: dk ? 'none' : '2px 0 16px rgba(43,115,255,0.04)',
+                boxShadow: dk ? 'none' : '2px 0 16px rgba(0,0,0,0.04)',
             }}>
                 {/* Gradient top accent */}
                 <div style={{
@@ -257,7 +265,6 @@ export default function Adminpage() {
                                 border: `1.5px solid ${T.border}`, background: T.surface,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 cursor: 'pointer', color: T.textSec, flexShrink: 0,
-                                boxShadow: '0 2px 8px rgba(43,115,255,0.12)',
                                 transition: 'all 0.15s',
                             }}
                             onMouseEnter={e => { e.currentTarget.style.background = dk ? 'rgba(255,255,255,0.06)' : '#EEF4FF'; e.currentTarget.style.borderColor = dk ? '#3D4F6B' : '#B8D0FF'; e.currentTarget.style.color = '#2B73FF'; }}
@@ -352,8 +359,7 @@ function NavItem({ item, active, open, onClick, dk }) {
                 border: 'none',
                 background: bg,
                 color,
-                transition: 'background 0.18s, color 0.18s, box-shadow 0.18s',
-                boxShadow: active ? '0 4px 14px rgba(43,115,255,0.32)' : 'none',
+                transition: 'background 0.18s, color 0.18s',
                 letterSpacing: '-0.01em',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',

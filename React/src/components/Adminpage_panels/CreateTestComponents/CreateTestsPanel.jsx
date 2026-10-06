@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -7,7 +7,7 @@ import QuestionEditor from "./QuestionEditor.jsx";
 import { QuestionDefaults } from "./EditorQuestionTypes/QuestionDefaults.jsx";
 import { useAppContext } from "../../../AppContext.jsx";
 
-function CreateTestsPanel({ setOverlayImage }) {
+function CreateTestsPanel({ setOverlayImage, initialTest = null, onInitialTestConsumed }) {
   const { darkMode: dk } = useAppContext();
   const T = {
     bg:       dk ? '#0F1117' : '#F4F6FB',
@@ -69,6 +69,30 @@ function CreateTestsPanel({ setOverlayImage }) {
     setValue(`questions.${qIndex}.image_path`, null, { shouldDirty: true });
   }, [setValue]);
 
+  // Wspolna sciezka wczytywania testu z zewnatrz: plik JSON oraz draft
+  // z generatora AI trafiaja do formularza dokladnie tak samo.
+  const applyExternalTest = useCallback((jsonData, sourceLabel) => {
+    const validatedQuestions = jsonData.questions.map((q) => {
+      const defaults = QuestionDefaults[q.type] || QuestionDefaults.SingleChoice;
+      return { ...defaults, ...q, answers: Array.isArray(q.answers) ? q.answers : defaults.answers, extra_data: q.extra_data ?? defaults.extra_data ?? [] };
+    });
+    reset({ test_name: jsonData.test_name, test_description: jsonData.test_description || "", questions: validatedQuestions });
+    setImages([]);
+    setJsonFileName(sourceLabel);
+  }, [reset]);
+
+  // onInitialTestConsumed bywa nowa funkcja przy kazdym renderze rodzica,
+  // wiec bez tej blokady efekt resetowalby formularz i kasowal poprawki.
+  const appliedDraftRef = useRef(null);
+  useEffect(() => {
+    if (!initialTest || !Array.isArray(initialTest.questions) || initialTest.questions.length === 0) return;
+    if (appliedDraftRef.current === initialTest) return;
+    appliedDraftRef.current = initialTest;
+    applyExternalTest(initialTest, "AI generator");
+    toast.success(`Loaded ${initialTest.questions.length} AI-generated questions. Review them before saving.`);
+    onInitialTestConsumed?.();
+  }, [initialTest, applyExternalTest, onInitialTestConsumed]);
+
   const handleJsonFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -80,12 +104,7 @@ function CreateTestsPanel({ setOverlayImage }) {
           toast.error("Invalid JSON structure. Required: 'test_name' and 'questions' array.");
           return;
         }
-        const validatedQuestions = jsonData.questions.map((q) => {
-          const defaults = QuestionDefaults[q.type] || QuestionDefaults.SingleChoice;
-          return { ...defaults, ...q, answers: Array.isArray(q.answers) ? q.answers : defaults.answers, extra_data: q.extra_data ?? defaults.extra_data ?? [] };
-        });
-        reset({ test_name: jsonData.test_name, test_description: jsonData.test_description || "", questions: validatedQuestions });
-        setJsonFileName(file.name);
+        applyExternalTest(jsonData, file.name);
         toast.success("Test imported successfully!");
       } catch (err) {
         toast.error("Failed to parse or process the JSON file.");
@@ -153,7 +172,9 @@ function CreateTestsPanel({ setOverlayImage }) {
     try {
       const response = await fetch("/api/admin/create_new_test", { method: "POST", body: formData });
       if (!response.ok) { const e = await response.json().catch(() => ({})); throw new Error(e.message || "Submission failed."); }
-      toast.success("Test created successfully!");
+      // Liczba w komunikacie pozwala od razu zauwazyc, gdyby cokolwiek
+      // zginelo miedzy edytorem a baza.
+      toast.success(`Test created successfully with ${questions.length} questions!`);
       reset();
       setImages([]);
       setJsonFileName("");
@@ -207,7 +228,7 @@ function CreateTestsPanel({ setOverlayImage }) {
                 minWidth: '140px', background: isSubmitting ? T.textMuted : 'linear-gradient(135deg, #2B73FF 0%, #3F99FF 100%)',
                 color: '#FFFFFF', fontWeight: '600', padding: '7px 20px',
                 borderRadius: '999px', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                fontSize: '13px', boxShadow: isSubmitting ? 'none' : '0 4px 14px rgba(43,115,255,0.35)',
+                fontSize: '13px',
                 transition: 'opacity 0.15s',
               }}
               onMouseEnter={e => { if (!isSubmitting) e.currentTarget.style.opacity = '0.88'; }}
@@ -226,7 +247,7 @@ function CreateTestsPanel({ setOverlayImage }) {
         )}
 
         {/* Card */}
-        <div style={{ background: T.surface, borderRadius: '22px', border: `1px solid ${T.border}`, boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.04)' }}>
+        <div style={{ background: T.surface, borderRadius: '22px', border: dk ? `1px solid ${T.border}` : 'none', boxShadow: dk ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.06)' }}>
           {/* Test info */}
           <div style={{ padding: '24px', borderBottom: `1px solid ${T.border}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div>
@@ -290,7 +311,6 @@ function CreateTestsPanel({ setOverlayImage }) {
                   borderRadius: '999px', border: 'none',
                   cursor: canAddQuestion ? 'pointer' : 'not-allowed',
                   fontSize: '13px',
-                  boxShadow: canAddQuestion ? '0 4px 14px rgba(43,115,255,0.35)' : 'none',
                   transition: 'opacity 0.15s',
                 }}
                 onMouseEnter={e => { if (canAddQuestion) e.currentTarget.style.opacity = '0.88'; }}

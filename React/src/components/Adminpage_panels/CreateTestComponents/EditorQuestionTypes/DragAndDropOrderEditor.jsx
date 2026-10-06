@@ -82,7 +82,9 @@ const DragAndDropOrderEditor = ({qIndex, control, register, setValue}) => {
 
     useEffect(() => {
         if (answers && answers.length > 0) {
-            setValue(`questions.${qIndex}.extra_data.correct_order`, answers.map(a => a.answer_id), {shouldDirty: true});
+            // Nowe odpowiedzi nie maja jeszcze answer_id - wtedy liczy sie
+            // tymczasowe 'id', dokladnie jak w save_answers_for_question po stronie serwera.
+            setValue(`questions.${qIndex}.extra_data.correct_order`, answers.map(a => a.answer_id ?? a.id), {shouldDirty: true});
         }
     }, [answers, qIndex, setValue]);
 

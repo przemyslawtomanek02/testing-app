@@ -15,7 +15,7 @@ from starlette.responses import JSONResponse
 
 from fastapi_app.database.database import dispose_engine, init_models
 from fastapi_app.routes.admin import admin_utils, admin_auth, grading, instance_management, search, \
-    test_management, users_managment, generated_results, course_management
+    test_management, users_managment, generated_results, course_management, ai_generation
 from fastapi_app.routes.users import user_auth, users, profile, courses
 from fastapi_app.routes import default
 from fastapi_app.utils.dependencies import is_admin
@@ -124,6 +124,7 @@ app.include_router(instance_management.router)
 app.include_router(search.router)
 app.include_router(test_management.router)
 app.include_router(course_management.router)
+app.include_router(ai_generation.router)
 app.include_router(user_auth.router)
 app.include_router(profile.router)
 app.include_router(users.router)
